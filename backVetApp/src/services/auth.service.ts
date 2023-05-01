@@ -18,14 +18,12 @@ const loginUser = async ({email,password}:Auth) => {
             return result;
         }
         const passwordHash = result.password;
-        console.log(passwordHash);
         const passwordCoincide = await verified(password,passwordHash)
 
         if (!passwordCoincide){
             return "PASS_INCORRECTO";
         }
         return result;
-
     }
     catch(err){
         console.error("----Error en acceso a BD------");

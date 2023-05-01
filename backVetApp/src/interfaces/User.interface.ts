@@ -5,5 +5,10 @@ export interface Auth {
 
 export interface User extends Auth {
     id:number,
-    role:string
+    rol:string
+}
+
+export interface UserData {
+    email:string,
+    rol:string
 }
