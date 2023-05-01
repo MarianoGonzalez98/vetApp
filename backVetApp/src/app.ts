@@ -10,11 +10,13 @@ app.use(cors());
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
+import { TurnosRouter  } from "./routes/turnos"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
 
-
+app.use(cors());
 app.use(AdopcionesRouter);
+app.use(TurnosRouter);
 app.use(AuthRouter);
 
 app.get('/', (req:Request, res:Response) => {
