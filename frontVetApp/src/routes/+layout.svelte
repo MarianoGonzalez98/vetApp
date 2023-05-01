@@ -5,6 +5,7 @@
 	import '@skeletonlabs/skeleton/styles/all.css';
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
+	import NavBar from './NavBar.svelte';
 </script>
-
+<NavBar></NavBar>
 <slot />
