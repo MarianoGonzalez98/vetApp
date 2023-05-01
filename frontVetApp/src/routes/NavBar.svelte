@@ -1,7 +1,31 @@
+<script>
+    import { goto } from '$app/navigation';
+    import { user } from '$lib/stores/user';
+  import { AppBar } from '@skeletonlabs/skeleton';
+  import { LightSwitch } from '@skeletonlabs/skeleton';
+  
+  const logout = () => {
+    $user=null;
+    goto('/');
+  }
+</script>
 
-<nav class="p-3 shadow flex items-center justify-between">
-  <a class="btn rounded-lg variant-filled" href="/">Pagina principal</a>    
-  <a class="btn rounded-lg variant-filled" href="/login">Iniciar sesion</a>
+<AppBar>
+  <svelte:fragment slot="lead">
+    <a class="btn text-xl uppercase p-1" href="/" rel="noreferrer" >Oh My Dog!</a>
+    <LightSwitch></LightSwitch>
+  </svelte:fragment>
 
-  </nav>
+  
 
+  <svelte:fragment slot="trail">
+    {#if (!$user)}
+      <a class="btn btn-sm variant-ghost-surface" href="/auth/login" rel="noreferrer">Login</a>
+    {:else}
+      <button on:click={logout} type="button" class="btn btn-sm variant-ghost-surface" >Cerrar sesion</button>
+    {/if}
+  </svelte:fragment>
+
+</AppBar>
+
+<!-- https://www.skeleton.dev/components/app-bar -->
