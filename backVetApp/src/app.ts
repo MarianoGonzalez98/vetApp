@@ -7,10 +7,12 @@ const PORT = process.env.port || 3000
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones"
+import { TurnosRouter  } from "./routes/turnos"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 
-
+app.use(cors());
 app.use(AdopcionesRouter);
+app.use(TurnosRouter);
 
 app.get('/',cors(), (req:Request, res:Response) => {
 	res.send('Test backend')
