@@ -10,15 +10,21 @@
     let password = '';
     let currentError='';
 
-    const alert: ModalSettings = {
+    const fallaAuth: ModalSettings = {
 	type: 'alert',
-	// Data
 	title: 'Fallo del inicio de sesión',
 	body: 'Email/contraseña incorrectos',
-};
+    };
 
+    const fallaDesconocida: ModalSettings = {
+	type: 'alert',
+	title: 'Fallo del inicio de sesión',
+	body: 'Posible problema del servidor',
+    };
 
-    const handleLogin = async () =>{
+    const handleLogin = async () =>{        
+	    let cookies = document.cookie;
+        console.log(cookies);
         fetch('http://localhost:3000/login',{
             method:'POST',
             headers:{
@@ -29,8 +35,9 @@
         })
         .then((res) => {
             if (res.status < 299) return res.json()
-            if (res.status > 299) currentError = "Algo no esta bien"
-            modalStore.trigger(alert);
+            if (res.status > 299) currentError = "Falla en autenticacion. Satus error: ",res.status;
+            modalStore.clear();
+            modalStore.trigger(fallaAuth);
             console.log(currentError);
         })
         .then((resp:ApiResponse<LoginData<UserData>>)=>{
@@ -39,17 +46,18 @@
                 goto('/');
             }
         })
-/*         .catch((error) => {
+        .catch((error) => {
+            modalStore.clear();
+            modalStore.trigger(fallaDesconocida);
             currentError="server is down";
             console.log("Error login in: ",error);
-        }) */
+        })
     }
-    
-
-
-    
 </script>
+
+
 <Modal />
+
 <div class="container h-full mx-auto flex justify-center items-center">
     <form on:submit|preventDefault={handleLogin} class="space-y-2">
         <label class="label" for="email">Email</label>
@@ -65,6 +73,4 @@
         {$user.email}
     {/if}
 
-
-    
 </div>
