@@ -43,6 +43,7 @@
         .then((resp:ApiResponse<LoginData<UserData>>)=>{
             if (resp) {
                 user.update(val => val ={...(resp.data.userData)});
+                localStorage.setItem('user',JSON.stringify(resp.data.userData));
                 goto('/');
             }
         })
