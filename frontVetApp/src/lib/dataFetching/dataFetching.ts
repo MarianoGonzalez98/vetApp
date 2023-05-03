@@ -1,7 +1,7 @@
 import type { ApiResponse } from "$lib/interfaces/ApiResponse.interface";
 
-export const getTestData = async (url: string): Promise<ApiResponse> => {
+export const getTestData = async (url: string): Promise<ApiResponse<string>> => {
 	const response = await fetch(url);
-	const apiResponse: ApiResponse = await response.json();
+	const apiResponse: ApiResponse<string> = await response.json();
 	return apiResponse;
 }

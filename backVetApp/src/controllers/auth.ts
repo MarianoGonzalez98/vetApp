@@ -12,22 +12,28 @@ const loginController = async (req:Request, res:Response) => {
     const result= await loginUser(authData)
     //habria que refactorizar lo de abajo
     if (!result){
-        res.send({data:"no existe el usuario", statusCode:401}); 
+        res.status(401).send({data:"no existe el usuario", statusCode:401}); 
         return
     }
     if(result==="PASS_INCORRECTO"){
-        res.send({data:"password incorrecto", statusCode:401})
+        res.status(402).send({data:"password incorrecto", statusCode:402})
         return
     }
     if (result==="error"){
-        res.send({data:"posible error en base de datos", statusCode:401})
+        res.status(401).send({data:"posible error en base de datos", statusCode:403})
         return
     }
     const userData:UserData = {email:result.email, rol:result.rol}; //creo q se puede mejorar
-    console.log(userData);
     const token = await generateToken(userData);
-
+    const bearerToken =`Bearer ${token}`
+    res.cookie('jwt',bearerToken,{httpOnly:true});
     res.send({data:{userData,token:token}})
 };
 
-export {registerController, loginController}
+const logoutController = async  (req:Request, res:Response) => {
+    res.status(202)
+    .clearCookie('jwt',{httpOnly:true, domain:"localhost"})
+    .send('cookie cleared');
+};
+
+export {registerController, loginController,logoutController}
