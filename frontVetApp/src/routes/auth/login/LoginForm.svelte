@@ -34,16 +34,22 @@
             body: JSON.stringify({email:email, password:password})
         })
         .then((res) => {
-            if (res.status < 299) return res.json()
-            if (res.status > 299) currentError = "Falla en autenticacion. Satus error: ",res.status;
+            if (res.status < 299) {  //si entra acá no hubo error
+                return res.json()
+            }
+            currentError = "Falla en autenticacion. Satus error: ",res.status;
             modalStore.clear();
             modalStore.trigger(fallaAuth);
             console.log(currentError);
         })
-        .then((resp:ApiResponse<LoginData<UserData>>)=>{
+        .then((resp:ApiResponse<LoginData<UserData>>)=>{ //si no hay ningun error
             if (resp) {
                 user.update(val => val ={...(resp.data.userData)});
                 localStorage.setItem('user',JSON.stringify(resp.data.userData));
+                if (!resp.data.userData.primerLoginHecho){
+                    goto('/auth/cambiar-password/');
+                    return
+                }
                 goto('/');
             }
         })

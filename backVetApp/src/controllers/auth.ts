@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import { loginUser, registerCliente } from "../services/auth.service";
+import { loginUser, registerCliente , changePass, setPrimerLoginHecho, getCurrentPass} from "../services/auth.service";
 import { Auth, UserData } from "../interfaces/User.interface";
-import { generateToken, verifyToken } from "../utils/jwt.handle";
+import { decodeToken, generateToken, verifyToken } from "../utils/jwt.handle";
+import { JwtPayload } from "jsonwebtoken";
+import { encrypt, verified } from "../utils/bycrypt.handle";
 
 const registerController = async  (req:Request, res:Response) => {
     //const responseCliente = await registerCliente();
@@ -23,10 +25,14 @@ const loginController = async (req:Request, res:Response) => {
         res.status(401).send({data:"posible error en base de datos", statusCode:403})
         return
     }
-    const userData:UserData = {email:result.email, rol:result.rol}; //creo q se puede mejorar
+    const userData:UserData = {email:result.email, rol:result.rol, primerLoginHecho:result.primerLoginHecho}; //creo q se puede mejorar
+    console.log("LOGIN CRONTROLLER:")
+    console.log(userData);
     const token = await generateToken(userData);
-    const bearerToken =`Bearer ${token}`
-    res.cookie('jwt',bearerToken,{httpOnly:true});
+    if (userData.primerLoginHecho===false){ //si este es su primer login, lo persisto en bd al hecho.
+        setPrimerLoginHecho(userData.email); 
+    }
+    res.cookie('jwt',token,{httpOnly:true});
     res.send({data:{userData,token:token}})
 };
 
@@ -36,4 +42,33 @@ const logoutController = async  (req:Request, res:Response) => {
     .send('cookie cleared');
 };
 
-export {registerController, loginController,logoutController}
+const changePassController = async  (req:Request, res:Response) => {
+    const passwordInput:string = req.body.password;
+    const decodedToken = decodeToken(req.cookies.jwt)
+    if (decodedToken===null){
+        console.log('Problem at decoding jwt in changePassController');
+        res.status(411).send('Problen at decoding jwt in changePassController');
+        return
+    }
+    const user:UserData = res.locals.jwtData.user;
+    //checkeo que el password sea diferente al actual
+    const currentPassHash = await getCurrentPass(user.email);
+    const passwordCoincide = await verified(passwordInput,currentPassHash)
+    if (passwordCoincide){
+        res.status(409).send('La nueva contraseña debe ser diferente a la actual');
+        return;
+    }
+    //aca validar que sea de min 6 car, con un num y un car especial
+    //......
+    console.log("changePassController PASS q sera ENCRIPTADA:"+passwordInput);
+    const hashedPass = await encrypt(passwordInput);
+    const updateDone = await changePass({email: user.email ,password: hashedPass}); //toma el dato del jwt y la contraseña q mando por el body
+
+    if (updateDone){
+        res.status(202).send('Password Update done');
+    }
+    else
+        res.status(401).send('Problem at updating password');
+}
+
+export {registerController, loginController,logoutController, changePassController}

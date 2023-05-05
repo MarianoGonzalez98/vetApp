@@ -12,6 +12,11 @@
 		{/if}
 		
 		<BotonConDatos></BotonConDatos>
+
+		{#if ($user)}
+		<a class="btn btn-sm variant-ghost-surface" rel="noreferrer" href="/auth/cambiar-password">Cambiar mi contraseña</a>
+		{/if}
+
 	</div>
 
 
