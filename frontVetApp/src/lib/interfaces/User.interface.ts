@@ -10,5 +10,6 @@ export interface User extends Auth {
 
 export interface UserData {
     email:string,
-    rol:string
+    rol:string,
+    primerLoginHecho:boolean,
 }

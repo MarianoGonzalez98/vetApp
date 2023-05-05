@@ -9,10 +9,10 @@ const registerCliente = async (user:User) => {
 
 //devuelve el usuario si la autenticación fue correcta
 const loginUser = async ({email,password}:Auth) => {
-    const query = 'SELECT id, password, email, rol FROM public.usuarios WHERE email = $1'
+    const query = 'SELECT id, password, email, rol, "primerLoginHecho" FROM public.usuarios WHERE email = $1'
     const values = [email]
     try{
-        const response:QueryResult = await pool.query(query,values)
+        const response:QueryResult = await pool.query(query,values) //hace la query
         const result:User = await response.rows[0];
         if (!result){
             return result;
@@ -26,11 +26,49 @@ const loginUser = async ({email,password}:Auth) => {
         return result;
     }
     catch(err){
-        console.error("----Error en acceso a BD------");
+        console.error("----Error en acceso a BD:loginUser------");
         console.log(err);
         return "error";
     }
-
 };
 
-export {registerCliente, loginUser}
+
+const changePass = async ({email,password}:Auth) => {
+    //por ahora solo setea primer inicio en falso
+    const query = `
+    UPDATE public.usuarios
+	SET password = $1
+	WHERE email = $2
+    `;
+    const values = [password,email];
+    try{
+        const response:QueryResult = await pool.query(query,values) //hace la query
+        return true;
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:changePass------");
+        console.log(err);
+        return false;
+    }
+}
+
+const setPrimerLoginHecho = async (email:string) => {
+    //por ahora solo setea primer inicio en falso
+    const query = `
+    UPDATE public.usuarios
+	SET "primerLoginHecho" = true
+	WHERE email = $1
+    `;
+    const values = [email];
+    try{
+        const response:QueryResult = await pool.query(query,values) //hace la query
+        return true;
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:setPrimerLoginHecho------");
+        console.log(err);
+        return false;
+    }
+}
+
+export {registerCliente, loginUser, changePass,setPrimerLoginHecho}
