@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { loginUser, registerCliente , changePass, setPrimerLoginHecho} from "../services/auth.service";
+import { loginUser, registerCliente , changePass, setPrimerLoginHecho, getCurrentPass} from "../services/auth.service";
 import { Auth, UserData } from "../interfaces/User.interface";
 import { decodeToken, generateToken, verifyToken } from "../utils/jwt.handle";
 import { JwtPayload } from "jsonwebtoken";
-import { encrypt } from "../utils/bycrypt.handle";
+import { encrypt, verified } from "../utils/bycrypt.handle";
 
 const registerController = async  (req:Request, res:Response) => {
     //const responseCliente = await registerCliente();
@@ -43,16 +43,25 @@ const logoutController = async  (req:Request, res:Response) => {
 };
 
 const changePassController = async  (req:Request, res:Response) => {
-    const authData:Auth = {email: req.body.email , password:req.body.password}
+    const passwordInput:string = req.body.password;
     const decodedToken = decodeToken(req.cookies.jwt)
     if (decodedToken===null){
-        console.log('Problen at decoding jwt in changePassController');
+        console.log('Problem at decoding jwt in changePassController');
         res.status(411).send('Problen at decoding jwt in changePassController');
         return
     }
     const user:UserData = res.locals.jwtData.user;
-    console.log("changePassController PASS q sera ENCRIPTADA:"+authData.password);
-    const hashedPass = await encrypt(authData.password);
+    //checkeo que el password sea diferente al actual
+    const currentPassHash = await getCurrentPass(user.email);
+    const passwordCoincide = await verified(passwordInput,currentPassHash)
+    if (passwordCoincide){
+        res.status(409).send('La nueva contraseña debe ser diferente a la actual');
+        return;
+    }
+    //aca validar que sea de min 6 car, con un num y un car especial
+    //......
+    console.log("changePassController PASS q sera ENCRIPTADA:"+passwordInput);
+    const hashedPass = await encrypt(passwordInput);
     const updateDone = await changePass({email: user.email ,password: hashedPass}); //toma el dato del jwt y la contraseña q mando por el body
 
     if (updateDone){

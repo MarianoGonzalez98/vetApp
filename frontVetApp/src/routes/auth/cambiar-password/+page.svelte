@@ -1,17 +1,23 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { user } from "$lib/stores/user";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
+    import { error } from "@sveltejs/kit";
 
 
 
     const fallaDesconocida: ModalSettings = {
 	type: 'alert',
 	title: 'Fallo del cambio de contraseña',
-	body: 'Posible problema del servidor.',
+	body: 'No se pudo realizar el cambio de contraseña.',
     };
 
+    const fallaMismoPass: ModalSettings = {
+	type: 'alert',
+	title: 'Fallo del cambio de contraseña',
+	body: `No se pudo realizar el cambio de contraseña: la contraseña ingresada debe ser diferente a la actual.`,
+    buttonTextCancel:'Ok',
+    };
     const cambioHecho: ModalSettings = {
 	type: 'alert',
 	title: 'Contraseña cambiada',
@@ -29,12 +35,21 @@
                 'Content-Type':'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({email:$user?.email, password:password})
+            body: JSON.stringify({password:password})
         })
-        .then( (res:Response) => {
-            modalStore.clear();
-            modalStore.trigger(cambioHecho);
-
+        .then( (res) => {
+            if (res.status<299){
+                console.log("changePass RESPONSE:"+res);
+                //falta validar con regex que cumple los requisitos de caracteres
+                modalStore.clear();
+                modalStore.trigger(cambioHecho);
+                return res.json();
+            }
+            if (res.status === 409){
+                modalStore.clear();
+                modalStore.trigger(fallaMismoPass);
+                return res;
+            }
         })
         .catch((error) => {
             modalStore.clear();
@@ -47,9 +62,9 @@
 <Modal />
 <div class="container h-full mx-auto justify-center items-center">
     <form on:submit|preventDefault={changePass} class='space-y-2 mx-20 mt-10'>
-        <h4>Es su primera vez iniciando sesión. Realice un cambio de contraseña.</h4>
         <label class="label" for="password">Nueva contraseña: </label>
         <input bind:value={password} class="input max-w-md" type="password" placeholder="Ingrese su nueva contraseña" name="password" required>
+        <button class="btn rounded-lg variant-filled" type="submit">Cambiar contraseña</button>
     </form>
 
 </div>
