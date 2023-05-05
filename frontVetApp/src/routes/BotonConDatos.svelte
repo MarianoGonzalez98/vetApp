@@ -2,7 +2,7 @@
 	import { getTestData } from "$lib/dataFetching/dataFetching";
 	import type { ApiResponse } from "$lib/interfaces/ApiResponse.interface";
 
-	let datos:ApiResponse = {data:"noData",statusCode:-1};
+	let datos:ApiResponse<string> = {data:"noData",statusCode:-1};
 	let endpoint:string = 'http://localhost:3000/api/mensaje';
 
 	async function getDatos(){

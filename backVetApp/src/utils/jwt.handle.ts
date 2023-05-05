@@ -1,4 +1,4 @@
-import { sign, verify } from "jsonwebtoken";
+import { sign, verify, decode} from "jsonwebtoken";
 import { UserData } from "../interfaces/User.interface";
 
 const JWT_SECRET = process.env.JWT_SECRET || "string_secreto"
@@ -14,4 +14,9 @@ const verifyToken = async (token:string) => {
     return isValid;
 };
 
-export {verifyToken, generateToken}
+const decodeToken = (token:string) =>{
+    const decoded = decode(token);
+    return decoded;
+}
+
+export {verifyToken, generateToken,decodeToken}

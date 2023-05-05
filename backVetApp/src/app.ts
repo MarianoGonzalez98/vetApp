@@ -1,12 +1,20 @@
-import { Request, Response, Router } from "express"
+import { NextFunction, Request, Response, Router } from "express"
 //require('dotenv').config({path:'./.env'});
 const express = require('express')
 const cors = require('cors')
 const app = express()
+const cookieParser = require('cookie-parser');
 const PORT = process.env.port || 3000
 
+const corsOptions = {
+  origin: true, //'http://localhost:5173/'
+  credentials: true,
+  //preflightContinue: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
@@ -14,7 +22,6 @@ import { TurnosRouter  } from "./routes/turnos"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
 
-app.use(cors());
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
 app.use(AuthRouter);
