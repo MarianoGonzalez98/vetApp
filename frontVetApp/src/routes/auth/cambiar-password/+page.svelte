@@ -1,10 +1,9 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { user } from "$lib/stores/user";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
     import { error } from "@sveltejs/kit";
-
-
 
     const fallaDesconocida: ModalSettings = {
 	type: 'alert',
@@ -49,6 +48,11 @@
                 modalStore.clear();
                 modalStore.trigger(fallaMismoPass);
                 return res;
+            }
+            if (res.status === 400){ //error por modificacion del token jwt.
+                $user=null;
+                goto('/auth/login');
+                return;
             }
         })
         .catch((error) => {

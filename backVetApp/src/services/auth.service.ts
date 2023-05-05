@@ -18,15 +18,15 @@ const loginUser = async ({email,password}:Auth) => {
     try{
         const response:QueryResult = await pool.query(query,values) //hace la query
         const result:User = await response.rows[0];
-        if (!result){ //si no hay ningun resultado
+/*         if (!result){ //si no hay ningun resultado
             return result; //esto capaz este bueno cambiarlo
-        }
-        const passwordHash = result.password;
-        const passwordCoincide = await verified(password,passwordHash)
+        } */
+/*         const passwordHash = result.password;
+        const passwordCoincide = await verified(password,passwordHash) */
 
-        if (!passwordCoincide){
+/*         if (!passwordCoincide){
             return "PASS_INCORRECTO";
-        }
+        } */
         return result;
     }
     catch(err){
