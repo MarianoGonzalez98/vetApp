@@ -76,8 +76,4 @@
         <button class="btn rounded-lg variant-filled" type="submit">Login</button>
     </form>
 
-    {#if $user}
-        {$user.email}
-    {/if}
-
 </div>
