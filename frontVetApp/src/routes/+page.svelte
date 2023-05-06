@@ -17,6 +17,8 @@
 		<a class="btn btn-sm variant-ghost-surface" rel="noreferrer" href="/auth/cambiar-password">Cambiar mi contraseña</a>
 		{/if}
 
+		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
+
 	</div>
 
 
