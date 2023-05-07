@@ -8,7 +8,14 @@
     let fechaNacimiento: string = new Date().toJSON().slice(0,10);
 
     const handleCarga = () => {
-
+        fetch('http://localhost:3000/registrar-cliente',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({nombre,apellido,email,dni,direccion,telefono,fechaNacimiento,foto:null})
+        });
     }
 </script>
 
@@ -37,6 +44,6 @@
         <label class="label" for="dni">Teléfono:</label>
         <input bind:value={telefono} class="input" type="text" placeholder="Ingrese teléfono del cliente" name="telefono" required>
 
-        <button class="btn rounded-lg variant-filled-primary    " type="submit">Login</button>
+        <button class="btn rounded-lg variant-filled-primary" type="submit">Registrar cliente</button>
     </form>
 </div>

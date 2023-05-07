@@ -1,17 +1,41 @@
 import { Request, Response } from "express";
-import { loginUser, registerCliente , changePass, setPrimerLoginHecho, getCurrentPass} from "../services/auth.service";
-import { Auth, UserData } from "../interfaces/User.interface";
-import { decodeToken, generateToken, verifyToken } from "../utils/jwt.handle";
-import { JwtPayload } from "jsonwebtoken";
+import { getUser , changePass, setPrimerLoginHecho, getCurrentPass, insertUser} from "../services/auth.service";
+import { Auth, UserData, Persona } from "../interfaces/User.interface";
+import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
+import { generateRandomString } from "../utils/random.handle";
 
-const registerController = async  (req:Request, res:Response) => {
-    //const responseCliente = await registerCliente();
+const registrarController = async  (req:Request, res:Response) => {
+    const cliente:Persona = req.body;
+
+    const result = await getUser(cliente.email);
+    if (result==="error"){
+        //HTTP 500 Internal server error
+        res.status(500).send({data:"posible error en base de datos", statusCode:500})
+        return
+    }
+    if (result){ //si devuelve un elemento es que existe el usuario
+        //409 conflict
+        res.status(409).send({data:"El email del cliente ya se encuentra registrado", statusCode:409})
+        return
+    }
+
+    const randomPassword = generateRandomString();
+    const hashedPassword = await encrypt(randomPassword);
+    const dbResult = await insertUser({...cliente,password:hashedPassword, rol:'cliente'});
+    if (dbResult === 'error'){
+        //HTTP 500 Internal server error
+        res.status(500).send({data:"posible error en base de datos", statusCode:500})
+        return
+    }
+    //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
+    //201 Created
+    res.status(201).send('Se registró correctamente al cliente');
 };
 
 const loginController = async (req:Request, res:Response) => {
     const authData:Auth = {email: req.body.email , password:req.body.password}
-    const result= await loginUser(authData)
+    const result= await getUser(authData.email)
     if (result==="error"){
         //HTTP 500 Internal server error
         res.status(500).send({data:"posible error en base de datos", statusCode:500})
@@ -75,4 +99,4 @@ const changePassController = async  (req:Request, res:Response) => {
         res.status(401).send('Problem at updating password');
 }
 
-export {registerController, loginController,logoutController, changePassController}
+export {registrarController, loginController,logoutController, changePassController}

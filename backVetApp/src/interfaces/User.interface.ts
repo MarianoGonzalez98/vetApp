@@ -15,10 +15,14 @@ export interface UserData {
     primerLoginHecho:boolean,
 }
 
+export interface Rol{
+    rol:string;
+}
 
 export interface Persona{
     nombre:string,
     apellido:string,
+    email:string
     dni:string,
     fechaNacimiento:Date,
     direccion: string,
