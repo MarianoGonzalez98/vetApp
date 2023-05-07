@@ -3,12 +3,12 @@
     import { user } from "$lib/stores/user";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
-    import { error } from "@sveltejs/kit";
 
     const fallaDesconocida: ModalSettings = {
 	type: 'alert',
 	title: 'Fallo del cambio de contraseña',
 	body: 'No se pudo realizar el cambio de contraseña.',
+    buttonTextCancel:'Ok',
     };
 
     const fallaMismoPass: ModalSettings = {
@@ -38,22 +38,24 @@
         })
         .then( (res) => {
             if (res.status<299){
-                console.log("changePass RESPONSE:"+res);
                 //falta validar con regex que cumple los requisitos de caracteres
                 modalStore.clear();
                 modalStore.trigger(cambioHecho);
-                return res.json();
+                return res.text();
             }
             if (res.status === 409){
                 modalStore.clear();
                 modalStore.trigger(fallaMismoPass);
-                return res;
+                return res.text();
             }
             if (res.status === 400){ //error por modificacion del token jwt.
                 $user=null;
                 goto('/auth/login');
-                return;
+                return res.text();
             }
+        })
+        .then( (res) => {
+            console.log(res)
         })
         .catch((error) => {
             modalStore.clear();

@@ -4,6 +4,50 @@ import { pool } from "../utils/db.handle";
 import { verified } from "../utils/bycrypt.handle";
 
 
+    //solo en develop--------------------------------------DESPUES SACAR-------------
+
+const insertPassword = async (email:string,password:string) => {
+    const queryPasword = `
+    INSERT INTO public.passwords(
+        email, password)
+        VALUES ($1, $2);
+    `;
+    const valuesPassword = [email,password]
+    try{
+        const response:QueryResult = await pool.query(queryPasword,valuesPassword) //hace la query
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:insertPassword------");
+        console.log(err);
+        return "error";
+    }
+}
+
+const actualizarPasswordDevelop = async (email:string,password:string) => {
+    const queryPasword = `
+    UPDATE public.passwords
+	SET password= $1
+	WHERE email = $2;
+    `;
+    const valuesPassword = [password,email]
+    try{
+        const response:QueryResult = await pool.query(queryPasword,valuesPassword) //hace la query
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:actualizarPassword------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+
+
+    //FIN --------------------------------------DESPUES SACAR-------------
+
+
 const insertUser = async (usuario:Persona&Auth&Rol) => { //las intersecciones capaz se puedan mejorar
     console.log(usuario);
     const query = `
@@ -102,4 +146,4 @@ const setPrimerLoginHecho = async (email:string) => {
     }
 }
 
-export {getUser, changePass,setPrimerLoginHecho, getCurrentPass, insertUser}
+export {getUser, changePass,setPrimerLoginHecho, getCurrentPass, insertUser,insertPassword, actualizarPasswordDevelop}

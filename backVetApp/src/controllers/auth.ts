@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUser , changePass, setPrimerLoginHecho, getCurrentPass, insertUser} from "../services/auth.service";
+import { getUser , changePass, setPrimerLoginHecho, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop} from "../services/auth.service";
 import { Auth, UserData, Persona } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
@@ -29,6 +29,11 @@ const registrarController = async  (req:Request, res:Response) => {
         return
     }
     //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
+    //SOLO EN DEVELOP-------------------------
+
+    await insertPassword(cliente.email,randomPassword);
+
+    //FIN SOLO DEVELOP-------------
     //201 Created
     res.status(201).send('Se registró correctamente al cliente');
 };
@@ -93,7 +98,11 @@ const changePassController = async  (req:Request, res:Response) => {
     const updateDone = await changePass({email: user.email ,password: hashedPass}); //toma el dato del jwt y la contraseña q mando por el body
 
     if (updateDone){
+        //SOLO EN DEVELOP ----------------
+        await actualizarPasswordDevelop(user.email,passwordInput);
+        //FIN SOLO EN DEVELOP ----------------
         res.status(202).send('Password Update done');
+        
     }
     else
         res.status(401).send('Problem at updating password');
