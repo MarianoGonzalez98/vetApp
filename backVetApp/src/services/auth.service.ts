@@ -1,14 +1,76 @@
 import { QueryResult } from "pg";
-import { Auth, User } from "../interfaces/User.interface";
+import { Auth, Persona, Rol, User } from "../interfaces/User.interface";
 import { pool } from "../utils/db.handle";
 import { verified } from "../utils/bycrypt.handle";
 
-const registerCliente = async (user:User) => {
 
-};
+    //solo en develop--------------------------------------DESPUES SACAR-------------
 
-//devuelve el usuario si la autenticación fue correcta
-const loginUser = async ({email,password}:Auth) => {
+const insertPassword = async (email:string,password:string) => {
+    const queryPasword = `
+    INSERT INTO public.passwords(
+        email, password)
+        VALUES ($1, $2);
+    `;
+    const valuesPassword = [email,password]
+    try{
+        const response:QueryResult = await pool.query(queryPasword,valuesPassword) //hace la query
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:insertPassword------");
+        console.log(err);
+        return "error";
+    }
+}
+
+const actualizarPasswordDevelop = async (email:string,password:string) => {
+    const queryPasword = `
+    UPDATE public.passwords
+	SET password= $1
+	WHERE email = $2;
+    `;
+    const valuesPassword = [password,email]
+    try{
+        const response:QueryResult = await pool.query(queryPasword,valuesPassword) //hace la query
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:actualizarPassword------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+
+
+    //FIN --------------------------------------DESPUES SACAR-------------
+
+
+const insertUser = async (usuario:Persona&Auth&Rol) => { //las intersecciones capaz se puedan mejorar
+    console.log(usuario);
+    const query = `
+    INSERT INTO public.usuarios(
+        password, email, rol, "primerLoginHecho", nombre, apellido, dni, "fechaNacimiento", direccion, telefono, foto)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+    `
+    const values = [usuario.password, usuario.email, usuario.rol, false, usuario.nombre, usuario.apellido, usuario.dni,usuario.fechaNacimiento,usuario.direccion,usuario.telefono,usuario.foto]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) //hace la query
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:insertUser------");
+        console.log(err);
+        return "error";
+    }
+}
+
+//devuelve el usuario si existe
+
+const getUser = async (email:string) => {
     const query = `
     SELECT id, password, email, rol, "primerLoginHecho" 
     FROM public.usuarios 
@@ -18,19 +80,10 @@ const loginUser = async ({email,password}:Auth) => {
     try{
         const response:QueryResult = await pool.query(query,values) //hace la query
         const result:User = await response.rows[0];
-/*         if (!result){ //si no hay ningun resultado
-            return result; //esto capaz este bueno cambiarlo
-        } */
-/*         const passwordHash = result.password;
-        const passwordCoincide = await verified(password,passwordHash) */
-
-/*         if (!passwordCoincide){
-            return "PASS_INCORRECTO";
-        } */
         return result;
     }
     catch(err){
-        console.error("----Error en acceso a BD:loginUser------");
+        console.error("----Error en acceso a BD:getUser------");
         console.log(err);
         return "error";
     }
@@ -93,4 +146,4 @@ const setPrimerLoginHecho = async (email:string) => {
     }
 }
 
-export {registerCliente, loginUser, changePass,setPrimerLoginHecho, getCurrentPass}
+export {getUser, changePass,setPrimerLoginHecho, getCurrentPass, insertUser,insertPassword, actualizarPasswordDevelop}

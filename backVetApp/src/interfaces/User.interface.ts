@@ -14,3 +14,22 @@ export interface UserData {
     rol:string
     primerLoginHecho:boolean,
 }
+
+export interface Rol{
+    rol:string;
+}
+
+export interface Persona{
+    nombre:string,
+    apellido:string,
+    email:string
+    dni:string,
+    fechaNacimiento:Date,
+    direccion: string,
+    telefono:string,
+    foto: string | null
+}
+
+export interface Cliente extends Persona{
+    perros: null, //Perro[]
+}
