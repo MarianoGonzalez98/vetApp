@@ -14,10 +14,16 @@
 		<BotonConDatos></BotonConDatos>
 
 		{#if ($user)}
-		<a class="btn btn-sm variant-ghost-surface" rel="noreferrer" href="/auth/cambiar-password">Cambiar mi contraseña</a>
+			<a class="btn btn-sm variant-ghost-surface" rel="noreferrer" href="/auth/cambiar-password">Cambiar mi contraseña</a>
+
+			{#if ($user.rol ==='veterinario')}
+				<a class="btn btn-sm variant-ghost-surface" rel="noreferrer" href="/cargar-cliente">Cargar nuevo cliente</a>
+			{/if}
+
 		{/if}
 
 	</div>
 
 
 </div>
+
