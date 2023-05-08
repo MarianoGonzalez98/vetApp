@@ -21,10 +21,12 @@ import { AdopcionesRouter } from "./routes/adopciones.routes"
 import { TurnosRouter  } from "./routes/turnos.routes"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
+import { TestRouter } from "./routes/test.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
 app.use(AuthRouter);
+app.use(TestRouter);
 
 app.get('/', (req:Request, res:Response) => {
 	res.send('Test backend')
