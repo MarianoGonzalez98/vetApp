@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
-import { TurnosRouter  } from "./routes/turnos"
+import { TurnosRouter  } from "./routes/turnos.routes"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
 
