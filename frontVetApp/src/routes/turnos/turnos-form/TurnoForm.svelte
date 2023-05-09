@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import { DateInput } from 'date-picker-svelte'
  
     let motivo = '';
@@ -7,6 +8,28 @@
     let format = 'dd-MM-yyyy'
     let placeholder= 'Elija una fecha'
     let rangoHorario = '';
+
+    const SolicitudEnviada: ModalSettings = {
+	type: 'alert',
+	title: 'Solicitud de turno',
+	body: 'Solicitud enviada',
+    };
+
+    const handleSolicitud = async () =>{ 
+        fetch('http://localhost:3000/api/turnos',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({motivo:motivo, perro:perro, fecha:fecha.toJSON().slice(0,10), rangoHorario:rangoHorario})
+        })
+        .then(() => {
+            modalStore.clear();
+            modalStore.trigger(SolicitudEnviada);
+        })
+    }
+
 </script>
 
 
@@ -15,7 +38,7 @@
     <div class="card p-4">
         <h2>Solicitar turno</h2>
         <br>
-        <form class="space-y-2">
+        <form on:submit|preventDefault={handleSolicitud} class="space-y-2">
 
             <label class="label" for="motivo">Motivo</label>
             <select bind:value={motivo} class="select"  name="motivo" required>
