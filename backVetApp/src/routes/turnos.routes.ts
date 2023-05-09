@@ -1,13 +1,13 @@
 import { Router } from "express"
+import { getTurnos } from "../controllers/turnos";
+/* importar controladores */
 
-import { getTurno,getTurnos } from "../controllers/turnos";
 
 const TurnosRouter = Router();
-const URL="/api/turnos"
 /* 
     http://localhost:3000/api/turnos
 */
-TurnosRouter.get(URL, getTurnos)
+TurnosRouter.get("/api/turnos", getTurnos)
 
-TurnosRouter.get(URL+"/:id", getTurno)
+
 export { TurnosRouter}
