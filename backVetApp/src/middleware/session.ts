@@ -10,6 +10,6 @@ export const checkJWT = async (req:Request, res:Response, next: NextFunction) =>
     } catch (error) {
         console.log(error);
         res.status(400);
-        res.send('SESION_NO_VALIDA');
+        res.send('SESION_NO_VALIDA.No me cambies el jwt pillo.');
     }
 }

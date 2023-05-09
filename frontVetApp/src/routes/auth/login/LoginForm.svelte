@@ -23,7 +23,7 @@
     };
 
     const handleLogin = async () =>{        
-	    let cookies = document.cookie;
+        let cookies = document.cookie;
         console.log(cookies);
         fetch('http://localhost:3000/login',{
             method:'POST',
@@ -33,7 +33,7 @@
             credentials: 'include',
             body: JSON.stringify({email:email, password:password})
         })
-        .then((res) => {
+        .then((res) => { //primer then es para trabajar con los headers que primero se devuelvel
             if (res.status < 299) {  //si entra acá no hubo error
                 return res.json()
             }
@@ -42,7 +42,7 @@
             modalStore.trigger(fallaAuth);
             console.log(currentError);
         })
-        .then((resp:ApiResponse<LoginData<UserData>>)=>{ //si no hay ningun error
+        .then((resp:ApiResponse<LoginData<UserData>>)=>{ //si no hay ningun error, sigue con el contenido del fetch
             if (resp) {
                 user.update(val => val ={...(resp.data.userData)});
                 localStorage.setItem('user',JSON.stringify(resp.data.userData));
@@ -75,9 +75,5 @@
 
         <button class="btn rounded-lg variant-filled" type="submit">Login</button>
     </form>
-
-    {#if $user}
-        {$user.email}
-    {/if}
 
 </div>
