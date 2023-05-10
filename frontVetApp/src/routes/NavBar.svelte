@@ -3,7 +3,7 @@
     import { user } from '$lib/stores/user';
   import { AppBar } from '@skeletonlabs/skeleton';
   import { LightSwitch } from '@skeletonlabs/skeleton';
-  let imgSrc = 'Logo1.png';
+  let imgSrc = '/Logo1.png';
   const logout = () => {
     $user=null;
     fetch('http://localhost:3000/logout',{

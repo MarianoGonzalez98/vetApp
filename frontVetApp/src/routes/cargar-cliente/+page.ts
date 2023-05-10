@@ -2,9 +2,10 @@ import { user } from '$lib/stores/user';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { browser } from '$app/environment';
 
 export const load = (async () => {
-    if (get(user)?.rol !== 'veterinario'){
+    if ((browser)&& (get(user)?.rol !== 'veterinario')){
         throw error(401,'Acceso no permitido');
     }
 
