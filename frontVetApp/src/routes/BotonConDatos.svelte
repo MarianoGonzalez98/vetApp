@@ -14,4 +14,3 @@
 	>Hacer llamada get</button
 >
 <h1>Datos: {datos.data}</h1>
-<a href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a>
