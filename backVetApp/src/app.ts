@@ -4,10 +4,10 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const cookieParser = require('cookie-parser');
-const PORT = process.env.port || 3000
+const PORT = process.env.PORT || 3000
 
 const corsOptions = {
-  origin: true, //'http://localhost:5173/'
+  origin: true, //'http://localhost:5173'
   credentials: true,
   //preflightContinue: true,
 };

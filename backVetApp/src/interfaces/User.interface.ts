@@ -6,13 +6,13 @@ export interface Auth {
 export interface User extends Auth {
     id:number,
     rol:string,
-    primerLoginHecho:boolean,
+    seCambioPassword:boolean,
 }
 
 export interface UserData {
     email:string,
     rol:string
-    primerLoginHecho:boolean,
+    seCambioPassword:boolean,
 }
 
 export interface Rol{

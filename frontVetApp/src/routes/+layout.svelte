@@ -7,11 +7,26 @@
 	import '../app.postcss';
 	import NavBar from './NavBar.svelte';
     import { AppShell } from '@skeletonlabs/skeleton';
+    import { beforeUpdate, onMount } from 'svelte';
+    import { user } from '$lib/stores/user';
+    import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
+    import { page } from '$app/stores';
+
+	afterNavigate(()=> {
+		if ($page.url.pathname!=='/auth/cambiar-password/'){
+			if($user && (!$user.seCambioPassword)){
+				goto('/auth/cambiar-password');
+			}
+		}
+	})
 </script>
+
+
 <AppShell>
 	<svelte:fragment slot="header">
 		<NavBar></NavBar>
 	</svelte:fragment>
-	<svelte:fragment slot="pageFooter">Hecho por FJM Software factory</svelte:fragment>
 	<slot />
+	<svelte:fragment slot="pageFooter">Hecho por FJM Software factory</svelte:fragment>
+	
 </AppShell>
