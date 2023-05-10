@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUser , changePass, setPrimerLoginHecho, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop} from "../services/auth.service";
+import { getUser , changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword} from "../services/auth.service";
 import { Auth, UserData, Persona } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
@@ -58,13 +58,10 @@ const loginController = async (req:Request, res:Response) => {
         res.status(401).send({data:"password incorrecto", statusCode:402})
         return
     }
-    const userData:UserData = {email:result.email, rol:result.rol, primerLoginHecho:result.primerLoginHecho}; //creo q se puede mejorar
+    const userData:UserData = {email:result.email, rol:result.rol, seCambioPassword:result.seCambioPassword}; //creo q se puede mejorar
     console.log("LOGIN CRONTROLLER:")
     console.log(userData);
     const token = await generateToken(userData); //genero jwt token
-    if (userData.primerLoginHecho===false){ //si este es su primer login, lo persisto en bd al hecho.
-        setPrimerLoginHecho(userData.email); 
-    }
     res.cookie('jwt',token,{httpOnly:true}); //mando el jwt en una cookie httpOnly
     res.send({data:{userData,token:token}})
 };
@@ -101,6 +98,7 @@ const changePassController = async  (req:Request, res:Response) => {
         //SOLO EN DEVELOP ----------------
         await actualizarPasswordDevelop(user.email,passwordInput);
         //FIN SOLO EN DEVELOP ----------------
+        setSeCambioPassword(user.email); 
         res.status(202).send('Password Update done');
         
     }

@@ -52,7 +52,7 @@ const insertUser = async (usuario:Persona&Auth&Rol) => { //las intersecciones ca
     console.log(usuario);
     const query = `
     INSERT INTO public.usuarios(
-        password, email, rol, "primerLoginHecho", nombre, apellido, dni, "fechaNacimiento", direccion, telefono, foto)
+        password, email, rol, "seCambioPassword", nombre, apellido, dni, "fechaNacimiento", direccion, telefono, foto)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
     `
     const values = [usuario.password, usuario.email, usuario.rol, false, usuario.nombre, usuario.apellido, usuario.dni,usuario.fechaNacimiento,usuario.direccion,usuario.telefono,usuario.foto]
@@ -72,7 +72,7 @@ const insertUser = async (usuario:Persona&Auth&Rol) => { //las intersecciones ca
 
 const getUser = async (email:string) => {
     const query = `
-    SELECT id, password, email, rol, "primerLoginHecho" 
+    SELECT id, password, email, rol, "seCambioPassword" 
     FROM public.usuarios 
     WHERE email = $1
     `
@@ -127,11 +127,11 @@ const changePass = async ({email,password}:Auth) => {
     }
 }
 
-const setPrimerLoginHecho = async (email:string) => {
-    //por ahora solo setea primer inicio en falso
+const setSeCambioPassword = async (email:string) => {
+    //por ahora solo setea SeCambioPassword inicio en falso
     const query = `
     UPDATE public.usuarios
-	SET "primerLoginHecho" = true
+	SET "seCambioPassword" = true
 	WHERE email = $1
     `;
     const values = [email];
@@ -140,10 +140,10 @@ const setPrimerLoginHecho = async (email:string) => {
         return true;
     }
     catch(err){
-        console.error("----Error en acceso a BD:setPrimerLoginHecho------");
+        console.error("----Error en acceso a BD:setSeCambioPassword------");
         console.log(err);
         return false;
     }
 }
 
-export {getUser, changePass,setPrimerLoginHecho, getCurrentPass, insertUser,insertPassword, actualizarPasswordDevelop}
+export {getUser, changePass,setSeCambioPassword, getCurrentPass, insertUser,insertPassword, actualizarPasswordDevelop}

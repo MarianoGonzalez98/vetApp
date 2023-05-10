@@ -5,7 +5,6 @@
     import { user } from "$lib/stores/user";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
-    import { error } from "@sveltejs/kit";
     let email = '';
     let password = '';
     let currentError='';
@@ -46,7 +45,7 @@
             if (resp) {
                 user.update(val => val ={...(resp.data.userData)});
                 localStorage.setItem('user',JSON.stringify(resp.data.userData));
-                if (!resp.data.userData.primerLoginHecho){
+                if (!resp.data.userData.seCambioPassword){
                     goto('/auth/cambiar-password/');
                     return
                 }
