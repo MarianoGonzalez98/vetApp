@@ -7,10 +7,14 @@
 	import '../app.postcss';
 	import NavBar from './NavBar.svelte';
     import { AppShell } from '@skeletonlabs/skeleton';
-    import { beforeUpdate, onMount } from 'svelte';
     import { user } from '$lib/stores/user';
-    import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/stores';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
+
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
 
 	afterNavigate(()=> {
 		if ($page.url.pathname!=='/auth/cambiar-password/'){
