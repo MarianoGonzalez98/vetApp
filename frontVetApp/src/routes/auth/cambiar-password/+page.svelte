@@ -92,7 +92,7 @@
             <input bind:value={password} class="input max-w-md focus:invalid:border-red-500 {errorClass}" type="password" pattern={passRegex} use:popup={popupFocusBlur} placeholder="Ingrese su nueva contraseña" name="password" required>
             <p class="text-red-500">{errorMsj}</p>
         </div>
-        <label class="label" for="password2">Repita su nueva contraseña: </label>
+        <label class="label" for="password2">Confirme su nueva contraseña: </label>
         <div>
             <input bind:value={password2} pattern="^{password}$" class="input max-w-md focus:invalid:border-red-500" type="password" placeholder="Repita la contraseña" name="password2" required>
             <p class="text-red-500">{errorMsj2}</p>

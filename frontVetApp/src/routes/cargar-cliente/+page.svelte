@@ -101,7 +101,7 @@
 
         
         <label class="label" for="dni">Teléfono:</label>
-        <input bind:value={telefono} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese teléfono del cliente" use:popup={popupFocusBlur} name="telefono" pattern={numbersPattern} required>
+        <input bind:value={telefono} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese teléfono del cliente. Ej: 2214687634" use:popup={popupFocusBlur} name="telefono" pattern={numbersPattern} required>
 
         <div class="card p-4 variant-filled" data-popup="popupFocusBlur">
             <p>Sólo números</p>

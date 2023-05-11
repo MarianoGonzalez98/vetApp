@@ -14,12 +14,14 @@
 	type: 'alert',
 	title: 'Fallo del inicio de sesión',
 	body: 'Email/contraseña incorrectos',
+    buttonTextCancel:'Ok',
     };
 
     const fallaDesconocida: ModalSettings = {
 	type: 'alert',
 	title: 'Fallo del inicio de sesión',
 	body: 'Posible problema del servidor',
+    buttonTextCancel:'Ok',
     };
 
     const handleLogin = async () =>{        
