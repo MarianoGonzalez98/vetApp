@@ -4,9 +4,6 @@
     import type { ModalSettings, PopupSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore,popup} from '@skeletonlabs/skeleton';
 
-
-
-    let error = false;
     let errorMsj='';
     let errorMsj2='';
     let errorClass = '';
@@ -46,7 +43,6 @@
         })
         .then( (res) => {
             if (res.status<299){
-                //falta validar con regex que cumple los requisitos de caracteres
                 modalStore.clear();
                 modalStore.trigger(cambioHecho);
                 if($user!=null) { //para que ts no joda
@@ -57,9 +53,8 @@
             }
             if (res.status === 409){
                 modalStore.clear();
-                //modalStore.trigger(fallaMismoPass);
                 errorMsj="La nueva contraseña debe ser diferente a la actual";
-                errorClass="invalid:border-red-500 valid:border-red-500";
+                //errorClass="invalid:border-red-500 valid:border-red-500"; lo saco porque si no queda rojo hasta que vuelva a hacer submit
                 return res.text();
             }
             if (res.status === 400){ //error por modificacion del token jwt.
@@ -81,22 +76,25 @@
     }
 </script>
 
+<!-- POPUP (no importa donde se encuentre este div creo)------------ -->
 <div class="card p-4 variant-filled" data-popup="popupFocusBlur">
     <span>Debe tener 6 carácteres, al menos un número y un carácter especial</span>
     <div class="arrow variant-filled" />
 </div>
+<!-- FIN POPUP------------ -->
+
 
 <Modal />
 <div class="container h-full mx-auto justify-center items-center">
     <form on:submit|preventDefault={changePass} class='space-y-2 mx-20 mt-10'>
         <label class="label" for="password">Nueva contraseña: </label>
         <div>
-            <input bind:value={password} class="input max-w-md invalid:border-red-500 {errorClass}" type="password" pattern={passRegex} use:popup={popupFocusBlur} placeholder="Ingrese su nueva contraseña" name="password" required>
+            <input bind:value={password} class="input max-w-md focus:invalid:border-red-500 {errorClass}" type="password" pattern={passRegex} use:popup={popupFocusBlur} placeholder="Ingrese su nueva contraseña" name="password" required>
             <p class="text-red-500">{errorMsj}</p>
         </div>
         <label class="label" for="password2">Repita su nueva contraseña: </label>
         <div>
-            <input bind:value={password2} class="input max-w-md {errorClass}" type="password" placeholder="Repita la contraseña" name="password2" required>
+            <input bind:value={password2} pattern="^{password}$" class="input max-w-md focus:invalid:border-red-500" type="password" placeholder="Repita la contraseña" name="password2" required>
             <p class="text-red-500">{errorMsj2}</p>
         </div>
 
@@ -104,13 +102,3 @@
     </form>
 
 </div>
-
-
-<style>
-    .emailError{
-        left: 2px;
-        font-size: 16px;
-        font-weight: 400;
-        color: red;
-    }
-</style>
