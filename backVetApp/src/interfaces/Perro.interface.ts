@@ -6,24 +6,24 @@ export interface Perro {
     sexo: Sexo,
     fechaNacimiento: Date,
     observaciones: string;
-    historiaClinica: null,//Turno[]
-    libretaSanitaria: LibretaSanitaria
+    historiaClinica: null, //Turno[]
+    libretaSanitaria: null, //LibretaSanitaria[]
     foto: null,
-    dueño: string;
+    owner: string;
 }
 
-export interface vacunaAplicada {
+export interface VacunaAplicada {
     nombre: string,
     fechaDeAplicacion: Date
 }
 
-export interface antiparasitarioAplicado {
+export interface AntiparasitarioAplicado {
     nombre: string,
     cantidadAplicada: number
 }
 
 export interface LibretaSanitaria {
     peso: number,
-    vacunasAplicadas: vacunaAplicada[],
-    antiparasitariosAplicados: antiparasitarioAplicado[]
+    vacunasAplicadas: VacunaAplicada[],
+    antiparasitariosAplicados: AntiparasitarioAplicado[]
 }
