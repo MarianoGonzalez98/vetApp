@@ -4,32 +4,33 @@
     import { get } from "svelte/store";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
-    const clienteCargado: ModalSettings = {
+
+    const perroCargado: ModalSettings = {
         type: "alert",
-        title: "Cliente cargado",
-        body: "Cliente registrado correctamente",
+        title: "Perro cargado",
+        body: "Perro cargado correctamente",
         buttonTextCancel: "Ok",
         response: (r: boolean) => goto("/"),
     };
 
     const fallaDesconocida: ModalSettings = {
         type: "alert",
-        title: "Fallo de la carga del cliente",
-        body: "No se pudo registrar el nuevo cliente",
+        title: "Fallo de la carga del perro",
+        body: "No se pudo cargar el nuevo perro",
         buttonTextCancel: "Ok",
     };
 
     const fallaServidor: ModalSettings = {
         type: "alert",
-        title: "Fallo de la carga del cliente",
+        title: "Fallo de la carga del perro",
         body: "Falla del servidor",
         buttonTextCancel: "Ok",
     };
 
-    const fallaYaRegistrado: ModalSettings = {
+    const fallaYaCargado: ModalSettings = {
         type: "alert",
-        title: "Fallo de la carga del cliente",
-        body: "El email del cliente ya se encuentra registrado",
+        title: "Fallo de la carga del perro",
+        body: "El perro ya se encuentra cargado",
         buttonTextCancel: "Ok",
     };
 
@@ -41,6 +42,7 @@
     let peso: number;
     let vacunasAplicadas: string[] = [];
     let foto: null;
+    let owner = $user?.email;
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
         fechaHoy.getMonth() + 1
@@ -57,6 +59,7 @@
         console.log(peso);
         console.log(vacunasAplicadas);
         console.log(foto);
+        console.log(owner);
         fetch("http://localhost:3000/cargar-perro", {
             method: "POST",
             headers: {
@@ -71,12 +74,13 @@
                 observaciones,
                 peso,
                 vacunasAplicadas,
+                owner,
             }),
         })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
-                    modalStore.trigger(clienteCargado);
+                    modalStore.trigger(perroCargado);
                     return res;
                 }
                 if (res.status === 400) {
@@ -87,7 +91,7 @@
                 }
                 if (res.status === 409) {
                     modalStore.clear();
-                    modalStore.trigger(fallaYaRegistrado);
+                    modalStore.trigger(fallaYaCargado);
                     return res;
                 }
                 if (res.status === 500) {
