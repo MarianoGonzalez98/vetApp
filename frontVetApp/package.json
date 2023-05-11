@@ -26,7 +26,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"flowbite": "^1.6.5",
-		"flowbite-svelte": "^0.34.12"
+		"@floating-ui/dom": "^1.2.7"
 	}
 }
