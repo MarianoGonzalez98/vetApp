@@ -27,3 +27,21 @@ export const cargarPerroController = async (req: Request, res: Response) => {
 
     res.status(201).send('Se cargó correctamente al perro');
 }
+
+export const listarPerrosController = async (req: Request, res: Response) => {
+    const owner: string = req.body;
+    let perro: Perro;
+
+    const result = await getPerros(owner);
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (!result) { //si no devuelve un elemento es que existe el perro
+        //409 conflict
+        res.status(409).send({ data: "El nombre del perro ya se encuentra registrado para ese cliente", statusCode: 409 })
+        return
+    }
+}
