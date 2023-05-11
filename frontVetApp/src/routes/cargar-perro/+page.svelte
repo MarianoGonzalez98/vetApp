@@ -1,9 +1,9 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import { get } from "svelte/store";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
-
     const clienteCargado: ModalSettings = {
         type: "alert",
         title: "Cliente cargado",
@@ -36,10 +36,11 @@
     let nombre = "";
     let raza = "";
     let sexo = "";
-    let peso = "";
-    let telefono = "";
-    let observaciones = "";
     let fechaNacimiento: string = new Date().toJSON().slice(0, 10);
+    let observaciones = "";
+    let peso: number;
+    let vacunasAplicadas: string[] = [];
+    let foto: null;
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
         fechaHoy.getMonth() + 1
@@ -48,7 +49,15 @@
         .padStart(2, "0")}-${fechaHoy.getDate().toString().padStart(2, "0")}`;
 
     const handleCarga = () => {
-        fetch("http://localhost:3000/registrar-cliente", {
+        console.log(nombre);
+        console.log(raza);
+        console.log(sexo);
+        console.log(fechaNacimiento);
+        console.log(observaciones);
+        console.log(peso);
+        console.log(vacunasAplicadas);
+        console.log(foto);
+        fetch("http://localhost:3000/cargar-perro", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -58,11 +67,10 @@
                 nombre,
                 raza,
                 sexo,
-                dni,
-                direccion,
-                telefono,
                 fechaNacimiento,
-                foto: null,
+                observaciones,
+                peso,
+                vacunasAplicadas,
             }),
         })
             .then((res) => {
@@ -154,36 +162,28 @@
             name="observaciones"
         />
 
-        <label class="label" for="direccion">Peso:</label>
-        <div class="peso-wrapper" style="position: relative;">
-            <input
-                bind:value={peso}
-                class="input"
-                type="text"
-                placeholder="Ej: 20"
-                name="direccion"
-                required
-            />
-            <span
-                class="texto-adorno opacity-30"
-                style="position: absolute; top: 50%; transform: translateY(-50%); pointer-events: none;"
-                >Kg</span
-            >
-            //LO DEJÉ TRATANDO DE QUE APAREZCA KG DESPUÉS DEL PESO
-        </div>
-
-        <label class="label" for="dni">Vacunas aplicadas:</label>
+        <label class="label" for="direccion">Peso en kilos:</label>
         <input
-            bind:value={telefono}
-            class="input"
-            type="text"
-            placeholder="Ingrese teléfono del cliente"
-            name="telefono"
+            bind:value={peso}
+            class="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            placeholder="Ej: 20"
+            name="direccion"
             required
         />
 
+        <label class="label" for="vacunasAplicadas">Vacunas aplicadas:</label>
+        {#each ["Vacuna A", "Vacuna B"] as vacuna}
+            <input
+                bind:group={vacunasAplicadas}
+                type="checkbox"
+                value={vacuna}
+            />
+            {vacuna}
+        {/each}
+
         <button class="btn rounded-lg variant-filled-primary" type="submit"
-            >Registrar cliente</button
+            >Cargar perro</button
         >
     </form>
 </div>
