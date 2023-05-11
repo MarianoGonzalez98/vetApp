@@ -40,7 +40,7 @@
     };
 
     const popupFocusBlur: PopupSettings = {
-        event: "focus",
+        event: "focus-blur",
         target: "popupFocusBlur",
         placement: "top",
     };
