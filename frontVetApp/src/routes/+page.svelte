@@ -5,11 +5,14 @@
 <div class="container h-full mx-auto flex justify-center items-center">
 	<div class="space-y-5">
 		{#if $user}
-			<a
+			<div class="mb-20">
+				<a
 				class="btn variant-ghost-surface"
 				rel="noreferrer"
-				href="/auth/cambiar-password">Cambiar mi contraseña</a
-			>
+				href="/auth/mi-perfil">Ver mi perfil</a
+				>
+			</div>
+
 			{#if $user.rol === "veterinario"}
 				<a
 					class="btn variant-ghost-surface"

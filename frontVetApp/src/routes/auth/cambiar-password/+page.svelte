@@ -7,11 +7,11 @@
     let errorMsj='';
     let errorMsj2='';
     let errorClass = '';
-    const passRegex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`´#$¿%^&*_=+-]).{6,32}$"
+    const passRegex = "(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`\´#$\"¿%^&*_=+\-]).{6,32}"
 
     const popupFocusBlur: PopupSettings = {
-	event: 'focus',
-	target: 'popupFocusBlur',
+	event: 'focus-blur',
+	target: 'targetPopup',
 	placement: 'top'
     };
 
@@ -77,7 +77,7 @@
 </script>
 
 <!-- POPUP (no importa donde se encuentre este div creo)------------ -->
-<div class="card p-4 variant-filled" data-popup="popupFocusBlur">
+<div class="card p-4 variant-filled" data-popup="targetPopup">
     <span>Debe tener 6 carácteres, al menos un número y un carácter especial</span>
     <div class="arrow variant-filled" />
 </div>
