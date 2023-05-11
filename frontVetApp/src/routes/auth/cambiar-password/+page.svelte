@@ -41,6 +41,9 @@
                 //falta validar con regex que cumple los requisitos de caracteres
                 modalStore.clear();
                 modalStore.trigger(cambioHecho);
+                if($user!=null) { //para que ts no joda
+                    $user.seCambioPassword=true;
+                }
                 return res.text();
             }
             if (res.status === 409){

@@ -6,6 +6,7 @@ const config = {
     port : Number(process.env.DB_PORT),
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE,
+    ssl:Boolean(process.env.DB_SSL)||false,
 }
 
 const pool = new Pool(config);
