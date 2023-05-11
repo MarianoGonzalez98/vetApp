@@ -1,10 +1,16 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type { ModalSettings } from "@skeletonlabs/skeleton";
+    import { popup, type ModalSettings, type PopupSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
 
-
+    let submittedClass='';
+    const emailPattern:string = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[\.][a-zA-Z]{2,}$";
+    const letrasEspaciosPattern:string = "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$"
+    
+    const numbersPattern:string = "^[0]*$"
+    let emailErrorMsj='';
+    
     const clienteCargado: ModalSettings = {
 	type: 'alert',
 	title: 'Cliente cargado',
@@ -15,7 +21,7 @@
 
     const fallaDesconocida: ModalSettings = {
 	type: 'alert',
-	title: 'Fallo de la carga del cliente',
+	title: 'Error desconocido',
 	body: 'No se pudo registrar el nuevo cliente',
     buttonTextCancel:'Ok',
     };
@@ -27,11 +33,10 @@
     buttonTextCancel:'Ok',
     };
 
-    const fallaYaRegistrado: ModalSettings = {
-	type: 'alert',
-	title: 'Fallo de la carga del cliente',
-	body: 'El email del cliente ya se encuentra registrado',
-    buttonTextCancel:'Ok',
+    const popupFocusBlur: PopupSettings = {
+	event: 'focus',
+	target: 'popupFocusBlur',
+	placement: 'top'
     };
 
     let nombre= '';
@@ -40,7 +45,8 @@
     let dni = '';
     let direccion = '';
     let telefono = '';
-    let fechaNacimiento: string = new Date().toJSON().slice(0,10);
+    let fechaNacimiento: string //
+    let fechaMax:string = new Date().toJSON().slice(0,10);
 
     const handleCarga = () => {
         fetch('http://localhost:3000/registrar-cliente',{
@@ -62,8 +68,7 @@
                 return;
             }
             if (res.status === 409){
-                modalStore.clear();
-                modalStore.trigger(fallaYaRegistrado);
+                emailErrorMsj = "El email ya se encuentra registrado";
                 return res;
             }
             if (res.status === 500){
@@ -77,33 +82,49 @@
             console.log("Error en carga del cliente desconocido: ",error);
         });
     }
+
 </script>
 
 <Modal></Modal>
 
 <div class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center ">
-    <form on:submit|preventDefault={handleCarga} class="space-y-2 ">
+    <form on:submit|preventDefault={handleCarga} class="space-y-2 {submittedClass}">
         <label class="label" for="nombre">Nombre:</label>
-        <input bind:value={nombre} class="input" type="text" placeholder="Ingrese nombre del cliente" name="nombre" required>
+        <input bind:value={nombre} class="input " type="text" placeholder="Ingrese nombre del cliente" name="nombre" pattern={letrasEspaciosPattern} required>
 
         <label class="label" for="apellido">Apellido:</label>
-        <input bind:value={apellido} class="input" type="text" placeholder="Ingrese apellido del cliente" name="apellido" required>
+        <input bind:value={apellido} class="input" type="text" placeholder="Ingrese apellido del cliente" name="apellido" pattern={letrasEspaciosPattern} required>
 
         <label class="label" for="email">Email:</label>
-        <input bind:value={email} class="input" type="text" placeholder="Ingrese email del cliente" name="email" required>
+        <input pattern={emailPattern} title="Ingrese un mail valido" bind:value={email} class="input" type="text" placeholder="email del cliente. Ej: unCliente@gmail.com" name="email" required>
+        <p class="text-red-500">{emailErrorMsj}</p>
+
+        
+        <label class="label" for="dni">Teléfono:</label>
+        <input bind:value={telefono} class="input invalid:border-red-500" type="number" min='0' step='1' placeholder="Ingrese teléfono del cliente" use:popup={popupFocusBlur} name="telefono" pattern={numbersPattern} required>
+
+        <div class="card p-4 variant-filled" data-popup="popupFocusBlur">
+            <p>Sólo números</p>
+            <div class="arrow variant-filled" />
+        </div>
 
         <label class="label" for="dni">DNI:</label>
-        <input bind:value={dni} class="input" type="text" placeholder="Ingrese dni del cliente" name="dni" required>
+        <input bind:value={dni} class="input" type="number" max="9999999999" placeholder="Ingrese dni del cliente" name="dni"  autocomplete="off" pattern={numbersPattern} required>
+
+
 
         <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
-        <input bind:value={fechaNacimiento}  class="input" type="date" placeholder="Ingrese fecha de nacimiento del cliente" name="fechaNacimiento" required>
+        <input bind:value={fechaNacimiento}  class="input" type="date" placeholder="Ingrese fecha de nacimiento del cliente" name="fechaNacimiento" max={fechaMax} required>
 
         <label class="label" for="direccion">Dirección:</label>
         <input bind:value={direccion} class="input" type="text" placeholder="Ingrese dirección del cliente" name="direccion" required>
 
-        <label class="label" for="dni">Teléfono:</label>
-        <input bind:value={telefono} class="input" type="text" placeholder="Ingrese teléfono del cliente" name="telefono" required>
 
         <button class="btn rounded-lg variant-filled-primary" type="submit">Registrar cliente</button>
     </form>
 </div>
+
+<style>
+
+</style>
+
