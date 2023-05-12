@@ -38,6 +38,6 @@ export const listarPerrosController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-
+    console.log(result);
     res.status(200).send({ data: result, statusCode: 200 })
 }

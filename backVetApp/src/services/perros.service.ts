@@ -32,7 +32,7 @@ export const getPerros = async (owner: string) => {
     const values = [owner]
     try {
         const response: QueryResult = await pool.query(query, values)
-        const result: Perro[] = await response.rows[0]
+        const result: Perro[] = await response.rows
         return result
     }
     catch (err) {

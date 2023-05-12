@@ -7,9 +7,9 @@
 		{#if $user}
 			<div class="mb-20">
 				<a
-				class="btn variant-ghost-surface"
-				rel="noreferrer"
-				href="/auth/mi-perfil">Ver mi perfil</a
+					class="btn variant-ghost-surface"
+					rel="noreferrer"
+					href="/auth/mi-perfil">Ver mi perfil</a
 				>
 			</div>
 
@@ -26,12 +26,13 @@
 				>
 				<a
 					class="btn variant-ghost-surface"
-					rel="noreferrer"
-					href="/mis-perros">Mis perros</a
+					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
 				>
+			{:else}
 				<a
 					class="btn variant-ghost-surface"
-					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
+					rel="noreferrer"
+					href="/mis-perros">Mis perros</a
 				>
 			{/if}
 		{/if}
