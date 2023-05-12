@@ -31,6 +31,13 @@
         buttonTextCancel: "Ok",
     };
 
+    const fallaRangoCompleto: ModalSettings = {
+        type: "alert",
+        title: "Fallo en la solicitud del turno por cupo completo",
+        body: "No se pudo solicitar el nuevo turno. Seleccione otro rango horario u otra fecha",
+        buttonTextCancel: "Ok",
+    };
+
     const fallaServidor: ModalSettings = {
         type: "alert",
         title: "Fallo en la solicitud del turno",
@@ -58,6 +65,11 @@
                     $user = null;
                     goto("/auth/login");
                     return;
+                }
+                if (res.status === 409) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaRangoCompleto);
+                    return res;
                 }
                 if (res.status === 500) {
                     modalStore.clear();
@@ -97,7 +109,7 @@
 
             <label class="label" for="rangoHorario">Rango Horario</label>
             <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
-                <option value="Manana">Manana</option>
+                <option value="Manana">Mañana</option>
                 <option value="Tarde">Tarde</option>
                 <option value="Noche">Noche</option>
             </select>
