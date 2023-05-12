@@ -1,13 +1,11 @@
 import { Router } from "express"
-import { getTurnos } from "../controllers/turnos";
-/* importar controladores */
-
+import { SolicitarTurnoController } from "../controllers/turnos";
+import { checkJWT } from "../middleware/session"
+import { checkRolCliente } from "../middleware/checkRol"
 
 const TurnosRouter = Router();
-/* 
-    http://localhost:3000/api/turnos
-*/
-TurnosRouter.get("/api/turnos", getTurnos)
+
+TurnosRouter.post("/turnos/turnos-form", checkJWT, SolicitarTurnoController)
 
 
 export { TurnosRouter}

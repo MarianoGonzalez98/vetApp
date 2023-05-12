@@ -1,5 +1,7 @@
 import { Request, Response } from "express"
+import { getCantDeTurnosRangoHorarioFecha, insertTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
+
 /* importar servicios */
 /* importar interfaces */
 /* importar utilidades */
@@ -14,8 +16,30 @@ const visualizarTurnos = async (req:Request, res:Response) => {
     res.send({data:"aca van las turnos del cliente"})
 }
 
-const SolicitarTurno = async (req:Request, res:Response) => {
+export const SolicitarTurnoController = async (req:Request, res:Response) => {
     const turno:Turno = req.body;
+
+    const result = await getCantDeTurnosRangoHorarioFecha(turno);
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (result.length >= 2) { // cambiar a 20
+        res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
+        return
+    }
+
+    const dbResult = await insertTurno(turno.motivo,turno.perro,turno.fecha,turno.rangoHorario,turno.emailOwner);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se cargó correctamente la solicitud del turno');
 
     /*
     1. Consultar si hay disponibilidad en ese rango y fecha
@@ -67,4 +91,3 @@ const registrarUrgencia = async (req:Request, res:Response) => {}
 const finalizarAtención = async (req:Request, res:Response) => {}
 
 
-export {visualizarTurnos, SolicitarTurno, modificarTurno, cancelarTurno, visualizarTurnosVeterinario, aceptarTurno, rechazarTurno, registrarUrgencia, finalizarAtención}

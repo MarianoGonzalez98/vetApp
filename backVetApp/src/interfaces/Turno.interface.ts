@@ -1,8 +1,11 @@
 export interface Turno {
     motivo: Motivo
-    perro: string
+    perro: number // id del perro
     fecha: Date
     rangoHorario: 'Mañana' | 'Tarde' | 'Noche'
+    emailOwner: string
+    aceptado: boolean
+    descripcion: string
 }
 
 export interface Motivo {

@@ -2,13 +2,33 @@ import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { Motivo, Turno } from "../interfaces/Turno.interface";
 
-const insertTurno = async (motivo:Motivo, perro:string, fecha:string, rangoHorario:string) => {
+export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
+    const query = `
+    SELECT *
+    FROM public.turnos t
+    WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
+    `
+    const valuesCantTurnos = [turno.fecha,turno.rangoHorario]
+
+    try{
+        const response:QueryResult = await pool.query(query,valuesCantTurnos) 
+        const result: Turno[]  = await response.rows;
+        return result;
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:insertPassword------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const insertTurno = async (motivo:Motivo, perro:number, fecha:Date, rangoHorario:string, emailOwner:string) => {
     const queryTurno = `
     INSERT INTO public.turnos(
-        motivo, perro, fecha, rangoHorario) 
-        VALUES ($1, $2, $3, $4);
-    `; //Falta usuario asociado
-    const valuesTurno = [motivo, perro, fecha, rangoHorario]
+        motivo, perro, fecha, "rangoHorario", "emailOwner") 
+        VALUES ($1, $2, $3, $4, $5);
+    `; 
+    const valuesTurno = [motivo, perro, fecha, rangoHorario,emailOwner]
 
     try{
         const response:QueryResult = await pool.query(queryTurno,valuesTurno) 
@@ -21,7 +41,7 @@ const insertTurno = async (motivo:Motivo, perro:string, fecha:string, rangoHorar
     }
 }
 
-const getTurnos = async (turnos:Turno[]) => {
+export const getTurnos = async (turnos:Turno[]) => {
     const query = `
     SELECT * 
     FROM public.turnos 
@@ -41,4 +61,3 @@ const getTurnos = async (turnos:Turno[]) => {
 }
 
 
-export {insertTurno, getTurnos}
