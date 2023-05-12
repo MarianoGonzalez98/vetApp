@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { cargarPerroController } from "../controllers/perros"
+import { cargarPerroController, listarPerrosController } from "../controllers/perros"
 import { checkJWT } from "../middleware/session"
 import { checkRol } from "../middleware/checkRol"
 

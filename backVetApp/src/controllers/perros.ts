@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getPerro, insertPerro } from "../services/perros.service"
+import { getPerro, getPerros, insertPerro } from "../services/perros.service"
 import { Perro } from "../interfaces/Perro.interface"
 
 export const cargarPerroController = async (req: Request, res: Response) => {
@@ -29,8 +29,7 @@ export const cargarPerroController = async (req: Request, res: Response) => {
 }
 
 export const listarPerrosController = async (req: Request, res: Response) => {
-    const owner: string = req.body;
-    let perro: Perro;
+    const owner: string = req.query.cliente as string;
 
     const result = await getPerros(owner);
 
@@ -39,9 +38,6 @@ export const listarPerrosController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    if (!result) { //si no devuelve un elemento es que existe el perro
-        //409 conflict
-        res.status(409).send({ data: "El nombre del perro ya se encuentra registrado para ese cliente", statusCode: 409 })
-        return
-    }
+
+    res.status(200).send({ data: result, statusCode: 200 })
 }

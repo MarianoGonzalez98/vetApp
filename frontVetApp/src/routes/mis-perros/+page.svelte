@@ -1,7 +1,22 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
+    import { onMount } from "svelte";
+    import { user } from "$lib/stores/user";
 
-    export let data: PageData;
+    let cliente = $user?.email;
+
+    onMount(async () => {
+        const res = await fetch(
+            `http://localhost:3000/listar-perros?cliente=${cliente}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        );
+        console.log(res);
+    });
 </script>
 
 <h1>Mis perros</h1>
