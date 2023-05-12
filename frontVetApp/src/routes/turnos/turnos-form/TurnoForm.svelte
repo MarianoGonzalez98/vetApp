@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+    import { modalStore, type ModalSettings, Modal } from '@skeletonlabs/skeleton';
     import { DateInput } from 'date-picker-svelte'
  
     let motivo = '';
@@ -14,7 +14,6 @@
 
     let rangoHorario = '';
     let emailOwner = $user?.email;
-    let aceptado = false;
 
 
     const SolicitudEnviada: ModalSettings = {
@@ -40,13 +39,13 @@
     };
 
     const handleSolicitud = async () =>{ 
-        fetch('http://localhost:3000/api/turnos',{
-            method:'POST',
+        fetch("http://localhost:3000/turnos/turnos-form",{
+            method:"POST",
             headers:{
-                'Content-Type':'application/json',
+                "Content-Type":"application/json",
             },
-            credentials: 'include',
-            body: JSON.stringify({motivo:motivo, perro:perro, fecha:fecha.toJSON().slice(0,10), rangoHorario:rangoHorario, emailOwner:emailOwner, aceptado:aceptado})
+            credentials: "include",
+            body: JSON.stringify({motivo, perro, fecha:fecha.toJSON().slice(0,10), rangoHorario, emailOwner})
         })
         .then((res) => {
                 if (res.status < 299) {
@@ -75,7 +74,7 @@
 
 </script>
 
-
+<Modal />
 
 <div class="container h-full mx-auto flex justify-center items-center">
     <div class="card p-4">
@@ -85,10 +84,10 @@
 
             <label class="label" for="motivo">Motivo</label>
             <select bind:value={motivo} class="select"  name="motivo" required>
-                <option value="1">Vacunación</option>
-                <option value="2">Castración</option>
-                <option value="3">Anti-Parasitación</option>
-                <option value="4">Consulta general</option>
+                <option value="Vacunación">Vacunación</option>
+                <option value="Castración">Castración</option>
+                <option value="Anti-Parasitación">Anti-Parasitación</option>
+                <option value="Consulta general">Consulta general</option>
             </select>
             
             <!-- El perro va a tener que elegirse de la lista de perros del cliente   -->
@@ -98,9 +97,9 @@
 
             <label class="label" for="rangoHorario">Rango Horario</label>
             <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
-                <option value="1">Mañana</option>
-                <option value="2">Tarde</option>
-                <option value="3">Noche</option>
+                <option value="Manana">Manana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
             </select>
 
             <br>
