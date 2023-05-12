@@ -16,9 +16,9 @@ const visualizarTurnos = async (req:Request, res:Response) => {
     res.send({data:"aca van las turnos del cliente"})
 }
 
-export const SolicitarTurnoController = async (req:Request, res:Response) => {
-    const turno:Turno = req.body;
 
+const verificarDisponibilidad = async (req:Request, res:Response) => {
+    const turno:Turno = req.body;
     const result = await getCantDeTurnosRangoHorarioFecha(turno);
 
     if (result === "error") {
@@ -26,28 +26,48 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
     }
-    if (result.length >= 2) { // cambiar a 20
+    if (result.length >= 20) { 
         res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
         return
     }
+}
 
+const insertarTurno = async (req:Request, res:Response) => { 
+    let turno:Turno = req.body;
+    
     const dbResult = await insertTurno(turno.motivo,turno.perro,turno.fecha,turno.rangoHorario,turno.emailOwner);
-
+    
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
     }
+}
 
-    res.status(201).send('Se cargó correctamente la solicitud del turno');
+export const SolicitarTurnoController = async (req:Request, res:Response) => { //FALTA MANDAR MAIL A LOS VETERINARIOS
 
-    /*
-    1. Consultar si hay disponibilidad en ese rango y fecha
-    1.1 Si hay, Guardar turno en la base de datos e incrementar los turnos en ese rango y fecha
-    1.2 Si no hay, notificar error
-    ¿hace falta una respuesta? 
-    2. Notificar al veterinario
-    */
+    verificarDisponibilidad(req,res);
+    
+    insertarTurno (req,res);
+
+    let turno:Turno = req.body;
+
+    if (turno.motivo === "Vacunación b") { //Debe sacarse otro turno para el año siguiente
+       
+        const nuevaFechaString = turno.fecha.toString();
+        const nuevaFecha = Date.parse(nuevaFechaString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+        nuevaFechaDate.setFullYear(nuevaFechaDate.getFullYear() + 1);
+
+        turno.fecha = nuevaFechaDate;
+        req.body = turno;
+
+        verificarDisponibilidad(req,res);
+
+        insertarTurno(req,res);
+    }
+
+    res.status(201).send('Se cargó correctamente la solicitud del turno'); //¿Cómo notifico que se guardó para el año sig también?
 }
 
 const modificarTurno = async (re:Request, res:Response) => {
