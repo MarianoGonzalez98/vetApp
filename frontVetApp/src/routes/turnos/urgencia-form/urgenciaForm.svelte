@@ -16,8 +16,9 @@ function onClientSelection(event: any): void {
 	cliente = event.detail.label;
 }
 
-let motivo = '';
+let motivo:string[] = [];
 let fecha = new Date();
+let fechaMax = new Date();
 let format = 'dd-MM-yyyy'
 let placeholder= 'Elija una fecha'
 let rangoHorario = '';
@@ -37,18 +38,30 @@ let rangoHorario = '';
             </div>
             
 
-            <label class="label" for="motivo">Motivo</label>
-            <select bind:value={motivo} class="select"  name="motivo" required>
-                <option value="1">Vacunación</option>
-                <option value="2">Castración</option>
-                <option value="3">Anti-Parasitación</option>
-                <option value="4">Consulta general</option>
-            </select>
+            <label class="label" for="motivo">Motivo/s</label>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-2">
+                    <input class="checkbox" type="checkbox" bind:value={motivo[0]} checked />
+                    <p>Vacunación a</p>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input class="checkbox" type="checkbox" bind:value={motivo[1]} />
+                    <p>Vacunación b</p>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input class="checkbox" type="checkbox" bind:value={motivo[2]}/>
+                    <p>Castración</p>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input class="checkbox" type="checkbox" bind:value={motivo[3]} />
+                    <p>Anti-parasitación</p>
+                </label>
+            </div>
             
-            <!-- El perro va a tener que elegirse de la lista de perros del cliente   -->
+            <!-- El perro va a tener que elegirse de la lista de perros del cliente seleccionado  -->
 
             <label class="label" for="fecha">Fecha del turno</label>
-            <DateInput bind:value={fecha} bind:format={format} bind:placeholder={placeholder}/> 
+            <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
 
             <label class="label" for="rangoHorario">Rango Horario</label>
             <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>

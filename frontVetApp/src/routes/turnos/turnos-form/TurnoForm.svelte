@@ -96,7 +96,8 @@
 
             <label class="label" for="motivo">Motivo</label>
             <select bind:value={motivo} class="select"  name="motivo" required>
-                <option value="Vacunación">Vacunación</option>
+                <option value="Vacunación a">Vacunación a</option>
+                <option value="Vacunación b">Vacunación b</option>
                 <option value="Castración">Castración</option>
                 <option value="Anti-Parasitación">Anti-Parasitación</option>
                 <option value="Consulta general">Consulta general</option>
