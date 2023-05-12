@@ -210,7 +210,8 @@
         >
         <!-- Al apretar registrar cliente, debo almacenar los datos ingresados en un store y me debe redirigir a cargar perro. Una vez que aprete "cargar perro", si vengo de /cargar-cliente, enviaré los datos del cliente y perro al backend a traves del endpoint cargarClienteConPerro(solo rol cliente), sino del endpoint normal
         
-        Si vengo de /cargar-cliente y ahora no estoy en /cargar-perro, limpio el store correspondiente.
+        Si soy veterinario y entro a /cargar-perro viniendo desde una ruta diferente a /cargar-cliente, lanzo error.
+        Si soy veterinario y me voy de /cargar-perro a una ruta diferente a /cargar-cliente, limpio el store correspondiente.
 
 	beforeNavigate((nav:BeforeNavigate) => {
         if (nav?.to?.route){
