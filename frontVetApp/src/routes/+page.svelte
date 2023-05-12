@@ -34,9 +34,11 @@
 					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
 				>
 			{/if}
+			{#if $user.rol === "cliente"}
+				<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
+			{/if}
 		{/if}
 
-		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
 
 	</div>
 </div>
