@@ -33,3 +33,9 @@ export interface Persona{
 export interface Cliente extends Persona{
     perros: null, //Perro[]
 }
+
+export interface NombreApellidoMailPersona{
+    nombre:string,
+    apellido:string,
+    email:string
+}
