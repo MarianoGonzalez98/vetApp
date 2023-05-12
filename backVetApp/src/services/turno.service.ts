@@ -16,7 +16,7 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
         return result;
     }
     catch(err){
-        console.error("----Error en acceso a BD:insertPassword------");
+        console.error("----Error en acceso a BD:getCantDeTurnosRangoHorarioFecha------");
         console.log(err);
         return "error";
     }
@@ -25,17 +25,17 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
 export const insertTurno = async (motivo:string, perro:number, fecha:Date, rangoHorario:string, emailOwner:string) => {
     const queryTurno = `
     INSERT INTO public.turnos(
-        motivo, perro, fecha, "rangoHorario", "emailOwner") 
-        VALUES ($1, $2, $3, $4, $5);
+        motivo, "perroId", fecha, "rangoHorario", "emailOwner",aceptado,descripcion) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7);
     `; 
-    const valuesTurno = [motivo, perro, fecha, rangoHorario,emailOwner]
+    const valuesTurno = [motivo, perro, fecha, rangoHorario,emailOwner,false,"nada yet"]
 
     try{
         const response:QueryResult = await pool.query(queryTurno,valuesTurno) 
         return 'ok';
     }
     catch(err){
-        console.error("----Error en acceso a BD:insertPassword------");
+        console.error("----Error en acceso a BD:insertTurno------");
         console.log(err);
         return "error";
     }
