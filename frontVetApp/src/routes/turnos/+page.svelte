@@ -1,34 +1,27 @@
 <script>
-    import TurnoForm from "./TurnoForm.svelte";
-
+    import { AppBar } from "@skeletonlabs/skeleton";
 </script>
-<!-- <script lang="ts"> 
-    import type { Turno } from "$lib/interfaces/Turno.interface";
-</script>
-    
-    <style>
-      .content {
-        display: grid;
-        grid-template-columns: 20% 80%;
-        grid-column-gap: 10px;
-      }
-    </style>
-    
-    <h1>Form</h1>
-    <form class="content">
-      <label>Motivo</label>
-      <input type="text" bind:value={$Turno.motivo} />
-      <label>Perro</label>
-      <input type="text" bind:value={$Turno.} />
-      <label>Fecha</label>
-      <input type="text" bind:value={$user.phone} />
-      <label>Rango Horario</label>
-      <input type="text" bind:value={$user.phone} />
-    </form>
-    <p>
-        {JSON.stringify($user, 0, 2)}</p>
 
 
-<h1> Turnos </h1> -->
+<br>
+<AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
+	<svelte:fragment slot="lead"></svelte:fragment>
+	<h1>Turnos</h1>
+	<svelte:fragment slot="trail"></svelte:fragment>
+</AppBar>
 
-<TurnoForm></TurnoForm>
+<br>
+<br>
+
+<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/turnos-tabla">Visualizar Turno</a>
+
+<br>
+<br>
+
+<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/turnos-form">Solicitar Turno</a>
+
+<br>
+<br>
+
+<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/urgencia-form">Registrar Urgencia</a>
+
