@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
-import { Motivo, Turno } from "../interfaces/Turno.interface";
+import { Turno } from "../interfaces/Turno.interface";
 
 export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     const query = `
@@ -22,7 +22,7 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     }
 }
 
-export const insertTurno = async (motivo:Motivo, perro:number, fecha:Date, rangoHorario:string, emailOwner:string) => {
+export const insertTurno = async (motivo:string, perro:number, fecha:Date, rangoHorario:string, emailOwner:string) => {
     const queryTurno = `
     INSERT INTO public.turnos(
         motivo, perro, fecha, "rangoHorario", "emailOwner") 
