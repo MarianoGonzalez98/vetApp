@@ -4,10 +4,10 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const cookieParser = require('cookie-parser');
-const PORT = process.env.port || 3000
+const PORT = process.env.PORT || 3000
 
 const corsOptions = {
-  origin: true, //'http://localhost:5173/'
+  origin: true, //'http://localhost:5173'
   credentials: true,
   //preflightContinue: true,
 };
@@ -18,22 +18,26 @@ app.use(cookieParser());
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
-import { TurnosRouter  } from "./routes/turnos"
+import { TurnosRouter } from "./routes/turnos"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
+import { TestRouter } from "./routes/test.routes";
+import { PerrosRouter } from "./routes/perros.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
 app.use(AuthRouter);
+app.use(TestRouter);
+app.use(PerrosRouter);
 
-app.get('/', (req:Request, res:Response) => {
-	res.send('Test backend')
+app.get('/', (req: Request, res: Response) => {
+  res.send('Test backend')
 })
 
-app.get('/api/mensaje', (req:Request, res:Response) => {
-  const response:ApiResponse<string> = {
-    data:'Mensaje desde el backend',
-    statusCode:200,
+app.get('/api/mensaje', (req: Request, res: Response) => {
+  const response: ApiResponse<string> = {
+    data: 'Mensaje desde el backend',
+    statusCode: 200,
   }
   res.send(response)
 })

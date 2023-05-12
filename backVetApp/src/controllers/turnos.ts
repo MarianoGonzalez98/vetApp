@@ -9,4 +9,6 @@ const getTurno = ({params}:Request, res:Response) => {
     res.send({data:"aca va el turno: "+ (id)})
 } 
 
+
 export {getTurnos,getTurno}
+
