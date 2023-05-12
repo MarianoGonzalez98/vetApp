@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
-    import { navigating } from "$app/stores";
+    import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
     import {
         popup,
@@ -8,13 +7,8 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
-    import type { BeforeNavigate } from "@sveltejs/kit";
-
-	beforeNavigate((nav:BeforeNavigate) => {
-        if (nav?.to?.route){
-            console.log(nav.to?.route);
-        }
-    });
+    import { onMount } from "svelte";
+    import { FileDropzone } from '@skeletonlabs/skeleton';
 
     let submittedClass = "";
     const emailPattern: string =
@@ -61,6 +55,27 @@
     let telefono = "";
     let fechaNacimiento: string; //
     let fechaMax: string = new Date().toJSON().slice(0, 10);
+    let FotoFile: FileList; //por ahora ni tiene utilidad
+
+    let avatar:any;
+
+// then in the function
+    const onChangeFile = async (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (!target.files){
+            return
+        }
+        let image = target.files[0];
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = e => {
+            if (!e.target){
+                return
+            }
+            avatar = e.target.result
+            console.log(avatar);
+        };
+    }
 
     const handleCarga = () => {
         fetch("http://localhost:3000/registrar-cliente", {
@@ -108,6 +123,16 @@
                 console.log("Error en carga del cliente desconocido: ", error);
             });
     };
+
+    onMount( () => {
+        nombre="Mi nombre";
+        apellido = "Mi apellido";
+        dni = "1234556";
+        direccion = "Mi direccion";
+        telefono = "221454256";
+        fechaNacimiento = new Date().toJSON().slice(0, 10);
+    } )
+
 </script>
 
 <Modal />
@@ -124,7 +149,7 @@
             bind:value={nombre}
             class="input focus:invalid:border-red-500"
             type="text"
-            placeholder="Ingrese nombre del cliente"
+            placeholder="Ingrese su nombre"
             name="nombre"
             pattern={letrasEspaciosPattern}
             required
@@ -135,24 +160,11 @@
             bind:value={apellido}
             class="input focus:invalid:border-red-500"
             type="text"
-            placeholder="Ingrese apellido del cliente"
+            placeholder="Ingrese su apellido"
             name="apellido"
             pattern={letrasEspaciosPattern}
             required
         />
-
-        <label class="label" for="email">Email:</label>
-        <input
-            pattern={emailPattern}
-            title="Ingrese un mail valido"
-            bind:value={email}
-            class="input focus:invalid:border-red-500"
-            type="text"
-            placeholder="email del cliente. Ej: unCliente@gmail.com"
-            name="email"
-            required
-        />
-        <p class="text-red-500">{emailErrorMsj}</p>
 
         <label class="label" for="dni">Teléfono:</label>
         <input
@@ -204,24 +216,18 @@
             name="direccion"
             required
         />
-
+        <p>Foto:</p> 
+        <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg"
+            on:change={onChangeFile}>
+            <div>
+                {#if avatar}
+                    <img class="object-contain h-32 w-32" src="{avatar}" alt="foto de perfil" />
+                {:else}
+                    <img class="object-contain h-32 w-32" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> 
+                {/if}
+            </div>
         <button class="btn rounded-lg variant-filled-primary" type="submit"
-            >Registrar cliente</button
+            >Actualizar</button
         >
-        <!-- Al apretar registrar cliente, debo almacenar los datos ingresados en un store y me debe redirigir a cargar perro. Una vez que aprete "cargar perro", si vengo de /cargar-cliente, enviaré los datos del cliente y perro al backend a traves del endpoint cargarClienteConPerro(solo rol cliente), sino del endpoint normal
-        
-        Si vengo de /cargar-cliente y ahora no estoy en /cargar-perro, limpio el store correspondiente.
-
-	beforeNavigate((nav:BeforeNavigate) => {
-        if (nav?.to?.route){
-            console.log(nav.to?.route);
-        }
-    });
-
-
-        afterNavigate(()=> {
-    		console.log("root +layout afterNavigate():");
-		    if($navigating?.from?.route) console.log($navigating?.from?.route);
-        -->
     </form>
 </div>
