@@ -106,9 +106,9 @@ const aceptarTurno = async (req:Request, res:Response) => {
 
 const rechazarTurno = async(req:Request, res:Response) => {}
 
-export const registrarUrgenciaController = async (req:Request, res:Response) => {
+/*export const registrarUrgenciaController = async (req:Request, res:Response) => {
     
-}
+}*/
 
 const finalizarAtención = async (req:Request, res:Response) => {}
 
