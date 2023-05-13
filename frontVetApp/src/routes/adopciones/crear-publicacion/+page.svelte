@@ -1,11 +1,12 @@
 <script lang="ts">
     import { user } from "$lib/stores/user";
     import { onMount } from "svelte";
-    import { Autocomplete } from '@skeletonlabs/skeleton';
-    import type { AutocompleteOption } from '@skeletonlabs/skeleton';   
+    import type { AutocompleteOption, ModalSettings } from '@skeletonlabs/skeleton';   
     import type { Id, InfoPerroAdopcion, Perro } from "$lib/interfaces/Perro.interface";
+    import type { AdopcionInput } from "$lib/interfaces/Adopciones.interface";
+    import { goto } from "$app/navigation";
+    import { Modal, modalStore } from "@skeletonlabs/skeleton";
 
-    
     let perrosCliente:(Perro&Id)[] = [];
 
     let fechaMax: string = new Date().toJSON().slice(0, 10);
@@ -50,7 +51,6 @@
                 perrosCliente = apiResponse.data
             });
         }
-
         //obtengo mis datos
         fetch('http://localhost:3000/getPerfil',{
         method:'GET',
@@ -73,10 +73,76 @@
             })
     });
 
+    const publicacionAdopcionCargada: ModalSettings = {
+        type: "alert",
+        title: "Publicación cargada",
+        body: "Publicacion de adopción cargada correctamente",
+        buttonTextCancel: "Ok",
+        response: (r: boolean) => goto("/adopciones"),
+    };
+
+    const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Error desconocido",
+        body: "No se pudo actualizar el perfil",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo en actualizacion del perfil",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
     const handleCarga = () => {
-        
+        fetch("http://localhost:3000/adopciones/crear-publicacion", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                nombreContacto,
+                apellidoContacto,
+                telefonoContacto,
+                emailContacto,
+                nombrePerro:inputPerro.nombre,
+                razaPerro:inputPerro.raza,
+                fechaNacPerro:inputPerro.fechaNacimiento
+            }),
+        })
+            .then((res) => {
+                if (res.status < 299) {
+                    modalStore.clear();
+                    modalStore.trigger(publicacionAdopcionCargada);
+                    return res;
+                }
+                if (res.status === 400) {
+                    //error por modificacion del token jwt.
+                    $user = null;
+                    goto('/auth/login');
+                    return;
+                }
+                if (res.status === 404) {
+                    console.log("El usuario no existe...");
+                    return res;
+                }
+                if (res.status === 500) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
+            })
+            .catch((error) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log("Error desconocido: ", error);
+            });
     }
 </script>
+
+<Modal />
 
 <div class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center">
     <div class="w-6/12">
@@ -121,21 +187,25 @@
             {#if $user?.rol==='veterinario'}
             <hr class="!border-t-2" />
             <h3 class="h3 mt-3">Datos de contacto:</h3>
-                <label class="label" for="nombreContacto">Nombre:</label>
-                <input bind:value={nombreContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del contacto" name="nombreContacto" required/>
 
-                <label class="label" for="apellidoContacto">Apellido:</label>
-                <input bind:value={apellidoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Apellido del contacto" name="apellidoContacto" required/>
+            <label class="label" for="nombreContacto">Nombre:</label>
+            <input bind:value={nombreContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del contacto" name="nombreContacto" required/>
 
-                <label class="label" for="telefonoContacto">Telefono:</label>
-                <input bind:value={telefonoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Telefono del contacto" name="telefonoContacto" required/>
+            <label class="label" for="apellidoContacto">Apellido:</label>
+            <input bind:value={apellidoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Apellido del contacto" name="apellidoContacto" required/>
 
-                <label class="label" for="nombreContacto">Email:</label>
-                <input bind:value={emailContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Email del contacto" name="nombreContacto" required/>
+            <label class="label" for="telefonoContacto">Telefono:</label>
+            <input bind:value={telefonoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Telefono del contacto" name="telefonoContacto" required/>
+
+            <label class="label" for="nombreContacto">Email:</label>
+            <input bind:value={emailContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Email del contacto" name="nombreContacto" required/>
         
             {/if}
+            <hr class="!border-t-2" />
+            <div></div> <!-- para mas espacio con el último elemento(horrible, ya se) -->
+            <button class="btn rounded-lg variant-filled-primary mt-5" type="submit">Crear publicación de adopción</button>
         </form>
-        <button class="btn rounded-lg variant-filled-primary mt-10" type="submit">Crear publicación de adopción</button>
+
     </div>
 
 
