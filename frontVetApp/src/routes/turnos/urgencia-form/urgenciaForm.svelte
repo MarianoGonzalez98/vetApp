@@ -1,22 +1,51 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import type { Cliente } from "$lib/interfaces/Cliente.interface"
     import { type AutocompleteOption,Autocomplete, modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
+    import { onMount } from "svelte";
+
 
     let cliente = '';
-    const clientsOptions: AutocompleteOption[] = [ 
-        {label: "Carlos", value: "carlos"},
-        {label: "Luis", value: "luis"},
-        {label: "Fabiana", value: "fabiana"},
-        {label: "Hilda", value: "hilda"},
-        {label: "Rodolfo", value: "rodolfo"},
-        {label: "Pedro", value: "pedro"}
-    ]
+    
+    let clientes: Cliente[] = [];
+    onMount( () => {
+        fetch('http://localhost:3000/clientes',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            credentials: 'include',
+        }).then( (res) => {
+            if (res.status < 299) {  //si entra acá no hubo error
+                return res.json()
+            }
+            return Promise.reject(res);
+        }).then( (res) => {
+            clientes = res;
+
+        }).catch( (e)  => {
+            console.log("ERROR:");
+            console.log(e);
+        })
+    })
+
+    let clientesMapeado = clientes.map ((cliente) => {
+                                return {label: cliente.nombre + " " + cliente.apellido,
+                                        value: cliente.email }
+    })
+
+    const clientsOptions: AutocompleteOption[] = clientesMapeado;
+    console.log(clientesMapeado)
+
 
     function onClientSelection(event: any): void {
         cliente = event.detail.label;
     }
+
+    
+
 
     let motivo = '' ;
     let perro = 1;
@@ -105,19 +134,19 @@ const handleUrgencia = async () =>{
             <label class="label" for="motivo">Motivo/s</label> <!-- concatenar los motivos separados por ","-->
             <div class="space-y-2">
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo[0]} checked />
+                    <input class="checkbox" type="checkbox" bind:value={motivo} checked />
                     <p>Vacunación a</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo[1]} />
+                    <input class="checkbox" type="checkbox" bind:value={motivo} />
                     <p>Vacunación b</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo[2]}/>
+                    <input class="checkbox" type="checkbox" bind:value={motivo}/>
                     <p>Castración</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo[3]} />
+                    <input class="checkbox" type="checkbox" bind:value={motivo} />
                     <p>Anti-parasitación</p>
                 </label>
             </div>

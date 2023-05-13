@@ -3,9 +3,11 @@
     import { user } from "$lib/stores/user";
     import { modalStore, type ModalSettings, Modal } from '@skeletonlabs/skeleton';
     import { DateInput } from 'date-picker-svelte'
+    import { onMount } from "svelte";
  
     let motivo = '';
-    let perro = 1;
+    let perroNombre = '';
+    let perroId = '';
 
     let fecha = new Date();
     let fechaMin = new Date();
@@ -15,6 +17,27 @@
     let rangoHorario = '';
     let emailOwner = $user?.email;
 
+  /*   onMount(async () => {
+		fetch('http://localhost:3000/getPerros',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            credentials: 'include',
+        }).then( (res) => {
+            if (res.status < 299) {  //si entra acá no hubo error
+                return res.json()
+            }
+            return Promise.reject(res);
+        }).then( (res) => {
+            perroNombre=res.nombre;
+            perroId=res.id;
+        }).catch( (e)  => {
+            console.log("ERROR:");
+            console.log(e);
+        })
+	});
+ */
 
     const SolicitudEnviada: ModalSettings = {
 	type: 'alert',
@@ -52,7 +75,7 @@
                 "Content-Type":"application/json",
             },
             credentials: "include",
-            body: JSON.stringify({motivo, perro, fecha:fecha.toJSON().slice(0,10), rangoHorario, emailOwner})
+            body: JSON.stringify({motivo, perroId, fecha:fecha.toJSON().slice(0,10), rangoHorario, emailOwner})
         })
         .then((res) => {
                 if (res.status < 299) {
