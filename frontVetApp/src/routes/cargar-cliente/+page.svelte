@@ -113,11 +113,11 @@
 <Modal />
 
 <div
-    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center"
+    class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
 >
     <form
         on:submit|preventDefault={handleCarga}
-        class="space-y-2 {submittedClass}"
+        class="space-y-2 mb-2 {submittedClass}"
     >
         <label class="label" for="nombre">Nombre:</label>
         <input
