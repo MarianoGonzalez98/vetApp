@@ -1,9 +1,60 @@
 import { Request, Response } from "express";
-import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword } from "../services/auth.service";
+import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword, getUserCompleto, updatePerfilUsuario } from "../services/auth.service";
 import { Auth, UserData, Persona } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
 import { generateRandomString } from "../utils/random.handle";
+import { User } from "../interfaces/User.interface";
+import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
+
+
+export const getMiPerfilController = async (req: Request, res: Response) => {
+    const result = await getUserCompleto(res.locals.jwtData.user.email);
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    let fotoHTML = "";
+    if (result.foto){
+        fotoHTML = decodeToHTML_JPEG(result.foto);
+    }
+    
+    res.send({
+        nombre:result.nombre,
+        apellido:result.apellido,
+        dni:result.dni,
+        direccion:result.direccion,
+        telefono:result.telefono,
+        fechaNacimiento:result.fechaNacimiento,
+        foto:fotoHTML
+    })
+}
+
+export const updateMiPerfilController = async (req: Request, res: Response) => {
+    const cliente: Persona = req.body;
+    const emailJWT = res.locals.jwtData.user.email
+    const existeUsuario = await getUser(emailJWT);
+    if (existeUsuario === 'error'){
+        //HTTP 500 Internal server error
+        res.status(500).send("posible error en base de datos")
+        return
+    }
+    if (!existeUsuario){
+        res.status(404).send('El usuario no existe');
+    }
+
+    if (cliente.foto){
+        cliente.foto= await encodeRezizeImgToJPEG(cliente.foto) || "";
+    }
+    const result = await updatePerfilUsuario(cliente,emailJWT)
+    if (result === 'error'){
+        //HTTP 500 Internal server error
+        res.status(500).send("posible error en base de datos")
+        return
+    }
+    return res.status(200).send('Se actualizó el perfil correctamente.');
+}
 
 const registrarController = async (req: Request, res: Response) => {
     const cliente: Persona = req.body;

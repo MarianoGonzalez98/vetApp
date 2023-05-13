@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+    import { navigating } from "$app/stores";
     import { user } from "$lib/stores/user";
     import {
         popup,
@@ -7,6 +8,13 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
+    import type { BeforeNavigate } from "@sveltejs/kit";
+
+	beforeNavigate((nav:BeforeNavigate) => {
+        if (nav?.to?.route){
+            console.log(nav.to?.route);
+        }
+    });
 
     let submittedClass = "";
     const emailPattern: string =
@@ -105,11 +113,11 @@
 <Modal />
 
 <div
-    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center"
+    class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
 >
     <form
         on:submit|preventDefault={handleCarga}
-        class="space-y-2 {submittedClass}"
+        class="space-y-2 mb-2 {submittedClass}"
     >
         <label class="label" for="nombre">Nombre:</label>
         <input
@@ -200,5 +208,21 @@
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Registrar cliente</button
         >
+        <!-- Al apretar registrar cliente, debo almacenar los datos ingresados en un store y me debe redirigir a cargar perro. Una vez que aprete "cargar perro", si vengo de /cargar-cliente, enviaré los datos del cliente y perro al backend a traves del endpoint cargarClienteConPerro(solo rol cliente), sino del endpoint normal
+        
+        Si soy veterinario y entro a /cargar-perro viniendo desde una ruta diferente a /cargar-cliente, lanzo error.
+        Si soy veterinario y me voy de /cargar-perro a una ruta diferente a /cargar-cliente, limpio el store correspondiente.
+
+	beforeNavigate((nav:BeforeNavigate) => {
+        if (nav?.to?.route){
+            console.log(nav.to?.route);
+        }
+    });
+
+
+        afterNavigate(()=> {
+    		console.log("root +layout afterNavigate():");
+		    if($navigating?.from?.route) console.log($navigating?.from?.route);
+        -->
     </form>
 </div>
