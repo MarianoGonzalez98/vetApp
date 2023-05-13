@@ -11,21 +11,23 @@
 					rel="noreferrer"
 					href="/cargar-cliente">Cargar nuevo cliente</a
 				>
+
+				<a
+					class="btn variant-ghost-surface"
+					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
+				>
+			{:else}
+				<a
+					class="btn variant-ghost-surface"
+					rel="noreferrer"
+					href="/mis-perros">Mis perros</a
+				>
+				<a
+				class="btn variant-ghost-surface"
+				rel="noreferrer"
+				href="/cargar-perro">Cargar nuevo perro</a
+			>
 			{/if}
-			<a
-			class="btn bg-gradient-to-br variant-gradient-primary-secondary"
-			rel="noreferrer"
-			href="/cargar-perro">Cargar nuevo perro</a
-			>
-			<a
-			class="btn bg-gradient-to-br variant-gradient-primary-secondary"
-			rel="noreferrer"
-			href="/mis-perros">Mis perros</a
-			>
-			<a
-			class="btn bg-gradient-to-br variant-gradient-primary-secondary"
-			href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
-		>
 		{/if}
 	</div>
 </div>
