@@ -29,6 +29,11 @@
 			>
 			{/if}
 		{/if}
+		<a
+		class="btn variant-ghost-surface"
+		rel="noreferrer"
+		href="/adopciones">Adopciones</a
+		>
 	</div>
 </div>
 
