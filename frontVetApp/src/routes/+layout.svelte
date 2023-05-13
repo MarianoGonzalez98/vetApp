@@ -31,6 +31,5 @@
 		<NavBar></NavBar>
 	</svelte:fragment>
 	<slot />
-	<svelte:fragment slot="pageFooter">Hecho por FJM Software factory</svelte:fragment>
 	
 </AppShell>

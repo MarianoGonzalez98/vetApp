@@ -19,9 +19,16 @@
 
 <AppBar padding='p-1'>
   <svelte:fragment slot="lead">
-    <a href="/"><img src={imgSrc} alt="logo de veterinaria" width="90" height="70"></a>
+    <a href="/"><img src={imgSrc} alt="logo de veterinaria" width="91"></a>
     <div class="mr-2"></div>
     <LightSwitch></LightSwitch>
+    {#if $user}
+    <a
+    class="btn variant-ghost-surface ml-5"
+    rel="noreferrer"
+    href="/auth/mi-perfil">Ver mi perfil</a
+    >
+    {/if}
   </svelte:fragment>
 
   <svelte:fragment slot="trail">
