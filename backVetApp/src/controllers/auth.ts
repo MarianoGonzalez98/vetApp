@@ -113,7 +113,7 @@ const loginController = async (req: Request, res: Response) => {
     console.log("LOGIN CRONTROLLER:")
     console.log(userData);
     const token = await generateToken(userData); //genero jwt token
-    res.cookie('jwt', token, { httpOnly: true }); //mando el jwt en una cookie httpOnly
+    res.cookie('jwt', token, { httpOnly: true, maxAge:11704085200 }); //mando el jwt en una cookie httpOnly
     res.send({ data: { userData, token: token } })
 };
 

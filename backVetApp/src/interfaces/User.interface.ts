@@ -24,7 +24,7 @@ export interface Persona{
     apellido:string,
     email:string
     dni:string,
-    fechaNacimiento:Date,
+    fechaNacimiento:string,
     direccion: string,
     telefono:string,
     foto: string | null

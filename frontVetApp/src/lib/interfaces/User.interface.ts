@@ -13,3 +13,14 @@ export interface UserData {
     rol: string,
     seCambioPassword: boolean,
 }
+
+export interface Persona{
+    nombre:string,
+    apellido:string,
+    email:string
+    dni:string,
+    fechaNacimiento:string,
+    direccion: string,
+    telefono:string,
+    foto: string | null
+}

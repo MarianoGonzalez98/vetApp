@@ -1,13 +1,14 @@
 import { Router } from "express"
 
-import { getAdopcion,getAdopciones } from "../controllers/adopciones";
+import { insertAdopcion } from "../controllers/adopciones";
+import { checkJWT } from "../middleware/session";
 
 const AdopcionesRouter = Router();
-const URL="/api/adopciones"
 /* 
     http://localhost:3000/api/adopciones
 */
-AdopcionesRouter.get(URL, getAdopciones)
+AdopcionesRouter.post('/adopciones/crear-publicacion', checkJWT,insertAdopcion)
 
-AdopcionesRouter.get(URL+"/:id", getAdopcion)
+
+
 export { AdopcionesRouter}
