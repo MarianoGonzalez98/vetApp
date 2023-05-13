@@ -215,8 +215,7 @@
         </div>
 
         <a href="/auth/mi-perfil/"><button class="btn rounded-lg variant-filled-secondary">Cancelar edición</button></a>
-        <button class="btn rounded-lg variant-filled-primary" type="submit"
-            >Actualizar mi perfil</button
-        >
+
+        <button class="btn rounded-lg variant-filled-primary" type="submit">Actualizar mi perfil</button>
     </form>
 </div>
