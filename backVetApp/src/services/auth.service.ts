@@ -47,6 +47,24 @@ const actualizarPasswordDevelop = async (email: string, password: string) => {
 
 //FIN --------------------------------------DESPUES SACAR-------------
 
+export const updatePerfilUsuario = async ({nombre,apellido,dni,fechaNacimiento,direccion,telefono,foto}:Persona, email:string) => {
+    const query = `
+    UPDATE public.usuarios u
+	SET nombre=$1, apellido=$2, dni=$3, "fechaNacimiento"=$4, direccion=$5, telefono=$6, foto=$7
+	WHERE u.email = $8;
+    `
+    const values = [nombre,apellido,dni,fechaNacimiento,direccion,telefono,foto,email];
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:updatePerfilUsuario------");
+        console.log(err);
+        return "error";
+    }
+
+}
 
 const insertUser = async (usuario: Persona & Auth & Rol) => { //las intersecciones capaz se puedan mejorar
     console.log(usuario);
@@ -88,6 +106,26 @@ const getUser = async (email: string) => {
         return "error";
     }
 };
+
+export const getUserCompleto = async (email: string) => {
+    const query = `
+    SELECT id, password, email, rol, "seCambioPassword", nombre, apellido, dni, "fechaNacimiento", direccion, telefono, foto
+	FROM public.usuarios
+    WHERE email = $1
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result:User&Persona = await response.rows[0];
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getUserCompleto------");
+        console.log(err);
+        return "error";
+    }
+};
+
 
 const getCurrentPass = async (email: string) => {
     const query = `
@@ -145,5 +183,7 @@ const setSeCambioPassword = async (email: string) => {
         return false;
     }
 }
+
+
 
 export { getUser, changePass, setSeCambioPassword, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop }
