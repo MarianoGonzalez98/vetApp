@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import { get } from "svelte/store";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
 

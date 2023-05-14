@@ -19,7 +19,7 @@
     let fechaNacimiento: string; //
     let foto:any;
 
-    let FotoFile: FileList; //por ahora ni tiene utilidad
+    let FotoFile:any; //por ahora ni tiene utilidad
     let submittedClass = "";
     let fechaMax: string = new Date().toJSON().slice(0, 10);
 
@@ -59,6 +59,7 @@
 
     const eliminarFoto = () => {
         foto="";
+        FotoFile="";
     }
 
     onMount( () => {
@@ -103,6 +104,7 @@
             target.value="";
             return
         }
+        FotoFile=target.value;
         fileErrorMsj ="";
         let reader = new FileReader();
         reader.readAsDataURL(image);
@@ -175,94 +177,45 @@
     >
         <div class="space-y-1 mb-10">
             <label class="label" for="nombre">Nombre:</label>
-            <input
-                bind:value={nombre}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese su nombre"
-                name="nombre"
-                pattern={letrasEspaciosPattern}
-                required
-            />
+            <input bind:value={nombre} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese su nombre" name="nombre" pattern={letrasEspaciosPattern} required/>
     
             <label class="label" for="apellido">Apellido:</label>
-            <input
-                bind:value={apellido}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese su apellido"
-                name="apellido"
-                pattern={letrasEspaciosPattern}
-                required
-            />
+            <input bind:value={apellido} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese su apellido" name="apellido" pattern={letrasEspaciosPattern} required/>
     
             <label class="label" for="dni">Teléfono:</label>
-            <input
-                bind:value={telefono}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese teléfono del cliente. Ej: 2214687634"
-                use:popup={popupFocusBlur}
-                name="telefono"
-                pattern={numbersPattern}
-                required
-            />
-    
+            <input bind:value={telefono} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese teléfono del cliente. Ej: 2214687634"use:popup={popupFocusBlur} name="telefono" pattern={numbersPattern} required/>
+
             <div class="card p-4 variant-filled" data-popup="popupFocusBlur">
                 <p>Sólo números</p>
                 <div class="arrow variant-filled" />
             </div>
     
             <label class="label" for="dni">DNI:</label>
-            <input
-                bind:value={dni}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                max="9999999999"
-                placeholder="Ingrese dni del cliente"
-                name="dni"
-                autocomplete="off"
-                pattern={numbersPattern}
-                required
-            />
-    
+            <input bind:value={dni} class="input focus:invalid:border-red-500" type="text" max="9999999999" placeholder="Ingrese dni del cliente" name="dni" autocomplete="off" pattern={numbersPattern} required />
+
             <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
-            <input
-                bind:value={fechaNacimiento}
-                class="input"
-                type="date"
-                placeholder="Ingrese fecha de nacimiento del cliente"
-                name="fechaNacimiento"
-                max={fechaMax}
-                required
-            />
+            <input bind:value={fechaNacimiento} class="input" type="date" placeholder="Ingrese fecha de nacimiento del cliente" name="fechaNacimiento" max={fechaMax} required/>
     
             <label class="label" for="direccion">Dirección:</label>
-            <input
-                bind:value={direccion}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese dirección del cliente"
-                name="direccion"
-                required
-            />
-            <span>Foto:</span>
-            <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
+            <input bind:value={direccion} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese dirección del cliente" name="direccion" required/>
+
+            <p>Foto de perfil:</p>
             <div>
                 {#if foto}
                     <img class="object-contain h-32 w-32" src="{foto}" alt="foto de perfil" />
                 {:else}
-                    <img class="object-contain h-32 w-32" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> 
+                    <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt="" /> 
                 {/if}
+                <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
             </div>
             <p class="text-red-500">{fileErrorMsj}</p>
+
             <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg"
                 on:change={onChangeFile}>
         </div>
 
         <a href="/auth/mi-perfil/"><button class="btn rounded-lg variant-filled-secondary">Cancelar edición</button></a>
-        <button class="btn rounded-lg variant-filled-primary" type="submit"
-            >Actualizar mi perfil</button
-        >
+
+        <button class="btn rounded-lg variant-filled-primary" type="submit">Actualizar mi perfil</button>
     </form>
 </div>

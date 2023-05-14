@@ -11,27 +11,32 @@
 					rel="noreferrer"
 					href="/cargar-cliente">Cargar nuevo cliente</a
 				>
+
 				<a
-					class="btn bg-gradient-to-br variant-gradient-primary-secondary"
-					rel="noreferrer"
-					href="/cargar-perro">Cargar nuevo perro</a
+					class="btn variant-ghost-surface"
+					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
 				>
+			{:else}
 				<a
-					class="btn bg-gradient-to-br variant-gradient-primary-secondary"
+					class="btn variant-ghost-surface"
 					rel="noreferrer"
 					href="/mis-perros">Mis perros</a
 				>
 				<a
-					class="btn bg-gradient-to-br variant-gradient-primary-secondary"
-					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
-				>
+				class="btn variant-ghost-surface"
+				rel="noreferrer"
+				href="/cargar-perro">Cargar nuevo perro</a
+			>
 			{/if}
 			{#if $user.rol === "cliente"}
 				<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
 			{/if}
 		{/if}
-
-
+		<a
+		class="btn variant-ghost-surface"
+		rel="noreferrer"
+		href="/adopciones">Adopciones</a
+		>
 	</div>
 </div>
 
