@@ -5,6 +5,7 @@
     import {  modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
+    import type { Id, Perro, PerroTurno } from "$lib/interfaces/Perro.interface";
 
 
     let cliente:Cliente = {
@@ -17,8 +18,70 @@
         apellido:"",
         email:""
     }
-    
     let clientes: Cliente[] = [];
+
+    let perrosCompleto: Perro[] = [];
+    let perro: PerroTurno = {
+        nombre: "",
+        id: -1
+    }
+    let inputPerro: PerroTurno = {
+        nombre: "",
+        id: -1
+    }
+    let perros: PerroTurno[] = [];
+
+    const actualizarFormPerro = () => {
+        inputPerro.nombre=perro.nombre;
+        inputPerro.id = perro.id;
+    }
+
+    const actualizarForm = () => {
+        inputCliente.nombre=cliente.nombre;
+        inputCliente.apellido = cliente.apellido;
+        inputCliente.email = cliente.email;
+        onMount
+        
+    }
+
+    
+
+    onMount ( async () => {
+
+        await fetch('http://localhost:3000/clientes',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            credentials: 'include',
+        }).then( (res) => {
+                return res.json()
+        }).then( (res) => {
+            clientes = res.clientes;
+
+        }).catch( (e)  => {
+            console.log("ERROR:");
+            console.log(e);
+        })
+
+    })
+
+
+
+    onMount(async () => {
+        const res = await fetch(
+            `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (perros = apiResponse.data)); 
+    }); 
 
     
     let motivoVacA = false ;
@@ -26,23 +89,10 @@
     let motivoAntiPar = false ;
     let motivoCas = false ;
 
-    let motivo = '';
-
     let motivoVacAs = '' ;
     let motivoVacBs = '' ;
     let motivoAntiPars = '' ;
     let motivoCass = '' ;
-
-
-
-    let perro = 10;
-    let fecha = new Date();
-    let fechaMax = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-    let rangoHorario = '';
-    let emailOwner = '';
-    let descripcion = '';
 
     const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
         if(motivoVacA) {
@@ -71,46 +121,18 @@
         }
     }
 
-    const actualizarForm = () => {
-        inputCliente.nombre=cliente.nombre;
-        inputCliente.apellido = cliente.apellido;
-        inputCliente.email = cliente.email;
-    }
-
-    onMount( async () => {
-
-                await fetch('http://localhost:3000/clientes',{
-                    method:'GET',
-                    headers:{
-                        'Content-Type':'application/json',
-                    },
-                    credentials: 'include',
-                }).then( (res) => {
-                        return res.json()
-                }).then( (res) => {
-                    clientes = res.clientes;
-
-                }).catch( (e)  => {
-                    console.log("ERROR:");
-                    console.log(e);
-                })
-            
-    })
-
-    /* let clientesMapeado = clientes.map ((cliente) => {
-                                return {label: cliente.nombre + " " + cliente.apellido,
-                                        value: cliente.email }
-    })
- 
-    const clientsOptions: AutocompleteOption[] = clientesMapeado;
-    console.log(clientesMapeado)
 
 
-    function onClientSelection(event: any): void {
-        cliente = event.detail.label;
-    }
+    let fecha = new Date();
+    let fechaMax = new Date();
+    let format = 'dd-MM-yyyy'
+    let placeholder= 'Elija una fecha'
 
-*/    
+    let rangoHorario = '';
+
+    let descripcion = '';
+
+
 
     const UrgenciaRegistrada: ModalSettings = {
 	type: 'alert',
@@ -144,7 +166,7 @@ const handleUrgencia = async () =>{
             credentials: "include",
             body: JSON.stringify({
                 motivo: motivoVacAs +""+ motivoVacBs +""+ motivoCass +""+ motivoAntiPars, 
-                perro, 
+                perro: perro.id, 
                 fecha:fecha.toJSON().slice(0,10), 
                 rangoHorario, 
                 emailOwner:cliente.email, 
@@ -184,7 +206,7 @@ const handleUrgencia = async () =>{
     <div class="card p-4">
         <h2>Registar urgencia</h2>
         <br>
-
+        
         <div>
             <label for="seleccionCliente">Seleccione el cliente</label>
             <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm}>
@@ -194,8 +216,28 @@ const handleUrgencia = async () =>{
                     </option>
                 {/each}
             </select>
+
+            <label for="seleccionPerro">Seleccione el perro</label>
+            <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro}>
+                {#each perros as perro}
+                    <option value={perro}>
+                        <span>{perro.nombre} </span>
+                    </option>
+                {/each}
+            </select>
         </div>
-        
+
+        <!-- <div>
+            <label for="seleccionPerro">Seleccione el perro</label>
+            <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro}>
+                {#each perros as perro}
+                    <option value={perro}>
+                        <span>{perro.nombre} </span>
+                    </option>
+                {/each}
+            </select>
+        </div>
+         -->
 
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
 
@@ -220,14 +262,6 @@ const handleUrgencia = async () =>{
                 </label>                
             </div>
             
-            <!-- El perro va a tener que elegirse de la lista de perros del cliente seleccionado  -->
-            <label class="label">
-                <span>Perro</span>
-                <input class="input" type="number" bind:value={perro} placeholder="Id perro" />
-            </label>
-
-            
-
             <label class="label" for="fecha">Fecha del turno</label>
             <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
 
