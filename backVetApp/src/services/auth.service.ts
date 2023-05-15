@@ -107,6 +107,25 @@ const getUser = async (email: string) => {
     }
 };
 
+export const getUserConDni = async (dni: string) => {
+    const query = `
+    SELECT id, password, email, rol, "seCambioPassword" 
+    FROM public.usuarios 
+    WHERE dni = $1
+    `
+    const values = [dni]
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: User = await response.rows[0];
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getUserConDni------");
+        console.log(err);
+        return "error";
+    }
+};
+
 export const getUserCompleto = async (email: string) => {
     const query = `
     SELECT id, password, email, rol, "seCambioPassword", nombre, apellido, dni, "fechaNacimiento", direccion, telefono, foto
