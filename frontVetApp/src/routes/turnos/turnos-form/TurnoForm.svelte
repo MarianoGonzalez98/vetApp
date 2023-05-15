@@ -1,13 +1,13 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import type { Cliente } from "$lib/interfaces/Cliente.interface";
+    import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import { user } from "$lib/stores/user";
     import { modalStore, type ModalSettings, Modal } from '@skeletonlabs/skeleton';
     import { DateInput } from 'date-picker-svelte'
     import { onMount } from "svelte";
  
     let motivo = '';
-    let perroNombre = '';
-    let perro = 1;
 
     let fecha = new Date();
     let fechaMin = new Date();
@@ -17,27 +17,40 @@
     let rangoHorario = '';
     let emailOwner = $user?.email;
 
-  /*   onMount(async () => {
-		fetch('http://localhost:3000/getPerros',{
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-            },
-            credentials: 'include',
-        }).then( (res) => {
-            if (res.status < 299) {  //si entra acá no hubo error
-                return res.json()
+    let perro: PerroTurno = {
+        nombre: "",
+        id: -1
+    }
+    let inputPerro: PerroTurno = {
+        nombre: "",
+        id: -1
+    }
+    let perros: PerroTurno[] = [];
+
+
+    const actualizarFormPerro = () => {
+        inputPerro.nombre=perro.nombre;
+        inputPerro.id = perro.id;
+    }
+
+    onMount ( async () => {
+
+        await  fetch(
+            `http://localhost:3000/listar-perros?cliente=${emailOwner}`, 
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
             }
-            return Promise.reject(res);
-        }).then( (res) => {
-            perroNombre=res.nombre;
-            perroId=res.id;
-        }).catch( (e)  => {
-            console.log("ERROR:");
-            console.log(e);
-        })
-	});
- */
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (perros = apiResponse.data));
+
+    })
+
+
 
     const SolicitudEnviada: ModalSettings = {
 	type: 'alert',
@@ -77,7 +90,7 @@
             credentials: "include",
             body: JSON.stringify({
                 motivo, 
-                perro, 
+                perro:perro.id, 
                 fecha:fecha.toJSON().slice(0,10),
                 rangoHorario, 
                 emailOwner
@@ -121,6 +134,18 @@
     <div class="card p-4">
         <h2>Solicitar turno</h2>
         <br>
+
+        <div>
+            <label for="seleccionPerro">Seleccione el perro</label>
+            <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro}>
+                {#each perros as perro}
+                    <option value={perro}>
+                        <span>{perro.nombre} </span>
+                    </option>
+                {/each}
+            </select>
+        </div>
+
         <form on:submit|preventDefault={handleSolicitud} class="space-y-2">
 
             <label class="label" for="motivo">Motivo</label>

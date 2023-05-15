@@ -20,7 +20,7 @@
     }
     let clientes: Cliente[] = [];
 
-    let perrosCompleto: Perro[] = [];
+
     let perro: PerroTurno = {
         nombre: "",
         id: -1
@@ -40,12 +40,22 @@
         inputCliente.nombre=cliente.nombre;
         inputCliente.apellido = cliente.apellido;
         inputCliente.email = cliente.email;
-        onMount
+        fetch(
+            `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (perros = apiResponse.data));
         
     }
 
     
-
     onMount ( async () => {
 
         await fetch('http://localhost:3000/clientes',{
@@ -65,23 +75,6 @@
         })
 
     })
-
-
-
-    onMount(async () => {
-        const res = await fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            }
-        )
-            .then((res) => res.json())
-            .then((apiResponse) => (perros = apiResponse.data)); 
-    }); 
 
     
     let motivoVacA = false ;
@@ -227,17 +220,6 @@ const handleUrgencia = async () =>{
             </select>
         </div>
 
-        <!-- <div>
-            <label for="seleccionPerro">Seleccione el perro</label>
-            <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro}>
-                {#each perros as perro}
-                    <option value={perro}>
-                        <span>{perro.nombre} </span>
-                    </option>
-                {/each}
-            </select>
-        </div>
-         -->
 
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
 
