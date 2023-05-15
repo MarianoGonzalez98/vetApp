@@ -27,33 +27,88 @@
 
 <h1>Mis perros</h1>
 
-{#each perros as perro}
-    <div class="w-full text-token grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Detailed -->
-        <a class="card card-hover overflow-hidden" href="/elements/cards">
+<div class="ml-2 flex flex-wrap">
+    {#each perros as perro}
+        <div
+            class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
+        >
             <header>
                 <img
+                    class="object-cover h-full w-full rounded-t-lg"
                     src="https://i.pinimg.com/originals/ce/80/f5/ce80f5cdff3aa5ec3eb7072348d41075.jpg"
-                    class="bg-black/50 object-cover aspect-[21/9] grayscale hover:grayscale-0 duration-300"
-                    alt="Post"
+                    alt=""
                 />
             </header>
-            <div class="p-4 space-y-4">
-                <h3 class="h2 font-bold">{perro.nombre}</h3>
-                <article>
-                    <p>Raza: {perro.raza}</p>
-                    <p>Sexo: {perro.sexo}</p>
-                </article>
-            </div>
-            <footer class="p-4 flex justify-start items-center space-x-4">
-                <div class="flex-auto flex justify-between items-center">
-                    <h6 class="font-bold">By Alex</h6>
-                    <small>On {new Date().toLocaleDateString()}</small>
+            <div class="flex flex-col justify-start p-6">
+                <h5
+                    class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
+                >
+                    {perro.nombre}
+                </h5>
+                <div
+                    class="mb-4 text-base text-neutral-600 dark:text-neutral-200"
+                >
+                    <p>
+                        <span class="font-medium">Raza: </span>
+                        {perro.raza}
+                    </p>
+                    <p>
+                        <span class="font-medium">Sexo: </span>
+                        {perro.sexo}
+                    </p>
+                    <p>
+                        <span class="font-medium">Fecha de nacimiento: </span>
+                        {perro.fechaNacimiento}
+                    </p>
+                    <p>
+                        <span class="font-medium">Observaciones: </span>
+                    </p>
+                    <p>
+                        <span class="font-medium">Peso: COMPLETAR</span>
+                    </p>
+                    <p>
+                        <span class="font-medium"
+                            >Vacunas aplicadas: COMPLETAR</span
+                        >
+                    </p>
                 </div>
-            </footer>
-        </a>
+                {#if $user?.rol === "veterinario"}
+                    <footer class="flex">
+                        <button class="btn btn-sm variant-ghost-surface mr-2"
+                            >Editar</button
+                        >
+                        <button class="btn btn-sm variant-ghost-surface"
+                            >Marcar perro como fallecido</button
+                        >
+                    </footer>
+                {/if}
+            </div>
+        </div>
+    {/each}
+</div>
+<!-- <div
+    class="grayscale hover:grayscale-0 duration-300 flex flex-col rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 md:max-w-xl md:flex-row"
+>
+    <img
+        class="h-96 w-full rounded-t-lg object-cover md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
+        src="https://i.pinimg.com/originals/ce/80/f5/ce80f5cdff3aa5ec3eb7072348d41075.jpg"
+        alt=""
+    />
+    <div class="flex flex-col justify-start p-6">
+        <h5
+            class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
+        >
+            Card title
+        </h5>
+        <p class="mb-4 text-base text-neutral-600 dark:text-neutral-200">
+            This is a wider card with supporting text below as a natural lead-in
+            to additional content. This content is a little bit longer.
+        </p>
+        <p class="text-xs text-neutral-500 dark:text-neutral-300">
+            Last updated 3 mins ago
+        </p>
     </div>
-{/each}
+</div> -->
 
 <!-- <div>
     <div class="container my-8 mx-3">
