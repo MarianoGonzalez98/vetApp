@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { getCantDeTurnosRangoHorarioFecha, insertTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
+import { getClientes } from "../services/clientes.service"
 
 /* importar servicios */
 /* importar interfaces */
@@ -19,6 +20,8 @@ const visualizarTurnos = async (req:Request, res:Response) => {
 
 const verificarDisponibilidad = async (req:Request, res:Response) => {
     const turno:Turno = req.body;
+
+    console.log(turno.perro);
     const result = await getCantDeTurnosRangoHorarioFecha(turno);
 
     if (result === "error") {
@@ -35,7 +38,7 @@ const verificarDisponibilidad = async (req:Request, res:Response) => {
 const insertarTurno = async (req:Request, res:Response) => { 
     let turno:Turno = req.body;
     
-    const dbResult = await insertTurno(turno.motivo,turno.perro,turno.fecha,turno.rangoHorario,turno.emailOwner);
+    const dbResult = await insertTurno(turno.motivo,turno.perro,turno.fecha,turno.rangoHorario,turno.emailOwner,turno.descripcion);
     
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
@@ -107,7 +110,15 @@ const aceptarTurno = async (req:Request, res:Response) => {
 const rechazarTurno = async(req:Request, res:Response) => {}
 
 export const registrarUrgenciaController = async (req:Request, res:Response) => {
-    
+    const result = await getClientes();
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    res.send(result);
+
+    insertarTurno (req,res);
 }
 
 const finalizarAtención = async (req:Request, res:Response) => {}

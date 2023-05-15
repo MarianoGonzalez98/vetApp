@@ -22,13 +22,13 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     }
 }
 
-export const insertTurno = async (motivo:string, perro:number, fecha:Date, rangoHorario:string, emailOwner:string) => {
+export const insertTurno = async (motivo:string, perro:number, fecha:Date, rangoHorario:string, emailOwner:string,descripcion:string) => {
     const queryTurno = `
     INSERT INTO public.turnos(
         motivo, "perroId", fecha, "rangoHorario", "emailOwner",aceptado,descripcion) 
         VALUES ($1, $2, $3, $4, $5, $6, $7);
     `; 
-    const valuesTurno = [motivo, perro, fecha, rangoHorario,emailOwner,false,"nada yet"]
+    const valuesTurno = [motivo, perro, fecha, rangoHorario,emailOwner,false,descripcion]
 
     try{
         const response:QueryResult = await pool.query(queryTurno,valuesTurno) 
