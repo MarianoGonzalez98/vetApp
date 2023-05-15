@@ -2,40 +2,106 @@
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
     import type { Cliente } from "$lib/interfaces/Cliente.interface"
-    import { type AutocompleteOption,Autocomplete, modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
+    import {  modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
 
 
-    let cliente = '';
+    let cliente:Cliente = {
+        nombre: "",
+        apellido: "",
+        email: ""
+    };
+    let inputCliente:Cliente={
+        nombre:"",
+        apellido:"",
+        email:""
+    }
     
     let clientes: Cliente[] = [];
-    onMount( () => {
-        fetch('http://localhost:3000/clientes',{
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-            },
-            credentials: 'include',
-        }).then( (res) => {
-            if (res.status < 299) {  //si entra acá no hubo error
-                return res.json()
-            }
-            return Promise.reject(res);
-        }).then( (res) => {
-            clientes = res;
 
-        }).catch( (e)  => {
-            console.log("ERROR:");
-            console.log(e);
-        })
+    
+    let motivoVacA = false ;
+    let motivoVacB = false ;
+    let motivoAntiPar = false ;
+    let motivoCas = false ;
+
+    let motivo = '';
+
+    let motivoVacAs = '' ;
+    let motivoVacBs = '' ;
+    let motivoAntiPars = '' ;
+    let motivoCass = '' ;
+
+
+
+    let perro = 10;
+    let fecha = new Date();
+    let fechaMax = new Date();
+    let format = 'dd-MM-yyyy'
+    let placeholder= 'Elija una fecha'
+    let rangoHorario = '';
+    let emailOwner = '';
+    let descripcion = '';
+
+    const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
+        if(motivoVacA) {
+            motivoVacAs = "Vacunación a, "
+        }
+        if(!motivoVacA) {
+            motivoVacAs = '' ;
+        }
+        if(motivoVacB) {
+            motivoVacBs = "Vacunación b, " 
+        }
+        if(!motivoVacB) {
+            motivoVacBs = '' ;
+        }
+        if(motivoCas) {
+            motivoAntiPars = "Castración, " 
+        }
+        if(!motivoCas) {
+            motivoAntiPars = '' ;
+        }
+        if(motivoAntiPar) {
+            motivoCass = "Anti-Parasitación, "
+        }
+        if(!motivoAntiPar) {
+            motivoCass = '' ;
+        }
+    }
+
+    const actualizarForm = () => {
+        inputCliente.nombre=cliente.nombre;
+        inputCliente.apellido = cliente.apellido;
+        inputCliente.email = cliente.email;
+    }
+
+    onMount( async () => {
+
+                await fetch('http://localhost:3000/clientes',{
+                    method:'GET',
+                    headers:{
+                        'Content-Type':'application/json',
+                    },
+                    credentials: 'include',
+                }).then( (res) => {
+                        return res.json()
+                }).then( (res) => {
+                    clientes = res.clientes;
+
+                }).catch( (e)  => {
+                    console.log("ERROR:");
+                    console.log(e);
+                })
+            
     })
 
-    let clientesMapeado = clientes.map ((cliente) => {
+    /* let clientesMapeado = clientes.map ((cliente) => {
                                 return {label: cliente.nombre + " " + cliente.apellido,
                                         value: cliente.email }
     })
-
+ 
     const clientsOptions: AutocompleteOption[] = clientesMapeado;
     console.log(clientesMapeado)
 
@@ -44,19 +110,7 @@
         cliente = event.detail.label;
     }
 
-    
-
-
-    let motivo = '' ;
-    let perro = 1;
-    let fecha = new Date();
-    let fechaMax = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-    let rangoHorario = '';
-    let emailOwner = $user?.email;
-    let descripcion = '';
-
+*/    
 
     const UrgenciaRegistrada: ModalSettings = {
 	type: 'alert',
@@ -88,7 +142,14 @@ const handleUrgencia = async () =>{
                 "Content-Type":"application/json",
             },
             credentials: "include",
-            body: JSON.stringify({motivo, perro, fecha:fecha.toJSON().slice(0,10), rangoHorario, emailOwner, descripcion})
+            body: JSON.stringify({
+                motivo: motivoVacAs +""+ motivoVacBs +""+ motivoCass +""+ motivoAntiPars, 
+                perro, 
+                fecha:fecha.toJSON().slice(0,10), 
+                rangoHorario, 
+                emailOwner:cliente.email, 
+                descripcion
+            })
         })
         .then((res) => {
                 if (res.status < 299) {
@@ -123,35 +184,49 @@ const handleUrgencia = async () =>{
     <div class="card p-4">
         <h2>Registar urgencia</h2>
         <br>
+
+        <div>
+            <label for="seleccionCliente">Seleccione el cliente</label>
+            <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm}>
+                {#each clientes as cliente}
+                    <option value={cliente}>
+                        <span>{cliente.nombre} {cliente.apellido} (email: {cliente.email})</span>
+                    </option>
+                {/each}
+            </select>
+        </div>
+        
+
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
 
-            <input class="input" type="search" name="cliente" bind:value={cliente} placeholder="Search..." />
-            <div class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto">
-                <Autocomplete bind:input={cliente} options={clientsOptions} on:selection={onClientSelection} />
-            </div>
-            
 
-            <label class="label" for="motivo">Motivo/s</label> <!-- concatenar los motivos separados por ","-->
-            <div class="space-y-2">
+            <label class="label" for="motivo">Motivo/s</label> 
+            <div class="flex items-center space-x-2">
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo} checked />
+                    <input type=checkbox bind:checked={motivoVacA}  on:change={actualizarFormMotivo}>
                     <p>Vacunación a</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo} />
-                    <p>Vacunación b</p>
+                    <input type=checkbox bind:checked={motivoVacB} on:change={actualizarFormMotivo}>
+                    <p>Vacunación B</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo}/>
+                    <input type=checkbox bind:checked={motivoCas} on:change={actualizarFormMotivo}>
                     <p>Castración</p>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input class="checkbox" type="checkbox" bind:value={motivo} />
+                    <input type=checkbox bind:checked={motivoAntiPar} on:change={actualizarFormMotivo}>
                     <p>Anti-parasitación</p>
-                </label>
+                </label>                
             </div>
             
             <!-- El perro va a tener que elegirse de la lista de perros del cliente seleccionado  -->
+            <label class="label">
+                <span>Perro</span>
+                <input class="input" type="number" bind:value={perro} placeholder="Id perro" />
+            </label>
+
+            
 
             <label class="label" for="fecha">Fecha del turno</label>
             <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
@@ -163,9 +238,9 @@ const handleUrgencia = async () =>{
                 <option value="3">Noche</option>
             </select>
 
-            <label class="label"> <!-- Descripcion -->
+            <label class="label"> 
                 <span>Descripción</span>
-                <textarea class="textarea" rows="2" placeholder="Ingrese una descripción" />
+                <textarea class="textarea" rows="2" placeholder="Ingrese una descripción" bind:value={descripcion} />
             </label>
 
             <br>

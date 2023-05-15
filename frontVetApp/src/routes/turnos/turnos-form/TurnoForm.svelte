@@ -7,7 +7,7 @@
  
     let motivo = '';
     let perroNombre = '';
-    let perroId = '';
+    let perro = 1;
 
     let fecha = new Date();
     let fechaMin = new Date();
@@ -75,7 +75,13 @@
                 "Content-Type":"application/json",
             },
             credentials: "include",
-            body: JSON.stringify({motivo, perroId, fecha:fecha.toJSON().slice(0,10), rangoHorario, emailOwner})
+            body: JSON.stringify({
+                motivo, 
+                perro, 
+                fecha:fecha.toJSON().slice(0,10),
+                rangoHorario, 
+                emailOwner
+            })
         })
         .then((res) => {
                 if (res.status < 299) {
