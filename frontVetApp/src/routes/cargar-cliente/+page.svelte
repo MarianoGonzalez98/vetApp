@@ -1,6 +1,7 @@
 <script lang="ts">
     import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
     import { navigating } from "$app/stores";
+    import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
     import {
         popup,
@@ -8,14 +9,41 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
-    import type { BeforeNavigate } from "@sveltejs/kit";
+    import type { AfterNavigate, BeforeNavigate } from "@sveltejs/kit";
+
+    let validNavigation=false;
 
 	beforeNavigate((nav:BeforeNavigate) => {
         if (nav?.to?.route){
-            console.log(nav.to?.route);
+            if (nav.to.route.id ==='/cargar-perro'){
+                $dataRegistroCliente={
+                    nombre:nombre,
+                    apellido:apellido,
+                    email:email,
+                    dni : dni,
+                    direccion: direccion,
+                    telefono: telefono,
+                    fechaNacimiento:fechaNacimiento,
+                }
+            }
         }
     });
 
+
+    afterNavigate((nav:AfterNavigate) => {
+        if (($user?.rol==='veterinario') /* &&(nav.from?.route.id ==='/cargar-perro') */){
+            console.log($dataRegistroCliente);
+            if ($dataRegistroCliente){
+                nombre=$dataRegistroCliente.nombre;
+                apellido=$dataRegistroCliente.apellido;
+                email=$dataRegistroCliente.email;
+                dni=$dataRegistroCliente.dni;
+                direccion=$dataRegistroCliente.direccion;
+                telefono=$dataRegistroCliente.telefono;
+                fechaNacimiento=$dataRegistroCliente.fechaNacimiento;
+            }
+        }
+    });
     let submittedClass = "";
     const emailPattern: string =
         "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
@@ -62,51 +90,95 @@
     let fechaNacimiento: string; //
     let fechaMax: string = new Date().toJSON().slice(0, 10);
 
-    const handleCarga = () => {
-        fetch("http://localhost:3000/registrar-cliente", {
+    const handleRegistro =async () => {
+        let error:boolean=false;
+
+        await fetch("http://localhost:3000/existeUsuarioConEmail", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
             body: JSON.stringify({
-                nombre,
-                apellido,
-                email,
-                dni,
-                direccion,
-                telefono,
-                fechaNacimiento,
-                foto: null,
+                email:email,
             }),
         })
             .then((res) => {
                 if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(clienteCargado);
-                    return res;
+                    emailErrorMsj='';
                 }
                 if (res.status === 400) {
                     //error por modificacion del token jwt.
                     $user = null;
                     goto("/auth/login");
+                    error=true;
                     return;
                 }
                 if (res.status === 409) {
                     emailErrorMsj = "El email ya se encuentra registrado";
+                    error=true;
                     return res;
                 }
                 if (res.status === 500) {
+                    error=true;
                     modalStore.clear();
                     modalStore.trigger(fallaServidor);
                     return res;
                 }
             })
-            .catch((error) => {
+            .catch((err) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error en carga del cliente desconocido: ", error);
+                console.log("Error en carga del cliente desconocido: ", err);
             });
+            if (error){
+                return;
+            }
+
+            await fetch("http://localhost:3000/existeUsuarioConDni", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                dni:dni,
+            }),
+        })
+            .then((res) => {
+                if (res.status < 299) {
+                    emailErrorMsj='';
+                }
+                if (res.status === 400) {
+                    //error por modificacion del token jwt.
+                    $user = null;
+                    goto("/auth/login");
+                    error=true;
+                    return;
+                }
+                if (res.status === 409) {
+                    emailErrorMsj = "El dni ya se encuentra registrado";
+                    error=true;
+                    return res;
+                }
+                if (res.status === 500) {
+                    error=true;
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
+            })
+            .catch((err) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log("Error en carga del cliente desconocido: ", err);
+            });
+
+            if (error){
+                return
+            }
+
+            goto('/cargar-perro');
     };
 </script>
 
@@ -116,7 +188,7 @@
     class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
 >
     <form
-        on:submit|preventDefault={handleCarga}
+        on:submit|preventDefault={handleRegistro}
         class="space-y-2 mb-2 {submittedClass}"
     >
         <label class="label" for="nombre">Nombre:</label>
@@ -208,10 +280,11 @@
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Registrar cliente</button
         >
-        <!-- Al apretar registrar cliente, debo almacenar los datos ingresados en un store y me debe redirigir a cargar perro. Una vez que aprete "cargar perro", si vengo de /cargar-cliente, enviaré los datos del cliente y perro al backend a traves del endpoint cargarClienteConPerro(solo rol cliente), sino del endpoint normal
+        <!-- Al apretar registrar cliente,si no está registrado el dni ni el emial, debo almacenar los datos ingresados en un store y me debe redirigir a cargar perro. Una vez que aprete "cargar perro", si vengo de /cargar-cliente, enviaré los datos del cliente y perro al backend, si falla la persistencia del cliente no intentará la del perro.
         
         Si soy veterinario y entro a /cargar-perro viniendo desde una ruta diferente a /cargar-cliente, lanzo error.
         Si soy veterinario y me voy de /cargar-perro a una ruta diferente a /cargar-cliente, limpio el store correspondiente.
+        
 
 	beforeNavigate((nav:BeforeNavigate) => {
         if (nav?.to?.route){
