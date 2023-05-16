@@ -24,3 +24,13 @@ export interface Persona{
     telefono:string,
     foto: string | null
 }
+
+export interface DatosRegistroCliente{
+    nombre:string,
+    apellido:string,
+    email:string
+    dni:string,
+    fechaNacimiento:string,
+    direccion: string,
+    telefono:string,
+}

@@ -12,3 +12,11 @@ export interface AdopcionInput{
 export interface Adopcion extends AdopcionInput{
     adoptado:boolean
 }
+
+export interface PublicacionAdopcion{
+    nombre:string,
+    raza:string,
+    fechaNacimiento:string,
+    email:string,
+    adoptado:boolean,
+}

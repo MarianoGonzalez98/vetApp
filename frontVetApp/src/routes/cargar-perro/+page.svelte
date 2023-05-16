@@ -1,8 +1,10 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+    import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
+    import type { AfterNavigate, BeforeNavigate } from "@sveltejs/kit";
 
     const perroCargado: ModalSettings = {
         type: "alert",
@@ -12,10 +14,25 @@
         response: (r: boolean) => goto("/"),
     };
 
+    const perroClienteCargado: ModalSettings = {
+        type: "alert",
+        title: "Cliente y su perro cargado",
+        body: "Perro cargado junto con su cliente correctamente",
+        buttonTextCancel: "Ok",
+        response: (r: boolean) => goto("/"),
+    };
+
     const fallaDesconocida: ModalSettings = {
         type: "alert",
         title: "Fallo de la carga del perro",
         body: "No se pudo cargar el nuevo perro",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaDesconocidaCliente: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del cliente",
+        body: "No se pudo cargar el nuevo cliente ni su perro",
         buttonTextCancel: "Ok",
     };
 
@@ -49,17 +66,74 @@
         .toString()
         .padStart(2, "0")}-${fechaHoy.getDate().toString().padStart(2, "0")}`;
 
-    const handleCarga = () => {
-        console.log(nombre);
-        console.log(raza);
-        console.log(sexo);
-        console.log(fechaNacimiento);
-        console.log(observaciones);
-        console.log(peso);
-        console.log(vacunasAplicadas);
-        console.log(foto);
-        console.log(owner);
-        fetch("http://localhost:3000/cargar-perro", {
+
+    afterNavigate((nav:AfterNavigate) => {
+        if (($user?.rol==='veterinario') &&(nav.from?.route.id !=='/cargar-cliente')){
+            goto('/');
+        }
+    });
+    beforeNavigate((nav:BeforeNavigate) => {
+        if (nav?.to?.route.id !== '/cargar-cliente'){
+            $dataRegistroCliente=null;
+        }
+    });
+
+    const handleCarga = async () => {
+
+        if($user?.rol==='veterinario'){
+            owner= $dataRegistroCliente?.email;
+            }
+        let error=false;
+
+        if(($user?.rol==='veterinario')&&(!error)){
+            await fetch("http://localhost:3000/registrar-cliente", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                ...$dataRegistroCliente,
+                foto: null,
+            }),
+        })
+            .then((res) => {
+                if (res.status < 299) {
+                    modalStore.clear();
+                    modalStore.trigger(perroClienteCargado);
+                    return res;
+                }
+                if (res.status === 400) {
+                    //error por modificacion del token jwt.
+                    $user = null;
+                    error=true;
+                    goto("/auth/login");
+                    return;
+                }
+                if (res.status === 409) {
+                    error=true;
+                    return res;
+                }
+                if (res.status === 500) {
+                    error=true;
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
+            })
+            .catch((error) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log("Error en carga del cliente desconocido: ", error);
+            });
+        }
+
+        if (error){
+            modalStore.clear();
+            modalStore.trigger(fallaDesconocidaCliente);
+            return;
+        }
+        await fetch("http://localhost:3000/cargar-perro", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -75,7 +149,7 @@
                 vacunasAplicadas,
                 owner,
             }),
-        })
+            })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
@@ -102,7 +176,7 @@
             .catch((error) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error en carga del cliente desconocido: ", error);
+                console.log("Error desconocido en carga del perro : ", error);
             });
     };
 </script>

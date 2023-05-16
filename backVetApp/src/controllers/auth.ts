@@ -1,13 +1,42 @@
 import { Request, Response } from "express";
-import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword, getUserCompleto, updatePerfilUsuario } from "../services/auth.service";
+import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword, getUserCompleto, updatePerfilUsuario, getUserConDni } from "../services/auth.service";
 import { Auth, UserData, Persona } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
 import { generateRandomString } from "../utils/random.handle";
 import { User } from "../interfaces/User.interface";
 import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
+import { sendMailTest } from "../utils/mailer.handle";
 
+export const getExisteUsuarioConDni = async (req: Request, res: Response) => {
+    const dni: string = req.body.dni;
+    const existeUsuario = await getUserConDni(dni);
+    if (existeUsuario === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (existeUsuario){
+        res.status(409).send("Ya se encuentra un usuario registrado con ese dni")
+        return
+    }
+    return res.status(200).send('DNI valido para registro');
+}
 
+export const getExisteUsuarioConEmail = async (req: Request, res: Response) => {
+    const email: string = req.body.email;
+    const existeUsuario = await getUserCompleto(email);
+    if (existeUsuario === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (existeUsuario){
+        res.status(409).send("Ya se encuentra un usuario registrado con ese email")
+        return
+    }
+    return res.status(200).send('Email valido para registro');
+}
 export const getMiPerfilController = async (req: Request, res: Response) => {
     const result = await getUserCompleto(res.locals.jwtData.user.email);
     if (result === "error") {
@@ -80,6 +109,9 @@ const registrarController = async (req: Request, res: Response) => {
         return
     }
     //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
+/*     let asunto="Contraseña del sitio web Oh my dog!"
+    let texto="Su contraseña es: "+ randomPassword;
+    sendMailTest(cliente.email,asunto,texto); */
     //SOLO EN DEVELOP-------------------------
 
     await insertPassword(cliente.email, randomPassword);

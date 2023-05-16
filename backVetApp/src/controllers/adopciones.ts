@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AdopcionInput } from "../interfaces/Adopciones.interface";
-import { insertAdopcionInDB } from "../services/adopciones.service";
+import { getAdopcionesDB, insertAdopcionInDB } from "../services/adopciones.service";
 
 
 export const insertAdopcion = async (req:Request, res:Response) => {
@@ -18,3 +18,14 @@ export const insertAdopcion = async (req:Request, res:Response) => {
     res.status(201).send('Adopcion publicada correctamente');
 }
 
+
+export const getAdopciones = async (req:Request, res:Response) => {
+    const adopciones = await getAdopcionesDB();
+    
+    if (adopciones==='error'){
+        //HTTP 500 Internal server error
+        res.status(500).send("posible error en base de datos")
+        return
+    }
+    return res.status(200).send({publicaciones:adopciones});
+}
