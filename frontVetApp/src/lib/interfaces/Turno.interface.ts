@@ -1,6 +1,7 @@
 export interface Turno {
     motivo: string
-    perro: number // id del perro
+    perroNombre:string
+    perroId: number // id del perro
     fecha: Date
     rangoHorario: string
     emailOwner: string

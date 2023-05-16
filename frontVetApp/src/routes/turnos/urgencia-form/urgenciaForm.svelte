@@ -158,8 +158,9 @@ const handleUrgencia = async () =>{
             },
             credentials: "include",
             body: JSON.stringify({
-                motivo: motivoVacAs +""+ motivoVacBs +""+ motivoCass +""+ motivoAntiPars, 
-                perro: perro.id, 
+                motivo: (motivoVacAs +""+ motivoVacBs +""+ motivoCass +""+ motivoAntiPars).slice(0, (motivoVacAs +""+ motivoVacBs +""+ motivoCass +""+ motivoAntiPars).length-2), 
+                perroNombre: perro.nombre,
+                perroId: perro.id, 
                 fecha:fecha.toJSON().slice(0,10), 
                 rangoHorario, 
                 emailOwner:cliente.email, 
@@ -249,9 +250,9 @@ const handleUrgencia = async () =>{
 
             <label class="label" for="rangoHorario">Rango Horario</label>
             <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
-                <option value="1">Mañana</option>
-                <option value="2">Tarde</option>
-                <option value="3">Noche</option>
+                <option value="Manana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
             </select>
 
             <label class="label"> 

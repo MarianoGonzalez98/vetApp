@@ -28,9 +28,7 @@
 				href="/cargar-perro">Cargar nuevo perro</a
 			>
 			{/if}
-			{#if $user.rol === "cliente"}
-				<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
-			{/if}
+			<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
 		{/if}
 		<a
 		class="btn variant-ghost-surface"

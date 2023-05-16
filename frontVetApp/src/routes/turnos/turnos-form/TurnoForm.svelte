@@ -90,7 +90,8 @@
             credentials: "include",
             body: JSON.stringify({
                 motivo, 
-                perro:perro.id, 
+                perroNombre:perro.nombre,
+                perroId:perro.id, 
                 fecha:fecha.toJSON().slice(0,10),
                 rangoHorario, 
                 emailOwner
