@@ -74,8 +74,16 @@
 <Modal />
 
 {#if ($user)}
-<div>
+<div class="w-full ">
     <a href="/adopciones/crear-publicacion"><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8">Publicar perro</button></a>
+
+    <div class="float-right mr-5 mt-5 ">
+        <div class="flex items-center">
+            <label for="filtroRaza" class="text-left whitespace-nowrap">Filtrar por raza:</label>
+            <input type="text" class="input" name="filtroRaza" id="">
+        </div>
+    </div>
+    
 </div>
 {/if}
 <div class="container my-8 mx-auto ">
