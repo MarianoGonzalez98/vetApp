@@ -100,3 +100,24 @@ export const aceptarTurno = async (aceptado:boolean, id:number) => {
         return "error";
     }
 }
+
+
+export const rechazarTurno = async (rechazado:boolean, id:number) => {
+    const query = `
+    UPDATE public.turnos 
+    SET rechazado = $1
+    WHERE id = $2
+    `;
+
+    const values = [rechazado,id]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) 
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:rechazarTurno------");
+        console.log(err);
+        return "error";
+    }
+}

@@ -7,6 +7,7 @@ export interface Turno {
     rangoHorario: string
     emailOwner: string
     aceptado: boolean
+    rechazado:boolean
     descripcion: string
 }
 
