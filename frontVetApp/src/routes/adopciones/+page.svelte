@@ -1,0 +1,107 @@
+<script lang="ts">
+    import type { PublicacionAdopcion } from "$lib/interfaces/Adopciones.interface";
+    import { user } from "$lib/stores/user";
+    import type { ModalSettings} from "@skeletonlabs/skeleton";
+    import { Modal, modalStore } from "@skeletonlabs/skeleton";
+    import { onMount } from "svelte";
+
+
+    
+    let nombreSeleccionado:string='';
+    let razaSeleccionada:string='';
+    let publicaciones:PublicacionAdopcion[] = [
+            {
+                raza:"golden 1",
+                nombre:"Pichicho 1",
+                fechaNacimiento:"1999-01-23",
+                email:"pedro@gmail.com",
+                adoptado:false,
+            },
+            {
+                raza:"golden 1",
+                nombre:"Pichicho 1",
+                fechaNacimiento:"2000-01-23",
+                email:"asd@gmail.com",
+                adoptado:false,
+            },
+    ];
+    let dia = new Date().toLocaleDateString();
+    onMount( async ()  => {
+        let dia = new Date("1999-01-23").toLocaleDateString('es-AR');
+        console.log(dia);
+        console.log(typeof dia);
+        //fetch de lista de adopciones publicados
+        const res = await fetch(
+            `http://localhost:3000/adopciones/get-lista-adopciones`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
+    } )
+
+    const handleModalConfirmContacto = async (r:boolean) => {
+        console.log('response:', r);
+
+        //fetch para mandar mail al dueño de la publicación con los datos de contacto del interesado
+    }
+
+    const handleContactar = (publicacion:PublicacionAdopcion) => {
+        nombreSeleccionado=publicacion.nombre;
+        razaSeleccionada=publicacion.raza;
+        const modal: ModalSettings = {
+            type: 'confirm',
+            title: 'Confirme su contacto',
+            body: `¿Está seguro de contactarse para la adopcion del perro ${nombreSeleccionado} 
+            de raza ${razaSeleccionada}?, se enviará un correo con sus datos al email de contacto de la publicación.`,
+            buttonTextCancel:"Cancelar contacto",
+            buttonTextConfirm:"Confirmar contacto",
+            response: handleModalConfirmContacto,
+        }
+        modalStore.clear();
+        modalStore.trigger(modal);
+    }
+    
+
+
+</script>
+
+<Modal />
+
+{#if ($user)}
+<div>
+    <a href="/adopciones/crear-publicacion"><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8">Publicar perro</button></a>
+</div>
+{/if}
+<div class="container my-8 mx-auto ">
+    <div class="flex flex-wrap place-content-center ">
+        {#each publicaciones as publicacion}
+            {#if (!publicacion.adoptado)}
+                <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
+                    <header class="card-header">Raza: {publicacion.raza}</header>
+                    <section class="p-2">
+                        <p>Nombre: {publicacion.nombre}</p>
+                        <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
+                    </section>
+                    <footer class="card-footer">
+                        <div>
+                            <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
+                            {#if (publicacion.email === $user?.email)}
+                            <button class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
+                            {/if}
+                        </div>
+                    </footer>
+                </div>
+            {/if}
+
+        {/each}
+
+
+    </div>
+
+</div>

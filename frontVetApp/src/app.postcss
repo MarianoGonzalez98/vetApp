@@ -1,7 +1,28 @@
 /*place global styles here */
-html, body { @apply h-full; }
+html, body { @apply h-full;}
+
+
+html body {
+	background-image:
+		radial-gradient(at 0% 0%, rgba(var(--color-secondary-500) / 0.33) 0px, transparent 50%),
+		radial-gradient(at 98% 1%, rgba(var(--color-error-500) / 0.33) 0px, transparent 50%),
+		url("/perritos.png"),
+		url("/perro-golden.png");
+		/* url("/perrito-desde-abajo.png"); */
+	background-repeat:no-repeat,no-repeat, no-repeat;
+	background-position: center,center,left bottom, right bottom, center bottom;
+	background-size: auto, auto,20%,20%,20%;
+}
 @font-face {
 	font-family: 'Space Grotesk';
 	src: url('/fonts/SpaceGrotesk.ttf');
 	font-display: swap;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button,
+input[type='number'] {
+	-webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
 }
