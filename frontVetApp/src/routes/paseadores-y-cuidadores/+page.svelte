@@ -13,6 +13,10 @@
 </script>
 
 <h1>Paseadores y Cuidadores</h1>
+<a
+				class="btn variant-ghost-surface"
+				rel="noreferrer"
+				href="/paseadores-y-cuidadores/cargar-paseadorcuidador">Cargar paseador/cuidador</a>
 {#each datos.data as tarjeta}
     <div class="card">
         <h2>{tarjeta.nombre}</h2>

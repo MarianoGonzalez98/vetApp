@@ -24,6 +24,7 @@ import { AuthRouter } from "./routes/auth.routes";
 import { TestRouter } from "./routes/test.routes";
 import { PerrosRouter } from "./routes/perros.routes";
 import { ClientesRouter } from "./routes/clientes.routes";
+import { PaseadoresCuidadoresRouter } from "./routes/paseadoresycuidadores.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -31,6 +32,7 @@ app.use(AuthRouter);
 app.use(TestRouter);
 app.use(PerrosRouter);
 app.use(ClientesRouter)
+app.use(PaseadoresCuidadoresRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')
