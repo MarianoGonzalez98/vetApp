@@ -48,7 +48,7 @@
     };
 
     const handleModalConfirmContacto = async(aceptado: boolean) =>  {
-        fetch("http://localhost:3000/turnos/aceptar-turno",{
+        await fetch("http://localhost:3000/turnos/aceptar-turno",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
