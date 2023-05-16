@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { PaseadorCuidador } from "../interfaces/PaseadoresYCuidadores.interface";
-import { getPaseadorCuidador, insertPaseadorCuidador } from "../services/paseadorescuidadores.service";
+import { getPaseadorCuidador, getPaseadoresCuidadores, insertPaseadorCuidador } from "../services/paseadorescuidadores.service";
 
 export const cargarPaseadorCuidadorController = async (req: Request, res: Response) => {
     const paseadorcuidador: PaseadorCuidador = req.body;
@@ -26,4 +26,16 @@ export const cargarPaseadorCuidadorController = async (req: Request, res: Respon
     }
 
     res.status(201).send('Se cargó correctamente el paseador/cuidador');
+}
+
+export const listarPaseadoresCuidadoresController = async (req: Request, res: Response) => {
+    const result = await getPaseadoresCuidadores();
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    console.log(result);
+    res.status(200).send({ data: result, statusCode: 200 })
 }
