@@ -11,5 +11,5 @@ export interface PaseadorCuidador {
     telefono: string,
     email: string,
     oficio: Oficio,
-    disponible: boolean,
+    disponible: boolean;
 }

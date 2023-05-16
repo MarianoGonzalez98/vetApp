@@ -1,28 +1,29 @@
 import { Request, Response } from "express"
-import { PaseadorCuidador, RangoDate } from "../../../frontVetApp/src/lib/interfaces/PaseadoresYCuidadores.interface"
+import { PaseadorCuidador } from "../interfaces/PaseadoresYCuidadores.interface";
+import { getPaseadorCuidador, insertPaseadorCuidador } from "../services/paseadorescuidadores.service";
 
-export const getPaseadoresCuidadores = (req: Request, res: Response) => {
-    let rango: RangoDate = {
-        inicio: new Date(),
-        fin: new Date()
+export const cargarPaseadorCuidadorController = async (req: Request, res: Response) => {
+    const paseadorcuidador: PaseadorCuidador = req.body;
+
+    const result = await getPaseadorCuidador(paseadorcuidador.email);
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
     }
-    let paseador1: PaseadorCuidador = {
-        nombre: "nombre1",
-        apellido: "apellido1",
-        horario: rango,
-        fechas: rango,
-        telefono: "111 111-1111",
-        mail: "mail1",
-        oficio: "Paseador"
+    if (result) { //si devuelve un elemento es que existe el paseador
+        //409 conflict
+        res.status(409).send({ data: "El email del pasesador ya se encuentra cargado", statusCode: 409 })
+        return
     }
-    let paseador2: PaseadorCuidador = {
-        nombre: "nombre1",
-        apellido: "apellido1",
-        horario: rango,
-        fechas: rango,
-        telefono: "111 111-1111",
-        mail: "mail1",
-        oficio: "Paseador"
+
+    const dbResult = await insertPaseadorCuidador(paseadorcuidador);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
     }
-    res.send({ data: [paseador1, paseador2] })
+
+    res.status(201).send('Se cargó correctamente el paseador/cuidador');
 }

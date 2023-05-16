@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno } from "../services/turno.service"
+import { aceptarTurno, getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 
@@ -108,12 +108,19 @@ export const listarTurnosVeterinarioController = async (req:Request, res:Respons
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
-const aceptarTurno = async (req:Request, res:Response) => {
-    /*
-    1. Recibe un turno
-    2. MOdifica el booleano de aceptado 
-    3. Notifica al cliente
-    */
+export const aceptarTurnoController = async (req:Request, res:Response) => {
+    let aceptado:boolean = req.body.aceptado;
+    let turno:number = req.body.idTurnoSelec;
+
+    const dbResult = await aceptarTurno(aceptado,turno);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Seaceptó correctamente el turno');
 }
 
 const rechazarTurno = async(req:Request, res:Response) => {}
