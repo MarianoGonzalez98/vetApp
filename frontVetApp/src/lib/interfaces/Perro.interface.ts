@@ -1,6 +1,7 @@
 export type Sexo = "Macho" | "Hembra"
 
 export interface Perro {
+    id:number //PERDÓN, LO NECESITO
     nombre: string,
     raza: string,
     sexo: Sexo,
@@ -21,4 +22,9 @@ export interface InfoPerroAdopcion {
     raza: string,
     sexo: string,
     fechaNacimiento: string,
+}
+
+export interface PerroTurno {
+    nombre:string
+    id:number
 }

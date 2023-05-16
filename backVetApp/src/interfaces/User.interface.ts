@@ -36,6 +36,6 @@ export interface Cliente extends Persona{
 
 export interface NombreApellidoMailPersona{
     nombre:string,
-    apellido:string,
+    apellido:string, 
     email:string
 }
