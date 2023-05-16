@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getCantDeTurnosRangoHorarioFecha, insertTurno } from "../services/turno.service"
+import { getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 
@@ -9,19 +9,24 @@ import { getClientes } from "../services/clientes.service"
 
 /* -------------------- CLIENTE ------------------- */
 
-const visualizarTurnos = async (req:Request, res:Response) => {
-    /*
-    1. Seleccionar y enviar todos los turnos del cliente 
-    ¿Como sé que cliente lo pide? ¿Eso se envía en el Request?
-    */
-    res.send({data:"aca van las turnos del cliente"})
-}
 
+export const listarTurnosClienteController = async (req:Request, res:Response) => {
+    const owner: string = req.query.cliente as string;
+
+    const result = await getTurnos(owner);
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(200).send({ data: result, statusCode: 200 })
+}
 
 const verificarDisponibilidad = async (req:Request, res:Response) => {
     const turno:Turno = req.body;
 
-    console.log(turno.perro);
     const result = await getCantDeTurnosRangoHorarioFecha(turno);
 
     if (result === "error") {
@@ -38,7 +43,7 @@ const verificarDisponibilidad = async (req:Request, res:Response) => {
 const insertarTurno = async (req:Request, res:Response) => { 
     let turno:Turno = req.body;
     
-    const dbResult = await insertTurno(turno.motivo,turno.perro,turno.fecha,turno.rangoHorario,turno.emailOwner,turno.descripcion);
+    const dbResult = await insertTurno(turno.motivo,turno.perroNombre,turno.perroId,turno.fecha,turno.rangoHorario,turno.emailOwner,turno.descripcion);
     
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
@@ -91,12 +96,16 @@ const cancelarTurno = async (re:Request, res:Response) => {
 
 /* -------------------- VETERINARIO ------------------- */
 
-const visualizarTurnosVeterinario = async (req:Request, res:Response) => {
-    /*
-    1. Seleccionar y enviar todos los turnos del veteriinario
-    ¿Como sé que cliente lo pide? ¿Eso se envía en el Request?
-    */
-    res.send({data:"aca van las turnos del veterinario"})
+export const listarTurnosVeterinarioController = async (req:Request, res:Response) => {
+    const result = await getTurnosComoVeterinario();
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(200).send({ data: result, statusCode: 200 })
 }
 
 const aceptarTurno = async (req:Request, res:Response) => {
