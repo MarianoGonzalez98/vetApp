@@ -75,7 +75,27 @@ export const getTurnosComoVeterinario = async () => {
         return result;
     }
     catch(err){
-        console.error("----Error en acceso a BD:getTurnosCliente------");
+        console.error("----Error en acceso a BD:getTurnosVeterinario------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const aceptarTurno = async (aceptado:boolean, id:number) => {
+    const query = `
+    UPDATE public.turnos 
+    SET aceptado = $1
+    WHERE id = $2
+    `;
+
+    const values = [aceptado,id]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) 
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:aceptarTurno------");
         console.log(err);
         return "error";
     }
