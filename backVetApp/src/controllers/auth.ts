@@ -100,6 +100,13 @@ const registrarController = async (req: Request, res: Response) => {
         return
     }
 
+    const existeUsuario = await getUserConDni(cliente.dni);
+    if (existeUsuario) { //si devuelve un elemento es que existe el usuario
+        //409 conflict
+        res.status(409).send({ data: "El dni del cliente ya se encuentra registrado", statusCode: 409 })
+        return
+    }
+
     const randomPassword = generateRandomString();
     const hashedPassword = await encrypt(randomPassword);
     const dbResult = await insertUser({ ...cliente, password: hashedPassword, rol: 'cliente' });
