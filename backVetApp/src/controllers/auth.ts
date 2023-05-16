@@ -6,6 +6,7 @@ import { encrypt, verified } from "../utils/bycrypt.handle";
 import { generateRandomString } from "../utils/random.handle";
 import { User } from "../interfaces/User.interface";
 import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
+import { sendMailTest } from "../utils/mailer.handle";
 
 export const getExisteUsuarioConDni = async (req: Request, res: Response) => {
     const dni: string = req.body.dni;
@@ -108,6 +109,9 @@ const registrarController = async (req: Request, res: Response) => {
         return
     }
     //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
+/*     let asunto="Contraseña del sitio web Oh my dog!"
+    let texto="Su contraseña es: "+ randomPassword;
+    sendMailTest(cliente.email,asunto,texto); */
     //SOLO EN DEVELOP-------------------------
 
     await insertPassword(cliente.email, randomPassword);

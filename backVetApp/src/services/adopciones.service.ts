@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
-import { Adopcion, AdopcionInput } from "../interfaces/Adopciones.interface";
+import { Adopcion, AdopcionInput, PublicacionAdopcion } from "../interfaces/Adopciones.interface";
 
 export const insertAdopcionInDB = async (adopcion:AdopcionInput) => {
     const query = `
@@ -22,6 +22,22 @@ export const insertAdopcionInDB = async (adopcion:AdopcionInput) => {
             console.log(error);
             return "error";
         }
-        
+}
+
+export const getAdopcionesDB = async () => {
+    const query = `
+        SELECT "emailContacto" as email, "nombrePerro" as nombre, "razaPerro" as raza, "fechaNacPerro" as "fechaNacimiento", adoptado
+        FROM public.adopciones;
+    `;
+    try {
+        const response: QueryResult = await pool.query(query) 
+        const listaAdopciones:PublicacionAdopcion[] = response.rows;
+        return listaAdopciones;
+    }
+    catch (error) {
+        console.error("----Error en acceso a BD:getAdopcionesDB------");
+        console.log(error);
+        return "error";
+    }
 }
 
