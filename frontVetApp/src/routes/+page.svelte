@@ -11,11 +11,6 @@
 					rel="noreferrer"
 					href="/cargar-cliente">Cargar nuevo cliente</a
 				>
-
-				<a
-					class="btn variant-ghost-surface"
-					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
-				>
 			{:else}
 				<a
 					class="btn variant-ghost-surface"
@@ -23,29 +18,31 @@
 					href="/mis-perros">Mis perros</a
 				>
 				<a
-				class="btn variant-ghost-surface"
-				rel="noreferrer"
-				href="/cargar-perro">Cargar nuevo perro</a
-			>
+					class="btn variant-ghost-surface"
+					rel="noreferrer"
+					href="/cargar-perro">Cargar nuevo perro</a
+				>
 			{/if}
-			<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos">Ir a turnos</a>
+			<a
+				class="btn rounded-lg variant-filled"
+				rel="noreferrer"
+				href="/turnos">Ir a turnos</a
+			>
 		{/if}
-		<a
-		class="btn variant-ghost-surface"
-		rel="noreferrer"
-		href="/adopciones">Adopciones</a
+		<a class="btn variant-ghost-surface" href="/paseadores-y-cuidadores"
+			>Paseadores y Cuidadores</a
+		>
+		<a class="btn variant-ghost-surface" rel="noreferrer" href="/adopciones"
+			>Adopciones</a
 		>
 	</div>
 </div>
 
 <style>
-	.container{
-		background-image: url("/perrito-desde-abajo.png");	
-		background-repeat:no-repeat;
-		background-position: center bottom ;
+	.container {
+		background-image: url("/perrito-desde-abajo.png");
+		background-repeat: no-repeat;
+		background-position: center bottom;
 		background-size: 20%;
-		
 	}
-
-			
 </style>

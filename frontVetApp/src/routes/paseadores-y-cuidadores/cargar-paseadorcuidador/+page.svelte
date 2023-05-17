@@ -1,7 +1,10 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type { Oficio } from "$lib/interfaces/PaseadoresYCuidadores.interface";
+    import type {
+        Disponibilidad,
+        Oficio,
+    } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import {
         popup,
         type ModalSettings,
@@ -54,23 +57,15 @@
         buttonTextCancel: "Ok",
     };
 
-    let fechaMin = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-
     let nombre = "";
     let apellido = "";
     let zona = "";
-    let disponibilidadDeFechasDesde = new Date();
-    let disponibilidadDeFechasHasta = new Date();
-    let disponibilidadHorariaDesde = new Date();
-    let disponibilidadHorariaHasta = new Date();
     let telefono = "";
     let email = "";
-    let oficio : Oficio;
+    let oficio: Oficio;
 
-    const handleRegistro =async () => {
-        let error:boolean=false;
+    const handleRegistro = async () => {
+        let error: boolean = false;
 
         await fetch("http://localhost:3000/cargar-paseadorcuidador", {
             method: "POST",
@@ -82,16 +77,12 @@
                 nombre: nombre,
                 apellido: apellido,
                 zona: zona,
-                disponibilidadDeFechasDesde: disponibilidadDeFechasDesde.toJSON().slice(0,10),
-                disponibilidadDeFechasHasta: disponibilidadDeFechasHasta.toJSON().slice(0,10),
-                disponibilidadHorariaDesde: disponibilidadHorariaDesde,
-                disponibilidadHorariaHasta: disponibilidadHorariaHasta,
                 telefono: telefono,
                 email: email,
-                oficio: oficio
+                oficio: oficio,
             }),
         })
-        .then((res) => {
+            .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(paseadorCuidadorCargado);
@@ -117,7 +108,10 @@
             .catch((error) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error desconocido en carga del paseador/cuidador : ", error);
+                console.log(
+                    "Error desconocido en carga del paseador/cuidador : ",
+                    error
+                );
             });
     };
 </script>
@@ -163,41 +157,7 @@
             required
         />
 
-        <p>Disponibilidad de fechas:</p>
-        <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="fecha">Desde</label>
-                <DateInput bind:value={disponibilidadDeFechasDesde} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
-            </div>
-            <div class="flex-none ml-2">
-                <label class="label" for="fecha">Hasta</label>
-                <DateInput bind:value={disponibilidadDeFechasHasta} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
-            </div>
-        </div>
-
-        <p>Disponibilidad horaria:</p>
-        <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="disponibilidadHorariaDesde">Desde</label>
-                <input
-                    bind:value={disponibilidadHorariaDesde}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <label class="label" for="disponibilidadHorariaHasta">Hasta</label>
-                <input
-                    bind:value={disponibilidadHorariaHasta}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div>
+        <p class="text-red-500">HACER LO DE LA DISPONIBILIDAD</p>
 
         <label class="label" for="dni">Teléfono:</label>
         <input

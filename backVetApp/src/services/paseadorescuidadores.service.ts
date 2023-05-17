@@ -28,7 +28,7 @@ export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador)
         nombre, apellido, zona, "disponibilidadDeFechasDesde", "disponibilidadDeFechasHasta", "disponibilidadHorariaDesde", "disponibilidadHorariaHasta", telefono, email, oficio)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
     `
-    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.disponibilidadDeFechasDesde, paseadorcuidador.disponibilidadDeFechasHasta, paseadorcuidador.disponibilidadHorariaDesde, paseadorcuidador.disponibilidadHorariaHasta, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio]
+    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -36,6 +36,24 @@ export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador)
     }
     catch (err) {
         console.error("----Error en acceso a BD:insertPaseadorCuidador------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getPaseadoresCuidadores = async () => {
+    const query = `
+    SELECT nombre, apellido, zona, telefono, email, oficio, disponible
+    FROM public.paseadoresycuidadores
+    `
+
+    try {
+        const response: QueryResult = await pool.query(query, [])
+        const result: PaseadorCuidador[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getPaseadoresCuidadores------");
         console.log(err);
         return "error";
     }
