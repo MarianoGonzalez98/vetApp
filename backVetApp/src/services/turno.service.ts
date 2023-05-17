@@ -81,6 +81,26 @@ export const getTurnosComoVeterinario = async () => {
     }
 }
 
+export const cancelarTurno = async (id:number) => {
+    const query = `
+    DELETE 
+    FROM public.turnos
+    WHERE id = $1
+    `;
+
+    const values = [id]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) 
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:aceptarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
 export const aceptarTurno = async (aceptado:boolean, id:number) => {
     const query = `
     UPDATE public.turnos 

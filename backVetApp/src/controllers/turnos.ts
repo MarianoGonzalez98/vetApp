@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { aceptarTurno, getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno, rechazarTurno } from "../services/turno.service"
+import { aceptarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno, rechazarTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 
@@ -89,12 +89,19 @@ const modificarTurno = async (re:Request, res:Response) => {
     */
 }
 
-const cancelarTurno = async (re:Request, res:Response) => {
-    /* 
-    1. Recibe un turno
-    2. Notifica al veterinario que el turno fue cancelado
-    3. Elimina al turno 
-    */ 
+export const cancelarTurnoController = async (req:Request, res:Response) => {
+    let turno:number = req.body.idTurnoSelec;
+    
+    const dbResult = await cancelarTurno(turno);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se canceló correctamente el turno');
+    
 }
 
 
