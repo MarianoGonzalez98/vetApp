@@ -43,7 +43,7 @@ const verificarDisponibilidad = async (req:Request, res:Response) => {
 const insertarTurno = async (req:Request, res:Response) => { 
     let turno:Turno = req.body;
     
-    const dbResult = await insertTurno(turno.motivo,turno.perroNombre,turno.perroId,turno.fecha,turno.rangoHorario,turno.emailOwner,turno.descripcion);
+    const dbResult = await insertTurno(turno);
     
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
@@ -56,9 +56,13 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => { /
 
     verificarDisponibilidad(req,res);
     
+    let turno:Turno = req.body;
+    turno.urgencia = false;
+    turno.aceptado = false;
+    req.body = turno;
+
     insertarTurno (req,res);
 
-    let turno:Turno = req.body;
 
     if (turno.motivo === "Vacunación b") { //Debe sacarse otro turno para el año siguiente
        
@@ -147,6 +151,12 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
         return
     }
     res.send(result);
+
+
+    let turno:Turno = req.body;
+    turno.urgencia = true;
+    turno.aceptado = true;
+    req.body = turno;
 
     insertarTurno (req,res);
 }

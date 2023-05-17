@@ -9,5 +9,6 @@ export interface Turno {
     aceptado: boolean
     rechazado:boolean
     descripcion: string
+    urgencia:boolean
 }
 
