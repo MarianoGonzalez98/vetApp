@@ -14,11 +14,13 @@
 
 {#if $user?.rol === "cliente"}
 	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/cliente">Visualizar Turnos</a> <!--CLIENTE!-->
+	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/clientePendientes">Visualizar Turnos Pendientes</a> <!--CLIENTE!-->
 	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/turnos-form">Solicitar Turno</a>
 
 {/if}
 
 {#if $user?.rol === "veterinario"}
-	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinario">Visualizar Turnos</a> <!--VETERINARIO!-->
+	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinario">Visualizar Turnos Aceptados</a> <!--VETERINARIO!-->
+	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinarioPendientes">Visualizar Turnos Pendientes</a> <!--VETERINARIO!-->
 	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/urgencia-form">Registrar Urgencia</a>
 {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    //----------------------------ACEPTADOS-------------------------------//
+    //----------------------------PENDIENTES-------------------------------//
 
     import { onMount } from "svelte";
     import { user } from "$lib/stores/user";
@@ -33,31 +33,19 @@
 
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
-        {#if (turno.rechazado === false)&&(turno.aceptado === true)}
+        {#if (turno.rechazado === false)&&(turno.aceptado === false)}
             <div
-                class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
-            >
+                class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row">
                 <div class="flex flex-col justify-start p-6">
-                    {#if turno.urgencia === true}
-                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Urgencia
-                            </h6>
-                    {/if}    
-                    {#if turno.urgencia === false}
-                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Turno Aceptado
-                            </h6>
-                    {/if}   
-                    <h5
-                        class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                    >
+                    <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
+                        Turno Pendiente
+                    </h6>  
+                    <h5 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
                         {turno.fecha.toString().slice(0,10) + " "} 
                         {#if turno.rangoHorario === "Manana"} Mañana {/if} 
                         {#if turno.rangoHorario !== "Manana"} {turno.rangoHorario} {/if}
                     </h5>
-                    <div
-                        class="mb-4 text-base text-neutral-600 dark:text-neutral-200"
-                    >
+                    <div class="mb-4 text-base text-neutral-600 dark:text-neutral-200">
                         <p>
                             <span class="font-medium">Perro: </span>
                             {turno.perroNombre}
@@ -74,7 +62,15 @@
                             {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
-                </div>
+                        <footer class="flex">
+                            <button class="btn btn-sm variant-ghost-surface mr-2"
+                                >Modificar</button
+                            >
+                            <button class="btn btn-sm variant-ghost-surface"
+                                >Cancelar</button
+                            >
+                        </footer>
+                 </div>
             </div>
         {/if}
     {/each}
