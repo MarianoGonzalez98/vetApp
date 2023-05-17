@@ -28,7 +28,7 @@ export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador)
         nombre, apellido, zona, "disponibilidadDeFechasDesde", "disponibilidadDeFechasHasta", "disponibilidadHorariaDesde", "disponibilidadHorariaHasta", telefono, email, oficio)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
     `
-    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.disponibilidadDeFechasDesde, paseadorcuidador.disponibilidadDeFechasHasta, paseadorcuidador.disponibilidadHorariaDesde, paseadorcuidador.disponibilidadHorariaHasta, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio]
+    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -43,7 +43,7 @@ export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador)
 
 export const getPaseadoresCuidadores = async () => {
     const query = `
-    SELECT nombre, apellido, zona, "disponibilidadDeFechasDesde", "disponibilidadDeFechasHasta", "disponibilidadHorariaDesde", "disponibilidadHorariaHasta", telefono, email, oficio, disponible
+    SELECT nombre, apellido, zona, telefono, email, oficio, disponible
     FROM public.paseadoresycuidadores
     `
 
