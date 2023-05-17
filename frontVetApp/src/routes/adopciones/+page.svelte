@@ -20,7 +20,7 @@
     onMount( async ()  => {
         let dia = new Date("1999-01-23").toLocaleDateString('es-AR');
         //fetch de lista de adopciones publicados
-        const res = await fetch(
+        await fetch(
             `http://localhost:3000/adopciones/get-lista-adopciones`,
             {
                 method: "GET",
