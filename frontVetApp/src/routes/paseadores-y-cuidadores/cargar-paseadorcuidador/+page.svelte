@@ -1,7 +1,10 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type { Oficio } from "$lib/interfaces/PaseadoresYCuidadores.interface";
+    import type {
+        Disponibilidad,
+        Oficio,
+    } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import {
         popup,
         type ModalSettings,
@@ -55,8 +58,22 @@
     };
 
     let fechaMin = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
+    let format = "dd-MM-yyyy";
+    let placeholder = "Elija una fecha";
+    let dias = [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+    ];
+    let dia = "";
+    let horadesde = new Date();
+    let horahasta = new Date();
+    let aver = ["prueba"];
+    let disponibilidad: Disponibilidad;
 
     let nombre = "";
     let apellido = "";
@@ -67,10 +84,10 @@
     let disponibilidadHorariaHasta = new Date();
     let telefono = "";
     let email = "";
-    let oficio : Oficio;
+    let oficio: Oficio;
 
-    const handleRegistro =async () => {
-        let error:boolean=false;
+    const handleRegistro = async () => {
+        let error: boolean = false;
 
         await fetch("http://localhost:3000/cargar-paseadorcuidador", {
             method: "POST",
@@ -82,16 +99,20 @@
                 nombre: nombre,
                 apellido: apellido,
                 zona: zona,
-                disponibilidadDeFechasDesde: disponibilidadDeFechasDesde.toJSON().slice(0,10),
-                disponibilidadDeFechasHasta: disponibilidadDeFechasHasta.toJSON().slice(0,10),
+                disponibilidadDeFechasDesde: disponibilidadDeFechasDesde
+                    .toJSON()
+                    .slice(0, 10),
+                disponibilidadDeFechasHasta: disponibilidadDeFechasHasta
+                    .toJSON()
+                    .slice(0, 10),
                 disponibilidadHorariaDesde: disponibilidadHorariaDesde,
                 disponibilidadHorariaHasta: disponibilidadHorariaHasta,
                 telefono: telefono,
                 email: email,
-                oficio: oficio
+                oficio: oficio,
             }),
         })
-        .then((res) => {
+            .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(paseadorCuidadorCargado);
@@ -117,8 +138,20 @@
             .catch((error) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error desconocido en carga del paseador/cuidador : ", error);
+                console.log(
+                    "Error desconocido en carga del paseador/cuidador : ",
+                    error
+                );
             });
+    };
+
+    const agregarDia = () => {
+        console.log(horadesde);
+        console.log(horadesde.toString());
+        disponibilidad[dia].desde = horadesde.toDateString();
+        disponibilidad[dia].hasta = horahasta.toDateString();
+        dias.splice(dias.indexOf(dia), 1);
+        aver.concat(["estoEsUnParche"]);
     };
 </script>
 
@@ -127,10 +160,7 @@
 <div
     class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
 >
-    <form
-        on:submit|preventDefault={handleRegistro}
-        class="space-y-2 mb-2 {submittedClass}"
-    >
+    <form class="space-y-2 mb-2 {submittedClass}">
         <label class="label" for="nombre">Nombre:</label>
         <input
             bind:value={nombre}
@@ -163,41 +193,52 @@
             required
         />
 
-        <p>Disponibilidad de fechas:</p>
-        <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="fecha">Desde</label>
-                <DateInput bind:value={disponibilidadDeFechasDesde} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
+        <p>Disponibilidad semanal:</p>
+        {#each aver as nose}
+            <div class="flex">
+                <div class="flex-none mr-2">
+                    <label class="label" for="diaDisponible">Día</label>
+                    <select
+                        bind:value={dia}
+                        class="input"
+                        name="diaDisponible"
+                        required
+                    >
+                        <option value="" disabled selected
+                            >Seleccione uno</option
+                        >
+                        {#each dias as value}
+                            <option {value}>{value}</option>
+                        {/each}
+                    </select>
+                </div>
+                <div class="flex-none">
+                    <label class="label" for="horadesde">Desde</label>
+                    <input
+                        bind:value={horadesde}
+                        class="input focus:invalid:border-red-500"
+                        type="time"
+                        name="horadesde"
+                        required
+                    />
+                </div>
+                <div class="flex-none ml-2">
+                    <label class="label" for="horahasta">Hasta</label>
+                    <input
+                        bind:value={horahasta}
+                        class="input focus:invalid:border-red-500"
+                        type="time"
+                        name="horahasta"
+                        required
+                    />
+                </div>
             </div>
-            <div class="flex-none ml-2">
-                <label class="label" for="fecha">Hasta</label>
-                <DateInput bind:value={disponibilidadDeFechasHasta} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
-            </div>
-        </div>
+        {/each}
 
-        <p>Disponibilidad horaria:</p>
-        <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="disponibilidadHorariaDesde">Desde</label>
-                <input
-                    bind:value={disponibilidadHorariaDesde}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <label class="label" for="disponibilidadHorariaHasta">Hasta</label>
-                <input
-                    bind:value={disponibilidadHorariaHasta}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div>
+        <button
+            class="btn rounded-lg variant-ghost-primary"
+            on:click={agregarDia}>Agregar Día</button
+        >
 
         <label class="label" for="dni">Teléfono:</label>
         <input
