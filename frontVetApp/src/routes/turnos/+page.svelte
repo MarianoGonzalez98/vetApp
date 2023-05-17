@@ -13,7 +13,7 @@
 
 
 {#if $user?.rol === "cliente"}
-	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/cliente">Visualizar Turnos</a> <!--CLIENTE!-->
+	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/cliente">Visualizar Turnos Aceptados</a> <!--CLIENTE!-->
 	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/clientePendientes">Visualizar Turnos Pendientes</a> <!--CLIENTE!-->
 	<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/turnos-form">Solicitar Turno</a>
 

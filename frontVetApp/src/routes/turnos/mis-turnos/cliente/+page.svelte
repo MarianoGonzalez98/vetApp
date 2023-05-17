@@ -4,11 +4,14 @@
 
     import { onMount } from "svelte";
     import { user } from "$lib/stores/user";
-    import { Modal } from "@skeletonlabs/skeleton";
+    import { Modal, modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
     import type { Turno } from "$lib/interfaces/Turno.interface";
+    import { goto } from "$app/navigation";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
+    let idTurnoSelec:number
+    let turnoModificado:Turno;
 
     onMount(async () => { 
         const res = await fetch(
@@ -24,6 +27,120 @@
             .then((res) => res.json())
             .then((apiResponse) => (turnos = apiResponse.data));
     });
+
+    const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Fallo en la solicitud del turno",
+        body: "No se pudo solicitar el nuevo turno",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo en la solicitud del turno",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
+    //----------------------------Cancelar turno----------------------------------------//
+    const TurnoCancelado: ModalSettings = {
+        type: 'alert',
+        title: 'Turno cancelado',
+        body: 'Turno cancelado',
+        buttonTextCancel: "Ok",
+        response: () => location.reload() // Como hago para que se recargue al seleccionar ok
+    };
+
+    const handleModalConfirmCancelación  = async(cancelado: boolean) =>  {
+        if (cancelado === true) {
+            await fetch("http://localhost:3000/turnos/cancelar-turno",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    cancelado,
+                    idTurnoSelec
+                })
+            })
+            .then((res) => {
+                if (res.status < 299) {
+                        modalStore.clear();
+                        modalStore.trigger(TurnoCancelado);
+                        return res;
+                }
+                if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        goto("/auth/login");
+                        return;
+                }
+                if (res.status === 500) {
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                }
+            })
+            .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log("Error en la aceptación del turno desconocido: ", error);
+            });
+
+        }
+        location.reload()
+    }
+
+    const handleCancelar = (fecha:Date, rango:string, cliente:string, id:number) => {
+        const modal1: ModalSettings = {
+            type: 'confirm',
+            title: 'Confirmar cancelar turno',
+            body: `¿Está seguro de cancelar el turno solicitado en el rango horario ${rango} de la fecha ${fecha.toString().slice(0,10)}?`,
+            buttonTextCancel:"Cancelar",
+            buttonTextConfirm:"Confirmar",
+
+            response: handleModalConfirmCancelación,
+        }
+        modalStore.clear();
+        modalStore.trigger(modal1);
+        idTurnoSelec = id; 
+    } 
+
+//----------------------------Modificar turno----------------------------------------//
+    const handleModalConfirmModificación = async() => {}
+
+    const handleModificación = async(rechazado: boolean) =>  {
+            if (rechazado === true) {
+                const modal2: ModalSettings = {
+                    type: 'prompt',
+                    // Data
+                    title: 'Turno rechazado',
+                    body: 'Ingrese una justificación',
+                    // Populates the input value and attributes
+                    value: '',
+                    valueAttr: { type: 'text', minlength: 3, required: true },
+                    // Returns the updated response value
+                    response: (r: string) => handleModalConfirmModificación(),
+                };
+                modalStore.trigger(modal2);
+            }
+        }
+
+
+    const handleModificar = (turno:Turno) => {
+        const modal1: ModalSettings = {
+            type: 'confirm',
+            title: 'Confirmar modificar turno',
+            body: `¿Está seguro de modificar el turno solicitado en el rango horario ${turno.rangoHorario} de la fecha ${turno.fecha.toString().slice(0,10)}?`,
+            buttonTextCancel:"Cancelar",
+            buttonTextConfirm:"Confirmar",
+
+            response: handleModificación,
+        }
+        modalStore.clear();
+        modalStore.trigger(modal1);
+    }
 </script>
 
 <Modal />
@@ -74,6 +191,16 @@
                             {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
+                        {#if turno.urgencia === false}
+                            <footer class="flex">
+                                <button on:click={(event) => handleModificar(turno) } class="btn btn-sm variant-ghost-surface mr-2"
+                                    >Modificar</button
+                                >
+                                <button  on:click={(event) => handleCancelar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
+                                    >Cancelar</button
+                                >
+                            </footer>
+                        {/if}
                 </div>
             </div>
         {/if}
