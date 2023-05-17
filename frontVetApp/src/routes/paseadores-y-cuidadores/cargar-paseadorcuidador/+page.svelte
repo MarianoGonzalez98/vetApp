@@ -57,31 +57,9 @@
         buttonTextCancel: "Ok",
     };
 
-    let fechaMin = new Date();
-    let format = "dd-MM-yyyy";
-    let placeholder = "Elija una fecha";
-    let dias = [
-        "Lunes",
-        "Martes",
-        "Miércoles",
-        "Jueves",
-        "Viernes",
-        "Sábado",
-        "Domingo",
-    ];
-    let dia = "";
-    let horadesde = new Date();
-    let horahasta = new Date();
-    let aver = ["prueba"];
-    let disponibilidad: Disponibilidad;
-
     let nombre = "";
     let apellido = "";
     let zona = "";
-    let disponibilidadDeFechasDesde = new Date();
-    let disponibilidadDeFechasHasta = new Date();
-    let disponibilidadHorariaDesde = new Date();
-    let disponibilidadHorariaHasta = new Date();
     let telefono = "";
     let email = "";
     let oficio: Oficio;
@@ -99,14 +77,6 @@
                 nombre: nombre,
                 apellido: apellido,
                 zona: zona,
-                disponibilidadDeFechasDesde: disponibilidadDeFechasDesde
-                    .toJSON()
-                    .slice(0, 10),
-                disponibilidadDeFechasHasta: disponibilidadDeFechasHasta
-                    .toJSON()
-                    .slice(0, 10),
-                disponibilidadHorariaDesde: disponibilidadHorariaDesde,
-                disponibilidadHorariaHasta: disponibilidadHorariaHasta,
                 telefono: telefono,
                 email: email,
                 oficio: oficio,
@@ -144,15 +114,6 @@
                 );
             });
     };
-
-    const agregarDia = () => {
-        console.log(horadesde);
-        console.log(horadesde.toString());
-        disponibilidad[dia].desde = horadesde.toDateString();
-        disponibilidad[dia].hasta = horahasta.toDateString();
-        dias.splice(dias.indexOf(dia), 1);
-        aver.concat(["estoEsUnParche"]);
-    };
 </script>
 
 <Modal />
@@ -160,7 +121,10 @@
 <div
     class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
 >
-    <form class="space-y-2 mb-2 {submittedClass}">
+    <form
+        on:submit|preventDefault={handleRegistro}
+        class="space-y-2 mb-2 {submittedClass}"
+    >
         <label class="label" for="nombre">Nombre:</label>
         <input
             bind:value={nombre}
@@ -193,52 +157,7 @@
             required
         />
 
-        <p>Disponibilidad semanal:</p>
-        {#each aver as nose}
-            <div class="flex">
-                <div class="flex-none mr-2">
-                    <label class="label" for="diaDisponible">Día</label>
-                    <select
-                        bind:value={dia}
-                        class="input"
-                        name="diaDisponible"
-                        required
-                    >
-                        <option value="" disabled selected
-                            >Seleccione uno</option
-                        >
-                        {#each dias as value}
-                            <option {value}>{value}</option>
-                        {/each}
-                    </select>
-                </div>
-                <div class="flex-none">
-                    <label class="label" for="horadesde">Desde</label>
-                    <input
-                        bind:value={horadesde}
-                        class="input focus:invalid:border-red-500"
-                        type="time"
-                        name="horadesde"
-                        required
-                    />
-                </div>
-                <div class="flex-none ml-2">
-                    <label class="label" for="horahasta">Hasta</label>
-                    <input
-                        bind:value={horahasta}
-                        class="input focus:invalid:border-red-500"
-                        type="time"
-                        name="horahasta"
-                        required
-                    />
-                </div>
-            </div>
-        {/each}
-
-        <button
-            class="btn rounded-lg variant-ghost-primary"
-            on:click={agregarDia}>Agregar Día</button
-        >
+        <p class="text-red-500">HACER LO DE LA DISPONIBILIDAD</p>
 
         <label class="label" for="dni">Teléfono:</label>
         <input
