@@ -1,25 +1,45 @@
 <script lang="ts">
+    import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
+
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
-	export let datos:any
+	export let datosParaContacto:any
+	export let publicacion:PublicacionAdopcion;
 
 	// Stores
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	// Form Data
 	const formData = {
-		nombreApellido: datos.nombreApellido,
-		telefono: datos.telefono,
-		email: datos.email,
+		nombreApellido: datosParaContacto.nombreApellido,
+		telefono: datosParaContacto.telefono,
+		email: datosParaContacto.email,
 	};
 	
-	// We've created a custom submit function to pass the response and close the modal.
+	
 	async function onFormSubmit() {
-		console.log(datos);
-		await new Promise((resolve, reject) => { //esto seria el fetch
-			setTimeout(() => resolve("done!"), 1000)
-		});
+		//console.log(emailDestino);
+		console.log(publicacion)
+		await fetch('http://localhost:3000/send-mail',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials: 'include',
+				body: JSON.stringify({
+				emailData: {
+					emailDestino:publicacion.email,
+					asunto:"Alguien quiere contactarse por su publicacion",
+					cuerpo:`Alguien se ha contacado con usted por su publicacion del perro ${publicacion.nombre} disponible para adoptar. <br>
+					Sus datos de contacto son: <br>
+					Apellido y nombre: ${formData.nombreApellido}<br>
+					Email: <br>
+					Teléfono: <br>
+					`,
+				}
+            }),
+            })
 
 		modalStore.close();
 		//if fetch fue correcto

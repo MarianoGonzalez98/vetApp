@@ -25,6 +25,7 @@ import { TestRouter } from "./routes/test.routes";
 import { PerrosRouter } from "./routes/perros.routes";
 import { ClientesRouter } from "./routes/clientes.routes";
 import { PaseadoresCuidadoresRouter } from "./routes/paseadoresycuidadores.routes";
+import { MailerRouter } from "./routes/mailer.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -33,6 +34,7 @@ app.use(TestRouter);
 app.use(PerrosRouter);
 app.use(ClientesRouter)
 app.use(PaseadoresCuidadoresRouter);
+app.use(MailerRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

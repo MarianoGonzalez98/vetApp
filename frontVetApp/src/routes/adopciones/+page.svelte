@@ -14,9 +14,11 @@
     
     let nombreSeleccionado:string='';
     let razaSeleccionada:string='';
+    let emailSeleccionado:string="";
     let publicaciones:PublicacionAdopcion[] = [];
     let inputRaza:string;
 
+    let publicacionSeleccionada:PublicacionAdopcion;
     $: publicacionesVisibles = inputRaza ?
 		publicaciones.filter(pub => {
 			return pub.raza.toLowerCase().match(`${inputRaza.toLowerCase()}.*`)
@@ -66,46 +68,31 @@
     });
 
 
-    const handleModalConfirmContacto = async (r:boolean) => {
-        console.log('response:', r);
-
-        //fetch para mandar mail al dueño de la publicación con los datos de contacto del interesado
-    }
-
     const handleContactar = (publicacion:PublicacionAdopcion) => {
+
         nombreSeleccionado=publicacion.nombre;
         razaSeleccionada=publicacion.raza;
-        const modal: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirme su contacto',
-            body: `¿Está seguro de contactarse para la adopcion del perro ${nombreSeleccionado} 
-            de raza ${razaSeleccionada}?, se enviará un correo con sus datos al email de contacto de la publicación.`,
-            buttonTextCancel:"Cancelar contacto",
-            buttonTextConfirm:"Confirmar contacto",
-            response: handleModalConfirmContacto,
-        }
+        publicacionSeleccionada= publicacion;
+        emailSeleccionado = publicacion.email;
+        
+        console.log("holaa"+emailSeleccionado);
 
-        const modalTest: ModalSettings = {
+        let modalComponent = {
+            ref: ModalExampleForm,
+            props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada, email:emailSeleccionado},
+        };
+
+        let modalTest: ModalSettings = { //esto sí lo uso
             type: 'component',
             // Pass the component directly:
             component: modalComponent,
             response: (r: any) => console.log('response:', r),
         };
 
-
         modalStore.clear();
         modalStore.trigger(modalTest);
     }
     
-
-    $: modalComponent = {
-        // Pass a reference to your custom component
-        ref: ModalExampleForm,
-        // Add the component properties as key/value pairs
-        props: { datos:misDatos},
-        // Provide a template literal for the default component slot
-       /*  slot: '<p>Skeleton</p>' */
-    };
 
 </script>
 
