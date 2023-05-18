@@ -37,6 +37,7 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
+
         if (!($user?.rol === "veterinario")) {
             paseadorescuidadores = paseadorescuidadores.filter(
                 (pc) => pc.disponible
@@ -83,22 +84,84 @@
                 );
             });
     };
+
+    let inputZona: string;
+    let inputHorario: string;
+    let inputNombre: string;
+
+    $: mostrar = paseadorescuidadores.filter((pc) => {
+        const zonaMatch = inputZona
+            ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
+            : true;
+        const horarioMatch = inputHorario
+            ? pc.disponibilidad
+                  .toLowerCase()
+                  .match(`.*${inputHorario.toLowerCase()}.*`)
+            : true;
+        const nombreMatch = inputNombre
+            ? pc.nombre
+                  .toLowerCase()
+                  .concat(" " + pc.apellido.toLowerCase())
+                  .match(`.*${inputNombre.toLowerCase()}.*`)
+            : true;
+        return zonaMatch && horarioMatch && nombreMatch;
+    });
 </script>
 
 <Modal />
 
 <h1>Paseadores y Cuidadores</h1>
 {#if paseadorescuidadores.length > 0}
-    {#if $user?.rol === "veterinario"}
-        <a
-            class="ml-4 btn variant-filled-secondary"
-            rel="noreferrer"
-            href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
-            >Cargar paseador/cuidador</a
-        >
-    {/if}
+    <div class="flex">
+        {#if $user?.rol === "veterinario"}
+            <div class="mt-6">
+                <a
+                    class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
+                    rel="noreferrer"
+                    href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
+                    >Cargar paseador/cuidador</a
+                >
+            </div>
+        {/if}
+        <div class="ml-2">
+            <label for="filtroRaza" class="text-left whitespace-nowrap"
+                >Filtrar por zona:
+            </label>
+            <input
+                type="text"
+                bind:value={inputZona}
+                class="input"
+                name="filtroRaza"
+                id=""
+            />
+        </div>
+        <div class="ml-2">
+            <label for="filtroRaza" class="text-left whitespace-nowrap"
+                >Filtrar por disponibilidad:
+            </label>
+            <input
+                type="text"
+                bind:value={inputHorario}
+                class="input"
+                name="filtroRaza"
+                id=""
+            />
+        </div>
+        <div class="ml-2">
+            <label for="filtroRaza" class="text-left whitespace-nowrap"
+                >Filtrar por nombre:
+            </label>
+            <input
+                type="text"
+                bind:value={inputNombre}
+                class="input"
+                name="filtroRaza"
+                id=""
+            />
+        </div>
+    </div>
     <div class="ml-2 flex flex-wrap">
-        {#each paseadorescuidadores as pc}
+        {#each mostrar as pc}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row md:"
             >
