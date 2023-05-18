@@ -9,27 +9,16 @@
     
     let nombreSeleccionado:string='';
     let razaSeleccionada:string='';
-    let publicaciones:PublicacionAdopcion[] = [
-            {
-                raza:"golden 1",
-                nombre:"Pichicho 1",
-                fechaNacimiento:"1999-01-23",
-                email:"pedro@gmail.com",
-                adoptado:false,
-            },
-            {
-                raza:"golden 1",
-                nombre:"Pichicho 1",
-                fechaNacimiento:"2000-01-23",
-                email:"asd@gmail.com",
-                adoptado:false,
-            },
-    ];
-    let dia = new Date().toLocaleDateString();
+    let publicaciones:PublicacionAdopcion[] = [];
+    let inputRaza:string;
+
+    $: publicacionesVisibles = inputRaza ?
+		publicaciones.filter(pub => {
+			return pub.raza.toLowerCase().match(`${inputRaza.toLowerCase()}.*`)
+		}) : publicaciones;
+
     onMount( async ()  => {
         let dia = new Date("1999-01-23").toLocaleDateString('es-AR');
-        console.log(dia);
-        console.log(typeof dia);
         //fetch de lista de adopciones publicados
         const res = await fetch(
             `http://localhost:3000/adopciones/get-lista-adopciones`,
@@ -40,10 +29,15 @@
                 },
                 credentials: "include",
             }
-        )
+            )
             .then((res) => res.json())
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
-    } )
+        
+        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion por fecha de forma descendente
+            return a.fechaNacimiento > b.fechaNacimiento ? -1 : 1;
+        })
+        });
+
 
     const handleModalConfirmContacto = async (r:boolean) => {
         console.log('response:', r);
@@ -74,13 +68,21 @@
 <Modal />
 
 {#if ($user)}
-<div>
+<div class="w-full ">
     <a href="/adopciones/crear-publicacion"><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8">Publicar perro</button></a>
+
+    <div class="float-right mr-5 mt-5 ">
+        <div class="flex items-center">
+            <label for="filtroRaza" class="text-left whitespace-nowrap">Filtrar por raza:</label>
+            <input type="text" bind:value={inputRaza} class="input" name="filtroRaza" id="">
+        </div>
+    </div>
+    
 </div>
 {/if}
 <div class="container my-8 mx-auto ">
     <div class="flex flex-wrap place-content-center ">
-        {#each publicaciones as publicacion}
+        {#each publicacionesVisibles as publicacion}
             {#if (!publicacion.adoptado)}
                 <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
                     <header class="card-header">Raza: {publicacion.raza}</header>

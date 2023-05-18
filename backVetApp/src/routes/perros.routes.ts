@@ -6,4 +6,4 @@ import { checkRolCliente, checkRol } from "../middleware/checkRol"
 export const PerrosRouter = Router();
 
 PerrosRouter.post("/cargar-perro", checkJWT, cargarPerroController);
-PerrosRouter.get("/listar-perros", checkJWT, checkRolCliente, listarPerrosController);
+PerrosRouter.get("/listar-perros", checkJWT, listarPerrosController);
