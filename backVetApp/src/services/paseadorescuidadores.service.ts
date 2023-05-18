@@ -58,3 +58,22 @@ export const getPaseadoresCuidadores = async () => {
         return "error";
     }
 }
+
+export const toggleDisponible = async (paseadorcuidador: PaseadorCuidador) => {
+    const query = `
+    UPDATE public.paseadoresycuidadores
+    SET disponible = $2
+    WHERE email = $1;
+    `
+    const values = [paseadorcuidador.email, paseadorcuidador.disponible]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:insertPaseadorCuidador------");
+        console.log(err);
+        return "error";
+    }
+}

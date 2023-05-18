@@ -2,8 +2,27 @@
     import type { PaseadorCuidador } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import { onMount } from "svelte";
     import { user } from "$lib/stores/user";
-    import { Modal } from "@skeletonlabs/skeleton";
+    import {
+        Modal,
+        modalStore,
+        type ModalSettings,
+    } from "@skeletonlabs/skeleton";
+    import { goto } from "$app/navigation";
     let paseadorescuidadores: PaseadorCuidador[] = [];
+
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del perro",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del perro",
+        body: "No se pudo cargar el nuevo perro",
+        buttonTextCancel: "Ok",
+    };
 
     onMount(async () => {
         const res = await fetch(
@@ -24,6 +43,46 @@
             );
         }
     });
+
+    const cambiarDisponibilidad = async (
+        email: string,
+        disponible: boolean
+    ) => {
+        let error: boolean = false;
+
+        await fetch("http://localhost:3000/cambiar-disponible", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                email: email,
+                disponible: disponible,
+            }),
+        })
+            .then((res) => {
+                if (res.status === 400) {
+                    //error por modificacion del token jwt.
+                    $user = null;
+                    goto("/auth/login");
+                    return;
+                }
+                if (res.status === 500) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
+            })
+            .catch((error) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log(
+                    "Error desconocido en carga del paseador/cuidador : ",
+                    error
+                );
+            });
+    };
 </script>
 
 <Modal />
@@ -77,6 +136,13 @@
                     {#if $user?.rol === "veterinario"}
                         <footer class="flex mt-4">
                             <button
+                                on:click={() => {
+                                    pc.disponible = !pc.disponible;
+                                    cambiarDisponibilidad(
+                                        pc.email,
+                                        pc.disponible
+                                    );
+                                }}
                                 class="btn btn-sm variant-ghost-surface mr-2"
                                 >Marcar como {#if pc.disponible}
                                     "No disponible"
