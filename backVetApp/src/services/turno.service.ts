@@ -41,6 +41,26 @@ export const insertTurno = async (turno:Turno) => {
     }
 }
 
+export const getTurno = async(id:number) => {
+    const query = `
+    SELECT id
+    FROM public.turnos 
+    WHERE id = $1
+    `
+    const values = [id]
+
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: number = await response.rows[0];
+        return "ok";
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
 
 export const getTurnos = async (owner: string) => {
     const query = `
@@ -137,6 +157,26 @@ export const rechazarTurno = async (rechazado:boolean, id:number) => {
     }
     catch(err){
         console.error("----Error en acceso a BD:rechazarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const modificarTurno = async (turno:Turno) => {
+    const query = `
+    UPDATE public.turnos 
+    SET motivo = $1, "perroId" = $2, fecha = $3, "rangoHorario" = $4
+    WHERE id = $5
+    `;
+
+    const values = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.id]
+
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:modificarTurno------");
         console.log(err);
         return "error";
     }

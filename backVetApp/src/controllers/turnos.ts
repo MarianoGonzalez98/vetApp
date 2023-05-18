@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { aceptarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getTurnos, getTurnosComoVeterinario, insertTurno, rechazarTurno } from "../services/turno.service"
+import { aceptarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getTurno, getTurnos, getTurnosComoVeterinario, insertTurno, modificarTurno, rechazarTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 
@@ -82,11 +82,26 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => { /
     res.status(201).send('Se cargó correctamente la solicitud del turno'); //¿Cómo notifico que se guardó para el año sig también?
 }
 
-const modificarTurno = async (re:Request, res:Response) => {
-    /* 
-    1. Recibe un turno con la información modificada
-    2. Guarda la nueva infomacion
-    */
+export const modificarTurnoController = async (req:Request, res:Response) => {
+   const turno:Turno = req.body;
+   const existeTurno = await getTurno(turno.id);
+
+   if (existeTurno === 'error'){
+        //HTTP 500 Internal server error
+        res.status(500).send("posible error en base de datos")
+        return
+    }
+    if (!existeTurno){
+        res.status(404).send('El turno no existe');
+    }
+
+    const result = await modificarTurno(turno);
+    if (result === 'error'){
+        //HTTP 500 Internal server error
+        res.status(500).send("posible error en base de datos")
+        return
+    }
+    return res.status(200).send('Se actualizó el turno correctamente.');
 }
 
 export const cancelarTurnoController = async (req:Request, res:Response) => {
