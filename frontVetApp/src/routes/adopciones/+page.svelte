@@ -1,11 +1,16 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from "$lib/interfaces/Adopciones.interface";
     import { user } from "$lib/stores/user";
-    import type { ModalSettings} from "@skeletonlabs/skeleton";
+    import type { ModalComponent, ModalSettings} from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import { onMount } from "svelte";
+    import ModalExampleForm from "./ModalExampleForm.svelte";
 
-
+	let misDatos = {
+		nombreApellido: '',
+		telefono: '',
+		email: ''
+	};
     
     let nombreSeleccionado:string='';
     let razaSeleccionada:string='';
@@ -36,7 +41,29 @@
         publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion por fecha de forma descendente
             return a.fechaNacimiento > b.fechaNacimiento ? -1 : 1;
         })
-        });
+
+        if ($user){
+            await fetch('http://localhost:3000/getPerfil',{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials: 'include',
+            }).then( (res) => {
+                if (res.status < 299) {  //si entra acá no hubo error
+                    return res.json()
+                }
+                return Promise.reject(res);
+            }).then( (res) => {
+                console.log(res);
+                misDatos.nombreApellido=res.apellido+", "+res.nombre;
+                misDatos.telefono=res.telefono;
+                misDatos.email=$user?.email || '';
+            }).catch( (e)  => {
+                console.log(e);
+            })
+        }
+    });
 
 
     const handleModalConfirmContacto = async (r:boolean) => {
@@ -57,11 +84,28 @@
             buttonTextConfirm:"Confirmar contacto",
             response: handleModalConfirmContacto,
         }
+
+        const modalTest: ModalSettings = {
+            type: 'component',
+            // Pass the component directly:
+            component: modalComponent,
+            response: (r: any) => console.log('response:', r),
+        };
+
+
         modalStore.clear();
-        modalStore.trigger(modal);
+        modalStore.trigger(modalTest);
     }
     
 
+    $: modalComponent = {
+        // Pass a reference to your custom component
+        ref: ModalExampleForm,
+        // Add the component properties as key/value pairs
+        props: { datos:misDatos},
+        // Provide a template literal for the default component slot
+       /*  slot: '<p>Skeleton</p>' */
+    };
 
 </script>
 
