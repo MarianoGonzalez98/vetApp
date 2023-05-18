@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { goto, preloadCode } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type {
-        Disponibilidad,
-        Oficio,
-    } from "$lib/interfaces/PaseadoresYCuidadores.interface";
+    import type { Oficio } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import {
         popup,
         type ModalSettings,
