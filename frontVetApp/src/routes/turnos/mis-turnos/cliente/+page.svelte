@@ -4,14 +4,16 @@
 
     import { onMount } from "svelte";
     import { user } from "$lib/stores/user";
-    import { Modal, modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+    import { Modal, modalStore, type ModalSettings, type ModalComponent } from "@skeletonlabs/skeleton";
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { goto } from "$app/navigation";
+    import ModificarTurno from "./modificarTurno.svelte";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
     let idTurnoSelec:number
-    let turnoModificado:Turno;
+    let turnoModificar:Turno;
+    let modificar:boolean = false;
 
     onMount(async () => { 
         const res = await fetch(
@@ -40,6 +42,22 @@
         title: "Fallo en la solicitud del turno",
         body: "Falla del servidor",
         buttonTextCancel: "Ok",
+    };
+    //----------------------------Modificar turno----------------------------------------//
+
+    
+    const modalModificarTurno: Record<string, ModalComponent> = {
+
+    // Custom Modal 1
+        modalComponentOne: {
+            // Pass a reference to your custom component
+            ref: ModificarTurno,
+            // Add the component properties as key/value pairs
+            props: { background: 'bg-red-500' },
+            // Provide a template literal for the default component slot
+            slot: '<p>Skeleton</p>'
+        },
+
     };
 
     //----------------------------Cancelar turno----------------------------------------//
@@ -106,41 +124,7 @@
         modalStore.trigger(modal1);
         idTurnoSelec = id; 
     } 
-
-//----------------------------Modificar turno----------------------------------------//
-    const handleModalConfirmModificación = async() => {}
-
-    const handleModificación = async(rechazado: boolean) =>  {
-            if (rechazado === true) {
-                const modal2: ModalSettings = {
-                    type: 'prompt',
-                    // Data
-                    title: 'Turno rechazado',
-                    body: 'Ingrese una justificación',
-                    // Populates the input value and attributes
-                    value: '',
-                    valueAttr: { type: 'text', minlength: 3, required: true },
-                    // Returns the updated response value
-                    response: (r: string) => handleModalConfirmModificación(),
-                };
-                modalStore.trigger(modal2);
-            }
-        }
-
-
-    const handleModificar = (turno:Turno) => {
-        const modal1: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirmar modificar turno',
-            body: `¿Está seguro de modificar el turno solicitado en el rango horario ${turno.rangoHorario} de la fecha ${turno.fecha.toString().slice(0,10)}?`,
-            buttonTextCancel:"Cancelar",
-            buttonTextConfirm:"Confirmar",
-
-            response: handleModificación,
-        }
-        modalStore.clear();
-        modalStore.trigger(modal1);
-    }
+      
 </script>
 
 <Modal />
@@ -193,9 +177,9 @@
                     </div>
                         {#if turno.urgencia === false}
                             <footer class="flex">
-                                <button on:click={(event) => handleModificar(turno) } class="btn btn-sm variant-ghost-surface mr-2"
+                               <!--  <button  on:click={(event) => modalModificarTurno} class="btn btn-sm variant-ghost-surface"
                                     >Modificar</button
-                                >
+                                > -->
                                 <button  on:click={(event) => handleCancelar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
                                     >Cancelar</button
                                 >
