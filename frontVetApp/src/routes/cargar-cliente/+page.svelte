@@ -52,6 +52,7 @@
 
     const numbersPattern: string = "^[0-9]*$";
     let emailErrorMsj = "";
+    let dniErrorMsj = "";
 
     const clienteCargado: ModalSettings = {
         type: "alert",
@@ -92,7 +93,8 @@
 
     const handleRegistro =async () => {
         let error:boolean=false;
-
+        dniErrorMsj = '';
+        emailErrorMsj = '';
         await fetch("http://localhost:3000/existeUsuarioConEmail", {
             method: "POST",
             headers: {
@@ -106,6 +108,7 @@
             .then((res) => {
                 if (res.status < 299) {
                     emailErrorMsj='';
+                    dniErrorMsj = '';
                 }
                 if (res.status === 400) {
                     //error por modificacion del token jwt.
@@ -131,9 +134,7 @@
                 modalStore.trigger(fallaDesconocida);
                 console.log("Error en carga del cliente desconocido: ", err);
             });
-            if (error){
-                return;
-            }
+
 
             await fetch("http://localhost:3000/existeUsuarioConDni", {
             method: "POST",
@@ -147,7 +148,7 @@
         })
             .then((res) => {
                 if (res.status < 299) {
-                    emailErrorMsj='';
+                    dniErrorMsj='';
                 }
                 if (res.status === 400) {
                     //error por modificacion del token jwt.
@@ -157,7 +158,7 @@
                     return;
                 }
                 if (res.status === 409) {
-                    emailErrorMsj = "El dni ya se encuentra registrado";
+                    dniErrorMsj = "El dni ya se encuentra registrado";
                     error=true;
                     return res;
                 }
@@ -226,7 +227,7 @@
         />
         <p class="text-red-500">{emailErrorMsj}</p>
 
-        <label class="label" for="dni">Teléfono:</label>
+        <label class="label" for="telefono">Teléfono:</label>
         <input
             bind:value={telefono}
             class="input focus:invalid:border-red-500"
@@ -255,7 +256,7 @@
             pattern={numbersPattern}
             required
         />
-
+        <p class="text-red-500">{dniErrorMsj}</p>
         <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
         <input
             bind:value={fechaNacimiento}
