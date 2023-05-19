@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
-    import type{  PopupSettings, } from "@skeletonlabs/skeleton";
-	import {popup} from "@skeletonlabs/skeleton";
+
+
 
 	// Props
 	/** Exposes parent props to this component. */
@@ -19,7 +19,7 @@
 		email: datosParaContacto.email,
 	};
 	
-	async function onFormSubmit() {
+	async function onConfirm() {
 		await fetch('http://localhost:3000/send-mail',{
 			method:'POST',
 			headers:{
@@ -90,11 +90,6 @@
         buttonTextCancel: "Ok",
     };
 
-	const popupFocusBlur: PopupSettings = {
-        event: "focus-blur",
-        target: "popupFocusBlur",
-        placement: "top",
-    };
 	// Base Classes for css
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
@@ -115,28 +110,6 @@
 		<header class={cHeader}>Contactar a un paseador</header>
 		<article>Ingrese sus datos de contacto:</article>
 
-		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
-			<label class="label">
-				<span>Apellido y nombre</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre y apellido válido" bind:value={formData.nombreApellido} pattern={letrasEspaciosComaPattern} required placeholder="Ingrese su apellido y nombre" />
-			</label>
-
-			<label use:popup={popupFocusBlur}  class="label">
-				<span>Teléfono</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un teléfono válido con unicamente números" bind:value={formData.telefono} pattern={numbersPattern}  required placeholder="Ingrese su teléfono. Ej. 2219876543" />
-			</label>
-
-			<label class="label">
-				<span>Email</span>
-				<input class="input focus:invalid:border-red-500" title="Ingrese un mail valido" type="text" bind:value={formData.email} pattern={emailPattern} required placeholder="Ingrese su email" />
-			</label>
-			<div class="card p-2 variant-filled" data-popup="popupFocusBlur">
-				<p>Sólo números</p>
-				<div class="arrow variant-filled" />
-			</div>
-			<button type="button" class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-			<button class="btn {parent.buttonPositive}">Submit Form</button>
-		</form>
 		<footer class="modal-footer {parent.regionFooter}">
 
     </footer>

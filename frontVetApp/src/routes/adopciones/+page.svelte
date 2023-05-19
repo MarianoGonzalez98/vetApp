@@ -22,8 +22,8 @@
     $: publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
             if (!a.adoptado && b.adoptado) return -1;
             if (a.adoptado && !b.adoptado) return 1;
-            if (a.fechaNacimiento > b.fechaNacimiento) return -1;
-            if (a.fechaNacimiento <= b.fechaNacimiento) return 1;
+            if (a.fechaPublicacion > b.fechaPublicacion) return -1;
+            if (a.fechaPublicacion <= b.fechaPublicacion) return 1;
             return 1
         })
 
@@ -164,11 +164,13 @@
                     <div>
                         {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
                             <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
-                            {#if (publicacion.email === $user?.email)}
+                            {#if (publicacion.autorEmail === $user?.email)}
                             <button on:click={(event) => handleMarcarAdoptado(publicacion)} class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
                             {/if}
                         {/if}
+
                     </div>
+                    <p>Fecha de publicación: {new Date(publicacion.fechaPublicacion).toLocaleDateString('es-AR')}</p>
                 </footer>
             </div>
 
