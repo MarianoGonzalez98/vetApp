@@ -17,36 +17,46 @@
 		email: datosParaContacto.email,
 	};
 	
-	
 	async function onFormSubmit() {
-		//console.log(emailDestino);
-		console.log(publicacion)
 		await fetch('http://localhost:3000/send-mail',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                credentials: 'include',
-				body: JSON.stringify({
+			method:'POST',
+			headers:{
+				'Content-Type':'application/json',
+			},
+			credentials: 'include',
+			body: JSON.stringify({
 				emailData: {
 					emailDestino:publicacion.email,
 					asunto:"Alguien quiere contactarse por su publicacion",
 					cuerpo:`Alguien se ha contacado con usted por su publicacion del perro ${publicacion.nombre} disponible para adoptar. <br>
-					Sus datos de contacto son: <br>
+					Los datos de contacto del interesado son: <br>
+					<br>
 					Apellido y nombre: ${formData.nombreApellido}<br>
-					Email: <br>
-					Teléfono: <br>
+					Email: ${formData.email}<br>
+					Teléfono: ${formData.telefono} <br>
 					`,
 				}
-            }),
+			}),
+        }).then((res) => {
+                if (res.status < 299) {
+					modalStore.close();
+					modalStore.trigger(ContactoRealizadoModal);
+                }
+                if (res.status === 500) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                }
+				if (res.status === 424) {
+                    modalStore.clear();
+                    modalStore.trigger(ContactoFallidoModal);
+                }
+				return res;
             })
-
-		modalStore.close();
-		//if fetch fue correcto
-		modalStore.trigger(ContactoRealizadoModal);
-
-		//if hubo error en el fetch
-		modalStore.trigger(ContactoFallidoModal);
+            .catch((err) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log("Error en el contacto: ", err);
+            });
 	}
 
 
@@ -60,10 +70,24 @@
 	const ContactoFallidoModal: ModalSettings = {
         type: 'alert',
         title: 'Contacto fallido',
-        body: 'No se pudo realizar el contacto.',
+        body: 'No se pudo realizar el contacto. Hubo una falla en el envio del mail',
         buttonTextCancel: "Ok",
     };
-	// Base Classes
+
+	const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del cliente",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
+	const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Error desconocido",
+        body: "No se pudo realizar el contacto",
+        buttonTextCancel: "Ok",
+    };
+	// Base Classes for css
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
 	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';

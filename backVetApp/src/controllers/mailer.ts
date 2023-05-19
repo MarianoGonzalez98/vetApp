@@ -10,7 +10,13 @@ export const mandarMailController = async (req: Request, res: Response) => {
     
     console.log("EMAIL SE MANDA CON DATOS:");
     console.log(emailData);
-/*     sendMailTest(emailData.emailDestino,asunto,texto); */
 
+    try {
+        /* await sendMailTest(emailData.emailDestino,asunto,texto); */
+        console.log(emailData);
+    } catch (error) {
+        res.status(424).send("Falla en envio de mail.") //424 (Failed Dependency)
+        return
+    }
     res.status(200).send("Email enviado correctamente");
 };

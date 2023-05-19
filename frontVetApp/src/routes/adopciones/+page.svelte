@@ -11,9 +11,7 @@
 		telefono: '',
 		email: ''
 	};
-    
-    let nombreSeleccionado:string='';
-    let razaSeleccionada:string='';
+
     let emailSeleccionado:string="";
     let publicaciones:PublicacionAdopcion[] = [];
     let inputRaza:string;
@@ -69,17 +67,11 @@
 
 
     const handleContactar = (publicacion:PublicacionAdopcion) => {
-
-        nombreSeleccionado=publicacion.nombre;
-        razaSeleccionada=publicacion.raza;
         publicacionSeleccionada= publicacion;
         emailSeleccionado = publicacion.email;
-        
-        console.log("holaa"+emailSeleccionado);
-
         let modalComponent = {
             ref: ModalExampleForm,
-            props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada, email:emailSeleccionado},
+            props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada},
         };
 
         let modalTest: ModalSettings = { //esto sí lo uso
