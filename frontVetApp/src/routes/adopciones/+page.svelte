@@ -38,8 +38,11 @@
             .then((res) => res.json())
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
         
-        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion por fecha de forma descendente
-            return a.fechaNacimiento > b.fechaNacimiento ? -1 : 1;
+        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
+            if (!a.adoptado && b.adoptado) return -1;
+            if (a.fechaNacimiento > b.fechaNacimiento) return -1;
+            if (a.fechaNacimiento <= b.fechaNacimiento) return 1;
+            return 1
         })
 
         if ($user){
@@ -106,23 +109,28 @@
 <div class="container my-8 mx-auto ">
     <div class="flex flex-wrap place-content-center ">
         {#each publicacionesVisibles as publicacion}
-            {#if (!publicacion.adoptado)}
-                <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
-                    <header class="card-header">Raza: {publicacion.raza}</header>
-                    <section class="p-2">
-                        <p>Nombre: {publicacion.nombre}</p>
-                        <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
-                    </section>
-                    <footer class="card-footer">
-                        <div>
+
+            <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
+                {#if publicacion.adoptado}
+                    <h1 class="h1 text-amber-800">ADOPTADO</h1>
+                {/if}
+                <header class="card-header">Raza: {publicacion.raza}</header>
+                <section class="p-2">
+                    <p>Nombre: {publicacion.nombre}</p>
+                    <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
+                </section>
+                <footer class="card-footer">
+                    <div>
+                        {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
                             <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
                             {#if (publicacion.email === $user?.email)}
                             <button class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
                             {/if}
-                        </div>
-                    </footer>
-                </div>
-            {/if}
+                        {/if}
+                    </div>
+                </footer>
+            </div>
+
 
         {/each}
 
