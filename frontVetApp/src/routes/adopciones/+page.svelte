@@ -1,17 +1,22 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from "$lib/interfaces/Adopciones.interface";
     import { user } from "$lib/stores/user";
-    import type { ModalSettings} from "@skeletonlabs/skeleton";
+    import type { ModalComponent, ModalSettings} from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import { onMount } from "svelte";
+    import ModalExampleForm from "./ModalExampleForm.svelte";
 
+	let misDatos = {
+		nombreApellido: '',
+		telefono: '',
+		email: ''
+	};
 
-    
-    let nombreSeleccionado:string='';
-    let razaSeleccionada:string='';
+    let emailSeleccionado:string="";
     let publicaciones:PublicacionAdopcion[] = [];
     let inputRaza:string;
 
+    let publicacionSeleccionada:PublicacionAdopcion;
     $: publicacionesVisibles = inputRaza ?
 		publicaciones.filter(pub => {
 			return pub.raza.toLowerCase().match(`${inputRaza.toLowerCase()}.*`)
@@ -20,7 +25,7 @@
     onMount( async ()  => {
         let dia = new Date("1999-01-23").toLocaleDateString('es-AR');
         //fetch de lista de adopciones publicados
-        const res = await fetch(
+        await fetch(
             `http://localhost:3000/adopciones/get-lista-adopciones`,
             {
                 method: "GET",
@@ -33,35 +38,56 @@
             .then((res) => res.json())
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
         
-        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion por fecha de forma descendente
-            return a.fechaNacimiento > b.fechaNacimiento ? -1 : 1;
+        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
+            if (!a.adoptado && b.adoptado) return -1;
+            if (a.fechaNacimiento > b.fechaNacimiento) return -1;
+            if (a.fechaNacimiento <= b.fechaNacimiento) return 1;
+            return 1
         })
-        });
 
+        if ($user){
+            await fetch('http://localhost:3000/getPerfil',{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials: 'include',
+            }).then( (res) => {
+                if (res.status < 299) {  //si entra acá no hubo error
+                    return res.json()
+                }
+                return Promise.reject(res);
+            }).then( (res) => {
+                console.log(res);
+                misDatos.nombreApellido=res.apellido+", "+res.nombre;
+                misDatos.telefono=res.telefono;
+                misDatos.email=$user?.email || '';
+            }).catch( (e)  => {
+                console.log(e);
+            })
+        }
+    });
 
-    const handleModalConfirmContacto = async (r:boolean) => {
-        console.log('response:', r);
-
-        //fetch para mandar mail al dueño de la publicación con los datos de contacto del interesado
-    }
 
     const handleContactar = (publicacion:PublicacionAdopcion) => {
-        nombreSeleccionado=publicacion.nombre;
-        razaSeleccionada=publicacion.raza;
-        const modal: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirme su contacto',
-            body: `¿Está seguro de contactarse para la adopcion del perro ${nombreSeleccionado} 
-            de raza ${razaSeleccionada}?, se enviará un correo con sus datos al email de contacto de la publicación.`,
-            buttonTextCancel:"Cancelar contacto",
-            buttonTextConfirm:"Confirmar contacto",
-            response: handleModalConfirmContacto,
-        }
+        publicacionSeleccionada= publicacion;
+        emailSeleccionado = publicacion.email;
+        let modalComponent = {
+            ref: ModalExampleForm,
+            props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada},
+        };
+
+        let modalTest: ModalSettings = { //esto sí lo uso
+            type: 'component',
+            // Pass the component directly:
+            component: modalComponent,
+            response: (r: any) => console.log('response:', r),
+        };
+
         modalStore.clear();
-        modalStore.trigger(modal);
+        modalStore.trigger(modalTest);
     }
     
-
 
 </script>
 
@@ -83,23 +109,28 @@
 <div class="container my-8 mx-auto ">
     <div class="flex flex-wrap place-content-center ">
         {#each publicacionesVisibles as publicacion}
-            {#if (!publicacion.adoptado)}
-                <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
-                    <header class="card-header">Raza: {publicacion.raza}</header>
-                    <section class="p-2">
-                        <p>Nombre: {publicacion.nombre}</p>
-                        <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
-                    </section>
-                    <footer class="card-footer">
-                        <div>
+
+            <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
+                {#if publicacion.adoptado}
+                    <h1 class="h1 text-amber-800">ADOPTADO</h1>
+                {/if}
+                <header class="card-header">Raza: {publicacion.raza}</header>
+                <section class="p-2">
+                    <p>Nombre: {publicacion.nombre}</p>
+                    <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
+                </section>
+                <footer class="card-footer">
+                    <div>
+                        {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
                             <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
                             {#if (publicacion.email === $user?.email)}
                             <button class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
                             {/if}
-                        </div>
-                    </footer>
-                </div>
-            {/if}
+                        {/if}
+                    </div>
+                </footer>
+            </div>
+
 
         {/each}
 
