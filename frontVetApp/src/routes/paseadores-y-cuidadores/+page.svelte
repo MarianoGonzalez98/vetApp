@@ -295,7 +295,7 @@
                 </h1>
                 <div class="flex justify-center">
                     <a
-                        class="btn variant-filled-secondary"
+                        class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
                         rel="noreferrer"
                         href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
                         >Cargar paseador/cuidador</a

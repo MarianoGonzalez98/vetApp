@@ -22,8 +22,6 @@
         "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
     const numbersPattern: string = "^[0-9]*$";
-    let emailErrorMsj = "";
-    let dniErrorMsj = "";
 
     let nombre = miNombre;
     let apellido = miApellido;
