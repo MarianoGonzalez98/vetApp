@@ -65,7 +65,22 @@
     const handleModificar = (turno:Turno) => {
         turnoModificar = turno;
 
-        const modalTest: ModalSettings = {
+       let modalComponent = {
+            // Pass a reference to your custom cosmponent
+            ref: ModificarTurno,
+            // Add the component properties as key/value pairs
+            props: {
+                perrosCliente:perros,
+                turnoId:turnoModificar.id,
+                turnoMotivo: turnoModificar.motivo,
+                turnoPerroId:turnoModificar.perroId,
+                turnoPerroNombre:turnoModificar.perroNombre,
+                turnoFecha: turnoModificar.fecha,
+                turnoRango: turnoModificar.rangoHorario
+            },
+        };
+
+        let modalTest: ModalSettings = {
             type: "component",
             // Pass the component directly:
             component: modalComponent,
@@ -75,22 +90,6 @@
         modalStore.trigger(modalTest);
     }
 
-    $: modalComponent = {
-        // Pass a reference to your custom cosmponent
-        ref: ModificarTurno,
-        // Add the component properties as key/value pairs
-        props: {
-            perrosCliente:perros,
-            turnoId:turnoModificar.id,
-            turnoMotivo: turnoModificar.motivo,
-            turnoPerroId:turnoModificar.perroId,
-            turnoPerroNombre:turnoModificar.perroNombre,
-            turnoFecha: turnoModificar.fecha,
-            turnoRango: turnoModificar.rangoHorario
-        },
-        // Provide a template literal for the default component slot
-        slot: "<p>Skeleton</p>",
-    };
 
     //----------------------------Cancelar turno----------------------------------------//
     const TurnoCancelado: ModalSettings = {
@@ -221,4 +220,7 @@
             </div>
         {/if}
     {/each}
+    {#if turnos.length === 0}
+        No hay turnos para visualizar
+    {/if}
 </div>

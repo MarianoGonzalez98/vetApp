@@ -155,4 +155,7 @@
             </div>
         {/if}
     {/each}
+    {#if turnos.length === 0}
+        No hay turnos para visualizar
+    {/if}
 </div>
