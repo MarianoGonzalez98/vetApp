@@ -22,6 +22,26 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     }
 }
 
+export const getCantDeTurnosRangoHorarioFechab = async (fecha:Date,rangoHorario:string) => {
+    const query = `
+    SELECT *
+    FROM public.turnos t
+    WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
+    `
+    const valuesCantTurnos = [fecha,rangoHorario]
+
+    try{
+        const response:QueryResult = await pool.query(query,valuesCantTurnos) 
+        const result: Turno[]  = await response.rows;
+        return result;
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:getCantDeTurnosRangoHorarioFecha------");
+        console.log(err);
+        return "error";
+    }
+}
+
 export const insertTurno = async (turno:Turno) => {
     const queryTurno = `
     INSERT INTO public.turnos(
@@ -162,14 +182,14 @@ export const rechazarTurno = async (rechazado:boolean, id:number) => {
     }
 }
 
-export const modificarTurno = async (turno:Turno) => {
+export const modificarTurno = async (id:number,perroId:number,perroNombre:string,motivo:string,fecha:Date,rango:string) => {
     const query = `
     UPDATE public.turnos 
-    SET motivo = $1, "perroId" = $2, fecha = $3, "rangoHorario" = $4
+    SET motivo = $1, "perroId" = $2, fecha = $3, "rangoHorario" = $4, "perroNombre" = $6, aceptado = $7
     WHERE id = $5
     `;
 
-    const values = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.id]
+    const values = [motivo, perroId, fecha, rango, id, perroNombre, false]
 
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
