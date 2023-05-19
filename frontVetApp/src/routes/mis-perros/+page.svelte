@@ -3,8 +3,24 @@
     import { user } from "$lib/stores/user";
     import type { Perro } from "$lib/interfaces/Perro.interface";
     import { Modal } from "@skeletonlabs/skeleton";
+    import { afterNavigate, goto } from "$app/navigation";
+    import type { AfterNavigate } from "@sveltejs/kit";
+    import Layout from "../+layout.svelte";
 
-    let cliente = $user?.email;
+    afterNavigate((nav: AfterNavigate) => {
+        if (
+            $user?.rol === "veterinario" &&
+            nav.from?.route.id !== "/clientes"
+        ) {
+            goto("/");
+        }
+    });
+
+    let cliente: string =
+        new URLSearchParams(window.location.search).get("cliente") ??
+        $user?.email ??
+        "";
+
     let perros: Perro[] = [];
 
     onMount(async () => {
