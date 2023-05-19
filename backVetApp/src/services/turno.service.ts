@@ -22,13 +22,33 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     }
 }
 
-export const insertTurno = async (motivo:string, perroNombre:string, perroId:number, fecha:Date, rangoHorario:string, emailOwner:string,descripcion:string) => {
+export const getCantDeTurnosRangoHorarioFechab = async (fecha:Date,rangoHorario:string) => {
+    const query = `
+    SELECT *
+    FROM public.turnos t
+    WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
+    `
+    const valuesCantTurnos = [fecha,rangoHorario]
+
+    try{
+        const response:QueryResult = await pool.query(query,valuesCantTurnos) 
+        const result: Turno[]  = await response.rows;
+        return result;
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:getCantDeTurnosRangoHorarioFecha------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const insertTurno = async (turno:Turno) => {
     const queryTurno = `
     INSERT INTO public.turnos(
-        motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre") 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+        motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre", urgencia) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
     `; 
-    const valuesTurno = [motivo, perroId, fecha, rangoHorario,emailOwner,false,descripcion, perroNombre]
+    const valuesTurno = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.emailOwner, turno.aceptado, turno.descripcion, turno.perroNombre, turno.urgencia]
 
     try{
         const response:QueryResult = await pool.query(queryTurno,valuesTurno) 
@@ -36,6 +56,26 @@ export const insertTurno = async (motivo:string, perroNombre:string, perroId:num
     }
     catch(err){
         console.error("----Error en acceso a BD:insertTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getTurno = async(id:number) => {
+    const query = `
+    SELECT id
+    FROM public.turnos 
+    WHERE id = $1
+    `
+    const values = [id]
+
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: number = await response.rows[0];
+        return "ok";
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getTurno------");
         console.log(err);
         return "error";
     }
@@ -81,6 +121,26 @@ export const getTurnosComoVeterinario = async () => {
     }
 }
 
+export const cancelarTurno = async (id:number) => {
+    const query = `
+    DELETE 
+    FROM public.turnos
+    WHERE id = $1
+    `;
+
+    const values = [id]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) 
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:aceptarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
 export const aceptarTurno = async (aceptado:boolean, id:number) => {
     const query = `
     UPDATE public.turnos 
@@ -96,6 +156,47 @@ export const aceptarTurno = async (aceptado:boolean, id:number) => {
     }
     catch(err){
         console.error("----Error en acceso a BD:aceptarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+export const rechazarTurno = async (rechazado:boolean, id:number) => {
+    const query = `
+    UPDATE public.turnos 
+    SET rechazado = $1
+    WHERE id = $2
+    `;
+
+    const values = [rechazado,id]
+
+    try{
+        const response:QueryResult = await pool.query(query,values) 
+        return 'ok';
+    }
+    catch(err){
+        console.error("----Error en acceso a BD:rechazarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const modificarTurno = async (id:number,perroId:number,perroNombre:string,motivo:string,fecha:Date,rango:string) => {
+    const query = `
+    UPDATE public.turnos 
+    SET motivo = $1, "perroId" = $2, fecha = $3, "rangoHorario" = $4, "perroNombre" = $6, aceptado = $7
+    WHERE id = $5
+    `;
+
+    const values = [motivo, perroId, fecha, rango, id, perroNombre, false]
+
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:modificarTurno------");
         console.log(err);
         return "error";
     }

@@ -1,10 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type {
-        Disponibilidad,
-        Oficio,
-    } from "$lib/interfaces/PaseadoresYCuidadores.interface";
+    import type { Oficio } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import {
         popup,
         type ModalSettings,
@@ -63,6 +60,7 @@
     let telefono = "";
     let email = "";
     let oficio: Oficio;
+    let disponibilidad = "";
 
     const handleRegistro = async () => {
         let error: boolean = false;
@@ -80,6 +78,7 @@
                 telefono: telefono,
                 email: email,
                 oficio: oficio,
+                disponibilidad: disponibilidad,
             }),
         })
             .then((res) => {
@@ -114,6 +113,15 @@
                 );
             });
     };
+    /*
+
+    PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
+
+    let fecha = new Date();
+    let fechaMin = new Date();
+    let format = "dd-MM-yyyy";
+    let placeholder = "Elija una fecha";
+    */
 </script>
 
 <Modal />
@@ -157,7 +165,66 @@
             required
         />
 
-        <p class="text-red-500">HACER LO DE LA DISPONIBILIDAD</p>
+        <p>Disponibilidad horaria:</p>
+        <textarea
+            bind:value={disponibilidad}
+            class="input rounded-3xl"
+            placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
+            name="observaciones"
+        />
+
+        <!--
+            
+            PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
+            
+            <div class="flex">
+            <button
+                class="btn rounded-lg variant-ghost-secondary mr-2 grayscale"
+                type="submit">Domingo</button
+            >
+            <div class="flex-none">
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
+                    type="time"
+                    name="disponibilidadHorariaDesde"
+                    required
+                />
+            </div>
+            <div class="flex-none ml-2">
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
+                    type="time"
+                    name="disponibilidadHorariaHasta"
+                    required
+                />
+            </div>
+        </div>
+        <div class="flex">
+            <button
+                class="btn rounded-lg variant-filled-secondary mr-2"
+                type="submit">Domingo</button
+            >
+            <div class="flex-none">
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500"
+                    type="time"
+                    name="disponibilidadHorariaDesde"
+                    required
+                />
+            </div>
+            <div class="flex-none ml-2">
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500"
+                    type="time"
+                    name="disponibilidadHorariaHasta"
+                    required
+                />
+            </div>
+        </div> -->
 
         <label class="label" for="dni">Teléfono:</label>
         <input
