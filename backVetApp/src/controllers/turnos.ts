@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { aceptarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getTurno, getTurnos, getTurnosComoVeterinario, insertTurno, modificarTurno, rechazarTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
+import { sendMailTest } from "../utils/mailer.handle"
 
 /* importar servicios */
 /* importar interfaces */
@@ -52,6 +53,24 @@ const insertarTurno = async (req:Request, res:Response) => {
     }
 }
 
+const enviarMailSolicituTurno = async (req:Request, res:Response) => {
+    let turno:Turno = req.body;
+
+    let email = "felipetamburri@gmail.com" //solo para testear
+    //let emailDestinatario = veterinarios;
+    let asunto = "Nueva solicitud de turno"
+    let texto = `¡Un cliente solicitó un nuevo turno!
+    
+    A continuación te dejamos los datos del turno.
+    
+    Cliente: ${turno.emailOwner}
+    Fecha: ${turno.fecha.toJSON().slice(0,10)}
+    Rango horario: ${turno.rangoHorario}
+    Perro: ${turno.perroNombre}`;
+    
+    sendMailTest(email, asunto, texto);
+}
+
 export const SolicitarTurnoController = async (req:Request, res:Response) => { //FALTA MANDAR MAIL A LOS VETERINARIOS
 
     verificarDisponibilidad(req,res);
@@ -78,6 +97,8 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => { /
 
         insertarTurno(req,res);
     }
+
+    enviarMailSolicituTurno (req,res);
 
     res.status(201).send('Se cargó correctamente la solicitud del turno'); //¿Cómo notifico que se guardó para el año sig también?
 }
