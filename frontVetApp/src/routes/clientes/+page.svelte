@@ -132,7 +132,8 @@
                         <a
                             class="btn variant-ghost-surface"
                             rel="noreferrer"
-                            href="/mis-perros">Ver perros</a
+                            href="/clientes/sus-perros/{cliente.email}"
+                            >Ver perros</a
                         >
                     </footer>
                 </div>
