@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import type { Turno } from "$lib/interfaces/Turno.interface";
-    import { Modal, modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+    import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
     import { goto } from "$app/navigation";
 
     let fechaMin = new Date().toJSON().slice(0, 10);
@@ -10,6 +10,7 @@
     // Props
     /** Exposes parent props to this component. */
     export let perrosCliente:PerroTurno[]
+    export let turnoCliente:string
     export let parent: any;
     export let turnoId:number;
     export let turnoMotivo:string
@@ -19,21 +20,24 @@
     export let turnoRango:string;
     
     // Form Data
-    let perros = perrosCliente
-    let id = turnoId
-    let perroId=turnoPerroId
-    let perroNombre=turnoPerroNombre
-    let motivo=turnoMotivo
-    let fecha=turnoFecha
-    let rango=turnoRango
+    let formData ={
+        perros : perrosCliente,
+        cliente :turnoCliente,
+        id :turnoId,
+        perroId:turnoPerroId,
+        perroNombre:turnoPerroNombre,
+        motivo:turnoMotivo,
+        fecha:turnoFecha,
+        rango:turnoRango
+    }
 
     let perroSelect: PerroTurno = {
-        nombre: perroNombre,
-        id: perroId
+        nombre: turnoPerroNombre,
+        id:turnoPerroId
     }
     const actualizarFormPerro = () => {
-        perroId=perroSelect.id;
-        perroNombre = perroSelect.nombre;
+        formData.perroId=perroSelect.id;
+        formData.perroNombre = perroSelect.nombre;
     }
 
 
@@ -43,6 +47,13 @@
         body: "Turno actualizado correctamente",
         buttonTextCancel: "Ok",
         response: (r: boolean) => goto("/turnos"),
+    };
+
+    const fallaRangoCompleto: ModalSettings = {
+        type: "alert",
+        title: "Fallo en la modificación del turno por cupo completo",
+        body: "No se pudo modificar turno. Seleccione otro rango horario u otra fecha",
+        buttonTextCancel: "Ok",
     };
 
      const fallaDesconocida: ModalSettings = {
@@ -62,14 +73,6 @@
 
     // We've created a custom submit function to pass the response and close the modal.
     async function onFormSubmit() {
-        turno.id = id
-        turno.perroId = perroId
-        turno.perroNombre =perroNombre
-        turno.motivo = motivo
-        turno.fecha = fecha
-        turno.rangoHorario = rango
-        console.log(turno.motivo)
-
         await fetch("http://localhost:3000/turnos/modificar-turno", {
             method: "POST",
             headers: {
@@ -77,13 +80,24 @@
             },
             credentials: "include",
             body: JSON.stringify({
-                turno
+                turnoId: formData.id,
+                emailOwner: formData.cliente,
+                perroId: formData.perroId,
+                perroNombre: formData.perroNombre,
+                motivo: formData.motivo,
+                fecha: formData.fecha,
+                rango: formData.rango
             }),
         })
         .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(turnoModificado);
+                    return res;
+                }
+                if (res.status === 409) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaRangoCompleto);
                     return res;
                 }
                 if (res.status === 500) {
@@ -106,7 +120,7 @@
         "border border-surface-500 p-4 space-y-4 rounded-container-token";
    
 </script>
-<Modal/>
+
 <!-- @component This example creates a simple form modal. -->
 
 {#if $modalStore[0]}
@@ -117,7 +131,7 @@
                 <label class="label">
                     <span>Seleccione el perro:</span>
                     <select id="seleccionPerro" style="color: black;" bind:value={perroSelect} on:change={actualizarFormPerro}>
-                        {#each perros as perro}
+                        {#each formData.perros as perro}
                             <option value={perro}>
                                 <span>{perro.nombre} </span>
                             </option>
@@ -127,7 +141,7 @@
 
                 <label class="label">
                     <span>Motivo:</span>
-                    <select bind:value={motivo} class="select"  name="motivo" required>
+                    <select bind:value={formData.motivo} class="select"  name="motivo" required>
                         <option value="Vacunación a">Vacunación a</option>
                         <option value="Vacunación b">Vacunación b</option>
                         <option value="Castración">Castración</option>
@@ -139,7 +153,7 @@
 
                 <label class="label" for="fecha">Fecha deL turno:</label>
                 <input
-                    bind:value={fecha}
+                    bind:value={formData.fecha}
                     class="input"
                     type="date"
                     min={fechaMin}
@@ -149,7 +163,7 @@
 
                 <label class="label">
                     <span>Rango horario:</span>
-                    <select bind:value={rango} class="select"  name="rangoHorario" required>
+                    <select bind:value={formData.rango} class="select"  name="rangoHorario" required>
                         <option value="Manana">Mañana</option>
                         <option value="Tarde">Tarde</option>
                         <option value="Noche">Noche</option>
@@ -161,7 +175,7 @@
         <!-- prettier-ignore -->
         <footer class="modal-footer {parent.regionFooter}">
         <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Submit Form</button>
+        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Aceptar</button>
     </footer>
     </div>
 {/if}

@@ -16,6 +16,28 @@
     let turnoModificar:Turno 
     let perros: PerroTurno[] = [];
 
+    const compararFechas = (fechaTurno: Date) => { //la fecha del turno debe ser un dia mas (por lo menos) a la fecha de hoy
+        let fechaHoy = new Date();
+        fechaHoy.setDate(fechaHoy.getDate() + 1); //mañana
+        let fechaHoyTiempo = fechaHoy.getTime();
+
+        const nuevaFechaTurnoString = fechaTurno.toString();
+        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+        let fechaTurnoTiempo = nuevaFechaDate.getTime();
+
+        return fechaTurnoTiempo >= fechaHoyTiempo 
+    }
+
+    const mostarFechaArg = (fechaTurno:Date) => {
+        const nuevaFechaTurnoString = fechaTurno.toString();
+        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+
+        return nuevaFechaDate.toLocaleDateString('es-AR');
+    }
+    
+
     onMount(async () => { 
         await fetch(
             `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
@@ -71,6 +93,7 @@
             // Add the component properties as key/value pairs
             props: {
                 perrosCliente:perros,
+                turnoCliente: $user?.email,
                 turnoId:turnoModificar.id,
                 turnoMotivo: turnoModificar.motivo,
                 turnoPerroId:turnoModificar.perroId,
@@ -165,6 +188,9 @@
 
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
+        {#if turnos.length === 0}
+            No hay turnos para visualizar
+        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === true)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
@@ -183,7 +209,7 @@
                     <h5
                         class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                     >
-                        {turno.fecha.toString().slice(0,10) + " "} 
+                        {mostarFechaArg(turno.fecha)} 
                         {#if turno.rangoHorario === "Manana"} Mañana {/if} 
                         {#if turno.rangoHorario !== "Manana"} {turno.rangoHorario} {/if}
                     </h5>
@@ -206,7 +232,7 @@
                             {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
-                        {#if turno.urgencia === false}
+                        {#if (turno.urgencia === false)&& compararFechas(turno.fecha)}
                             <footer class="flex">
                                 <button  on:click={(event) => handleModificar(turno)} class="btn btn-sm variant-ghost-surface"
                                     >Modificar</button
@@ -220,7 +246,4 @@
             </div>
         {/if}
     {/each}
-    {#if turnos.length === 0}
-        No hay turnos para visualizar
-    {/if}
 </div>

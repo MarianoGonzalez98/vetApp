@@ -13,6 +13,26 @@
 
     let idTurnoSelec:number
 
+    const mostarFechaArg = (fechaTurno:Date) => {
+        const nuevaFechaTurnoString = fechaTurno.toString();
+        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+
+        return nuevaFechaDate.toLocaleDateString('es-AR');
+    }
+
+    const compararFechas = (fechaTurno: Date) => { //la fecha del turno debe ser un dia mas (por lo menos) a la fecha de hoy
+        let fechaHoy = new Date();
+        let fechaHoyTiempo = fechaHoy.getTime();
+
+        const nuevaFechaTurnoString = fechaTurno.toString();
+        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+        let fechaTurnoTiempo = nuevaFechaDate.getTime();
+
+        return fechaTurnoTiempo >= fechaHoyTiempo 
+    }
+
     onMount(async () => { 
         const res = await fetch(
             `http://localhost:3000/turnos/listar-turnos/veterinario`,
@@ -43,71 +63,6 @@
         buttonTextCancel: "Ok",
     };
 
-
-    //----------------------------Aceptar turno----------------------------------------//
-    const TurnoAceptado: ModalSettings = {
-        type: 'alert',
-        title: 'Turno aceptado',
-        body: 'Turno aceptado',
-        buttonTextCancel: "Ok",
-        response: () => location.reload() // Como hago para que se recargue al seleccionar ok
-    };
-
-    const handleModalConfirmAceptación = async(aceptado: boolean) =>  {
-        if (aceptado === true) {
-            await fetch("http://localhost:3000/turnos/aceptar-turno",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    aceptado,
-                    idTurnoSelec
-                })
-            })
-            .then((res) => {
-                if (res.status < 299) {
-                        modalStore.clear();
-                        modalStore.trigger(TurnoAceptado);
-                        return res;
-                }
-                if (res.status === 400) {
-                        //error por modificacion del token jwt.
-                        $user = null;
-                        goto("/auth/login");
-                        return;
-                }
-                if (res.status === 500) {
-                        modalStore.clear();
-                        modalStore.trigger(fallaServidor);
-                        return res;
-                }
-            })
-            .catch((error) => {
-                    modalStore.clear();
-                    modalStore.trigger(fallaDesconocida);
-                    console.log("Error en la aceptación del turno desconocido: ", error);
-            });
-
-        }
-    }
-
-    const handleAceptar = (fecha:Date, rango:string, cliente:string, id:number) => {
-        const modal: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirmar aceptación de turno',
-            body: `¿Está seguro de aceptar el turno del cliente ${cliente}  
-            en el rango horario ${rango} de la fecha ${fecha.toString().slice(0,10)}?`,
-            buttonTextCancel:"Cancelar",
-            buttonTextConfirm:"Confirmar",
-
-            response: handleModalConfirmAceptación,
-        }
-        modalStore.clear();
-        modalStore.trigger(modal);
-        idTurnoSelec = id;
-    }
 
 
     //----------------------------Rechazar turno----------------------------------------//
@@ -202,6 +157,9 @@
 
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
+        {#if turnos.length === 0}
+            No hay turnos para visualizar
+        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === true)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
@@ -220,7 +178,7 @@
                     <h5
                         class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                     >
-                    {turno.fecha.toString().slice(0,10) + " "} 
+                    {mostarFechaArg(turno.fecha)} 
                     {#if turno.rangoHorario === "Manana"} Mañana {/if} 
                     {#if turno.rangoHorario !== "Manana"} {turno.rangoHorario} {/if}
 
@@ -248,7 +206,13 @@
                             {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
-                                  
+                    <footer class="flex">
+                        {#if (turno.urgencia === false)&&(compararFechas(turno.fecha))}
+                            <button on:click={(event) => handleRechazar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
+                                >Rechazar</button
+                            >
+                        {/if}
+                    </footer>          
                 </div>
             </div>
         {/if}

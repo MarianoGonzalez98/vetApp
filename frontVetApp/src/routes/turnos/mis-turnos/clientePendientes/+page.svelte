@@ -12,6 +12,14 @@
     let turnos: Turno[] = [];
     let idTurnoSelec:number
 
+    const mostarFechaArg = (fechaTurno:Date) => {
+        const nuevaFechaTurnoString = fechaTurno.toString();
+        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+        let nuevaFechaDate = new Date(nuevaFecha);
+
+        return nuevaFechaDate.toLocaleDateString('es-AR');
+    }
+
     onMount(async () => { 
         const res = await fetch(
             `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
@@ -114,6 +122,9 @@
 
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
+        {#if turnos.length === 0}
+            No hay turnos para visualizar
+        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row">
@@ -122,7 +133,7 @@
                         Turno Pendiente
                     </h6>  
                     <h5 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                        {turno.fecha.toString().slice(0,10) + " "} 
+                        {mostarFechaArg(turno.fecha)} 
                         {#if turno.rangoHorario === "Manana"} Mañana {/if} 
                         {#if turno.rangoHorario !== "Manana"} {turno.rangoHorario} {/if}
                     </h5>
@@ -144,9 +155,6 @@
                         </p>
                     </div>
                         <footer class="flex">
-                            <button class="btn btn-sm variant-ghost-surface mr-2"
-                                >Modificar</button
-                            >
                             <button  on:click={(event) => handleCancelar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
                                 >Cancelar</button
                             >
@@ -155,7 +163,4 @@
             </div>
         {/if}
     {/each}
-    {#if turnos.length === 0}
-        No hay turnos para visualizar
-    {/if}
 </div>
