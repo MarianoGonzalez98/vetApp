@@ -14,7 +14,7 @@ TurnosRouter.post("/turnos/aceptar-turno",checkJWT,aceptarTurnoController)
 TurnosRouter.post("/turnos/rechazar-turno",checkJWT,rechazarTurnoController)
 
 TurnosRouter.post("/turnos/cancelar-turno",checkJWT,cancelarTurnoController)
-TurnosRouter.put("/turnos/modificar-turno",checkJWT,modificarTurnoController)
+TurnosRouter.post("/turnos/modificar-turno",checkJWT,modificarTurnoController)
 
 
 export { TurnosRouter}

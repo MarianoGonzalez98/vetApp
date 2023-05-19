@@ -84,16 +84,6 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => { /
 
 export const modificarTurnoController = async (req:Request, res:Response) => {
    const turno:Turno = req.body;
-   const existeTurno = await getTurno(turno.id);
-
-   if (existeTurno === 'error'){
-        //HTTP 500 Internal server error
-        res.status(500).send("posible error en base de datos")
-        return
-    }
-    if (!existeTurno){
-        res.status(404).send('El turno no existe');
-    }
 
     const result = await modificarTurno(turno);
     if (result === 'error'){
