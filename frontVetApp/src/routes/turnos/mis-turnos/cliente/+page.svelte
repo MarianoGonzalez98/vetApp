@@ -8,15 +8,16 @@
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { goto } from "$app/navigation";
     import ModificarTurno from "./modificarTurno.svelte";
+    import type { PerroTurno } from "$lib/interfaces/Perro.interface";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
     let idTurnoSelec:number
-    let turnoModificar:Turno;
-    let modificar:boolean = false;
+    let turnoModificar:Turno 
+    let perros: PerroTurno[] = [];
 
     onMount(async () => { 
-        const res = await fetch(
+        await fetch(
             `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
             {
                 method: "GET",
@@ -28,7 +29,23 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (turnos = apiResponse.data));
+
+        await  fetch(
+            `http://localhost:3000/listar-perros?cliente=${cliente}`, 
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (perros = apiResponse.data));
     });
+
+
+
 
     const fallaDesconocida: ModalSettings = {
         type: "alert",
@@ -45,19 +62,34 @@
     };
     //----------------------------Modificar turno----------------------------------------//
 
-    
-    const modalModificarTurno: Record<string, ModalComponent> = {
+    const handleModificar = (turno:Turno) => {
+        turnoModificar = turno;
 
-    // Custom Modal 1
-        modalComponentOne: {
-            // Pass a reference to your custom component
-            ref: ModificarTurno,
-            // Add the component properties as key/value pairs
-            props: { background: 'bg-red-500' },
-            // Provide a template literal for the default component slot
-            slot: '<p>Skeleton</p>'
+        const modalTest: ModalSettings = {
+            type: "component",
+            // Pass the component directly:
+            component: modalComponent,
+            response: (r: any) => console.log("response:", r),
+        };
+        modalStore.clear();
+        modalStore.trigger(modalTest);
+    }
+
+    $: modalComponent = {
+        // Pass a reference to your custom cosmponent
+        ref: ModificarTurno,
+        // Add the component properties as key/value pairs
+        props: {
+            perrosCliente:perros,
+            turnoId:turnoModificar.id,
+            turnoMotivo: turnoModificar.motivo,
+            turnoPerroId:turnoModificar.perroId,
+            turnoPerroNombre:turnoModificar.perroNombre,
+            turnoFecha: turnoModificar.fecha,
+            turnoRango: turnoModificar.rangoHorario
         },
-
+        // Provide a template literal for the default component slot
+        slot: "<p>Skeleton</p>",
     };
 
     //----------------------------Cancelar turno----------------------------------------//
@@ -177,9 +209,9 @@
                     </div>
                         {#if turno.urgencia === false}
                             <footer class="flex">
-                               <!--  <button  on:click={(event) => modalModificarTurno} class="btn btn-sm variant-ghost-surface"
+                                <button  on:click={(event) => handleModificar(turno)} class="btn btn-sm variant-ghost-surface"
                                     >Modificar</button
-                                > -->
+                                >
                                 <button  on:click={(event) => handleCancelar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
                                     >Cancelar</button
                                 >
