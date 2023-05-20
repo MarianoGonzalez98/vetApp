@@ -1,87 +1,57 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
+    import type { Id } from '$lib/interfaces/Id.interface';
 
 
 
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
-	export let datosParaContacto:any
-	export let publicacion:PublicacionAdopcion;
+	export let publicacion:PublicacionAdopcion&Id;
+	export let publicacionesVisibles:PublicacionAdopcion&Id;
 
 	// Stores
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
-	// Form Data
-	const formData = {
-		nombreApellido: datosParaContacto.nombreApellido,
-		telefono: datosParaContacto.telefono,
-		email: datosParaContacto.email,
-	};
+
 	
 	async function onConfirm() {
-		await fetch('http://localhost:3000/send-mail',{
-			method:'POST',
-			headers:{
-				'Content-Type':'application/json',
-			},
-			credentials: 'include',
-			body: JSON.stringify({
-				emailData: {
-					emailDestino:publicacion.email,
-					asunto:"Alguien quiere contactarse por su publicacion",
-					cuerpo:`Alguien se ha contacado con usted por su publicacion del perro ${publicacion.nombre} disponible para adoptar. <br>
-					Los datos de contacto del interesado son: <br>
-					<br>
-					Apellido y nombre: ${formData.nombreApellido}<br>
-					Email: ${formData.email}<br>
-					Teléfono: ${formData.telefono} <br>
-					`,
-				}
-			}),
-        }).then((res) => {
-                if (res.status < 299) {
-					modalStore.close();
-					modalStore.trigger(ContactoRealizadoModal);
-                }
-                if (res.status === 500) {
+		await fetch('http://localhost:3000/adopciones/marcar-adoptado',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    id:publicacion.id,
+                })
+            }).then( (res) => {
+                if (res.status < 299) {  //si entra acá no hubo error
+					if ($modalStore[0].response) {
+						$modalStore[0].response(true);
+					}
                     modalStore.clear();
-                    modalStore.trigger(fallaServidor);
+                    modalStore.trigger(perroMarcadoAdoptadoModal);
+
+                    
+                    return res;
                 }
-				if (res.status === 424) {
-                    modalStore.clear();
-                    modalStore.trigger(ContactoFallidoModal);
-                }
-				return res;
-            })
-            .catch((err) => {
+                return Promise.reject(res);
+            }).catch( (e)  => {
+                console.log(e);
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error en el contacto: ", err);
-            });
+        });
 	}
 
-
-	const ContactoRealizadoModal: ModalSettings = {
-        type: 'alert',
-        title: 'Contacto realizado',
-        body: 'Se ha enviado un correo con sus datos a la direccion de email de la publicación',
-        buttonTextCancel: "Ok",
-    };
-
-	const ContactoFallidoModal: ModalSettings = {
-        type: 'alert',
-        title: 'Contacto fallido',
-        body: 'No se pudo realizar el contacto. Hubo una falla en el envio del mail',
-        buttonTextCancel: "Ok",
-    };
-
-	const fallaServidor: ModalSettings = {
+    const perroMarcadoAdoptadoModal: ModalSettings = {
         type: "alert",
-        title: "Fallo de la carga del cliente",
-        body: "Falla del servidor",
+        title: "Perro marcado adoptado",
+        body: "Se ha marcado correctamente adoptado al perro seleccionado",
         buttonTextCancel: "Ok",
+		//response: () => location.reload(),
     };
+
 
 	const fallaDesconocida: ModalSettings = {
         type: "alert",
@@ -93,13 +63,13 @@
 	// Base Classes for css
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
-	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
-
-	const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-	const numbersPattern: string = "^[0-9]*$";
-	const letrasEspaciosComaPattern: string =
-        "^[a-zA-Zàáâäãåąčćęèéêëėį,ìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
+	let buttonNeutral = 'variant-ghost-surface';
+	/** Provide classes for positive actions, such as Confirm or Submit. */
+	let buttonPositive = 'variant-filled';
+	function onClose(): void {
+		if ($modalStore[0].response) $modalStore[0].response(false);
+		modalStore.close();
+	}
 </script>
 
 <!-- @component This example creates a simple form modal. -->
@@ -107,9 +77,11 @@
 {#if $modalStore[0]}
 	<slot></slot>
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>Contactar a un paseador</header>
-		<article>Ingrese sus datos de contacto:</article>
+		<header class={cHeader}>Confirme su acción</header>
+		<article>¿Está seguro de marcar el perro {publicacion.nombre} como adoptado?</article>
 
+			<button type="button" class="btn {buttonNeutral}" on:click={onClose}>Cancelar</button>
+			<button type="button" class="btn {buttonPositive}" on:click={onConfirm}>Confirmar</button>
 		<footer class="modal-footer {parent.regionFooter}">
 
     </footer>

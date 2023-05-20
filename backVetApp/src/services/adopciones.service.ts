@@ -6,12 +6,12 @@ import { Id } from "../interfaces/Id.interface";
 export const insertAdopcionInDB = async (adopcion:AdopcionInput) => {
     const query = `
         INSERT INTO public.adopciones(
-        "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro", "fechaNacPerro")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+        "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro", "fechaNacPerro","fechaPublicacion")
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9);
         `
         const values = [adopcion.emailContacto,adopcion.nombreContacto,adopcion.apellidoContacto,
             adopcion.telefonoContacto,adopcion.autorEmail, adopcion.nombrePerro, adopcion.razaPerro,
-            adopcion.fechaNacPerro
+            adopcion.fechaNacPerro, new Date().toJSON().slice(0, 10)
         ];
 
         try {
@@ -19,7 +19,7 @@ export const insertAdopcionInDB = async (adopcion:AdopcionInput) => {
             return 'ok';
         }
         catch (error) {
-            console.error("----Error en acceso a BD:insertPassword------");
+            console.error("----Error en acceso a BD:insertAdopcionInDB------");
             console.log(error);
             return "error";
         }
@@ -27,7 +27,7 @@ export const insertAdopcionInDB = async (adopcion:AdopcionInput) => {
 
 export const getAdopcionesDB = async () => {
     const query = `
-        SELECT id ,"emailContacto" as email, "nombrePerro" as nombre, "razaPerro" as raza, "fechaNacPerro" as "fechaNacimiento", adoptado
+        SELECT id ,"emailContacto" as email, "nombrePerro" as nombre, "razaPerro" as raza, "fechaNacPerro" as "fechaNacimiento", adoptado,"fechaPublicacion","autorEmail"
         FROM public.adopciones;
     `;
     try {

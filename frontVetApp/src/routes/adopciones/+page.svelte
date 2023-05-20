@@ -6,6 +6,7 @@
     import { onMount } from "svelte";
     import ModalExampleForm from "./ModalExampleForm.svelte";
     import type { Id } from "$lib/interfaces/Id.interface";
+    import ModalConfirmarMarcarAdoptado from "./ModalConfirmarMarcarAdoptado.svelte";
 
 	let misDatos = {
 		nombreApellido: '',
@@ -71,30 +72,25 @@
     });
 
     const handleMarcarAdoptado = async (publicacion:PublicacionAdopcion&Id) => {
-        
-        await fetch('http://localhost:3000/adopciones/marcar-adoptado',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    id:publicacion.id,
-                })
-            }).then( (res) => {
-                if (res.status < 299) {  //si entra acá no hubo error
-                    modalStore.clear();
-                    modalStore.trigger(perroMarcadoAdoptadoModal);
-                    publicacion.adoptado=true;
+        let modalComponent = {
+            ref: ModalConfirmarMarcarAdoptado,
+            props: { publicacion:publicacion, publicacionesVisibles:publicacionesVisibles},
+        };
+
+        let modalConfirm: ModalSettings = { //esto sí lo uso
+            type: 'component',
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+                if (confirmo){
+                    publicacion.adoptado=true; //marco como adoptada a la publicacion en el front tmb
                     publicacionesVisibles= publicacionesVisibles; //esta asignación es por la reactividad
-                    return res;
                 }
-                return Promise.reject(res);
-            }).catch( (e)  => {
-                console.log(e);
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-        });
+            },
+        };
+        modalStore.clear();
+        modalStore.trigger(modalConfirm);
+
     }
 
     const handleContactar = (publicacion:PublicacionAdopcion&Id) => {
@@ -105,7 +101,7 @@
             props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada},
         };
 
-        let modalTest: ModalSettings = { //esto sí lo uso
+        let modalForm: ModalSettings = { //esto sí lo uso
             type: 'component',
             // Pass the component directly:
             component: modalComponent,
@@ -113,7 +109,7 @@
         };
 
         modalStore.clear();
-        modalStore.trigger(modalTest);
+        modalStore.trigger(modalForm);
     }
     
 

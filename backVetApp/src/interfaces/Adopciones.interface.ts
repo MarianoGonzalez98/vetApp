@@ -18,5 +18,7 @@ export interface PublicacionAdopcion{
     raza:string,
     fechaNacimiento:string,
     email:string,
-    adoptado:boolean
+    adoptado:boolean,
+    fechaPublicacion:string,
+    autorEmail:string,
 }
