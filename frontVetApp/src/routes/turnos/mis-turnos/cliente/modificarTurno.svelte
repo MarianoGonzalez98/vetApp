@@ -46,7 +46,7 @@
         title: "truno actualizado",
         body: "Turno actualizado correctamente",
         buttonTextCancel: "Ok",
-        response: (r: boolean) => goto("/turnos"),
+        response: () => location.reload(),
     };
 
     const fallaRangoCompleto: ModalSettings = {
