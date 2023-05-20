@@ -4,7 +4,7 @@ import { pool } from "../utils/db.handle";
 
 export const getPaseadorCuidador = async (email: String) => {
     const query = `
-    SELECT nombre, apellido, zona, "disponibilidadDeFechasDesde", "disponibilidadDeFechasHasta", "disponibilidadHorariaDesde", "disponibilidadHorariaHasta", telefono, email, oficio, disponible
+    SELECT *
     FROM public.paseadoresycuidadores
     WHERE email = $1
     `
@@ -25,10 +25,10 @@ export const getPaseadorCuidador = async (email: String) => {
 export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador) => {
     const query = `
     INSERT INTO public.paseadoresycuidadores(
-        nombre, apellido, zona, "disponibilidadDeFechasDesde", "disponibilidadDeFechasHasta", "disponibilidadHorariaDesde", "disponibilidadHorariaHasta", telefono, email, oficio)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+        nombre, apellido, zona, telefono, email, oficio, disponibilidad)
+        VALUES ($1, $2, $3, $4, $5, $6, $7);
     `
-    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.disponibilidadDeFechasDesde, paseadorcuidador.disponibilidadDeFechasHasta, paseadorcuidador.disponibilidadHorariaDesde, paseadorcuidador.disponibilidadHorariaHasta, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio]
+    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio, paseadorcuidador.disponibilidad]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -36,6 +36,43 @@ export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador)
     }
     catch (err) {
         console.error("----Error en acceso a BD:insertPaseadorCuidador------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getPaseadoresCuidadores = async () => {
+    const query = `
+    SELECT *
+    FROM public.paseadoresycuidadores
+    `
+
+    try {
+        const response: QueryResult = await pool.query(query, [])
+        const result: PaseadorCuidador[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getPaseadoresCuidadores------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const toggleDisponible = async (paseadorcuidador: PaseadorCuidador) => {
+    const query = `
+    UPDATE public.paseadoresycuidadores
+    SET disponible = $2
+    WHERE email = $1;
+    `
+    const values = [paseadorcuidador.email, paseadorcuidador.disponible]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:toggleDisponible------");
         console.log(err);
         return "error";
     }

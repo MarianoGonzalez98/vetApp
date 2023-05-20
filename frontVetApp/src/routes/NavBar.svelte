@@ -3,6 +3,11 @@
     import { user } from '$lib/stores/user';
   import { AppBar } from '@skeletonlabs/skeleton';
   import { LightSwitch } from '@skeletonlabs/skeleton';
+  import { Avatar } from '@skeletonlabs/skeleton';
+
+
+  
+
   let imgSrc = '/Logo1.png';
   const logout = () => {
     $user=null;
@@ -35,6 +40,7 @@
     {#if (!$user)}
       <a class="btn variant-ghost-surface" href="/auth/login" rel="noreferrer">Login</a>
     {:else}
+    <Avatar src="{$user.foto || "/no_foto_perfil.png"}" fallback="/no_foto_perfil.png" width="w-16" rounded="rounded-3xl" />
       <button on:click={logout} type="button" class="btn variant-ghost-surface" >Cerrar sesion</button>
     {/if}
   </svelte:fragment>

@@ -1,5 +1,5 @@
 import { QueryResult } from "pg";
-import { Auth, Persona, Rol, User } from "../interfaces/User.interface";
+import { Auth, Foto, Persona, Rol, User } from "../interfaces/User.interface";
 import { pool } from "../utils/db.handle";
 import { verified } from "../utils/bycrypt.handle";
 
@@ -90,14 +90,14 @@ const insertUser = async (usuario: Persona & Auth & Rol) => { //las interseccion
 
 const getUser = async (email: string) => {
     const query = `
-    SELECT id, password, email, rol, "seCambioPassword" 
+    SELECT id, password, email, rol, "seCambioPassword",foto
     FROM public.usuarios 
     WHERE email = $1
     `
     const values = [email]
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
-        const result: User = await response.rows[0];
+        const result: User&Foto = await response.rows[0];
         return result;
     }
     catch (err) {

@@ -54,23 +54,16 @@
         buttonTextCancel: "Ok",
     };
 
-    let fechaMin = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-
     let nombre = "";
     let apellido = "";
     let zona = "";
-    let disponibilidadDeFechasDesde = new Date();
-    let disponibilidadDeFechasHasta = new Date();
-    let disponibilidadHorariaDesde = new Date();
-    let disponibilidadHorariaHasta = new Date();
     let telefono = "";
     let email = "";
-    let oficio : Oficio;
+    let oficio: Oficio;
+    let disponibilidad = "";
 
-    const handleRegistro =async () => {
-        let error:boolean=false;
+    const handleRegistro = async () => {
+        let error: boolean = false;
 
         await fetch("http://localhost:3000/cargar-paseadorcuidador", {
             method: "POST",
@@ -82,16 +75,13 @@
                 nombre: nombre,
                 apellido: apellido,
                 zona: zona,
-                disponibilidadDeFechasDesde: disponibilidadDeFechasDesde.toJSON().slice(0,10),
-                disponibilidadDeFechasHasta: disponibilidadDeFechasHasta.toJSON().slice(0,10),
-                disponibilidadHorariaDesde: disponibilidadHorariaDesde,
-                disponibilidadHorariaHasta: disponibilidadHorariaHasta,
                 telefono: telefono,
                 email: email,
-                oficio: oficio
+                oficio: oficio,
+                disponibilidad: disponibilidad,
             }),
         })
-        .then((res) => {
+            .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(paseadorCuidadorCargado);
@@ -117,9 +107,21 @@
             .catch((error) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error desconocido en carga del paseador/cuidador : ", error);
+                console.log(
+                    "Error desconocido en carga del paseador/cuidador : ",
+                    error
+                );
             });
     };
+    /*
+
+    PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
+
+    let fecha = new Date();
+    let fechaMin = new Date();
+    let format = "dd-MM-yyyy";
+    let placeholder = "Elija una fecha";
+    */
 </script>
 
 <Modal />
@@ -163,24 +165,50 @@
             required
         />
 
-        <p>Disponibilidad de fechas:</p>
-        <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="fecha">Desde</label>
-                <DateInput bind:value={disponibilidadDeFechasDesde} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
+        <p>Disponibilidad horaria:</p>
+        <textarea
+            bind:value={disponibilidad}
+            class="input rounded-3xl"
+            placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
+            name="observaciones"
+        />
+
+        <!--
+            
+            PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
+            
+            <div class="flex">
+            <button
+                class="btn rounded-lg variant-ghost-secondary mr-2 grayscale"
+                type="submit">Domingo</button
+            >
+            <div class="flex-none">
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
+                    type="time"
+                    name="disponibilidadHorariaDesde"
+                    required
+                />
             </div>
             <div class="flex-none ml-2">
-                <label class="label" for="fecha">Hasta</label>
-                <DateInput bind:value={disponibilidadDeFechasHasta} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/>
+                <input
+                    bind:value={fecha}
+                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
+                    type="time"
+                    name="disponibilidadHorariaHasta"
+                    required
+                />
             </div>
         </div>
-
-        <p>Disponibilidad horaria:</p>
         <div class="flex">
-            <div class="flex-none mr-2">
-                <label class="label" for="disponibilidadHorariaDesde">Desde</label>
+            <button
+                class="btn rounded-lg variant-filled-secondary mr-2"
+                type="submit">Domingo</button
+            >
+            <div class="flex-none">
                 <input
-                    bind:value={disponibilidadHorariaDesde}
+                    bind:value={fecha}
                     class="input focus:invalid:border-red-500"
                     type="time"
                     name="disponibilidadHorariaDesde"
@@ -188,16 +216,15 @@
                 />
             </div>
             <div class="flex-none ml-2">
-                <label class="label" for="disponibilidadHorariaHasta">Hasta</label>
                 <input
-                    bind:value={disponibilidadHorariaHasta}
+                    bind:value={fecha}
                     class="input focus:invalid:border-red-500"
                     type="time"
                     name="disponibilidadHorariaHasta"
                     required
                 />
             </div>
-        </div>
+        </div> -->
 
         <label class="label" for="dni">Teléfono:</label>
         <input
