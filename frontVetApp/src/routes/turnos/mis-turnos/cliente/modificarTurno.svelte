@@ -1,11 +1,10 @@
 <script lang="ts">
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
-    import type { Turno } from "$lib/interfaces/Turno.interface";
     import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
     import { goto } from "$app/navigation";
 
-    let fechaMin = new Date().toJSON().slice(0, 10);
-    let turno:Turno;
+    
+    let fechaMin = new Date();
 
     // Props
     /** Exposes parent props to this component. */
@@ -18,6 +17,7 @@
     export let turnoPerroNombre:string;;
     export let turnoFecha:Date;
     export let turnoRango:string;
+
     
     // Form Data
     let formData ={
@@ -27,7 +27,7 @@
         perroId:turnoPerroId,
         perroNombre:turnoPerroNombre,
         motivo:turnoMotivo,
-        fecha:turnoFecha,
+        fecha: new Date (turnoFecha),
         rango:turnoRango
     }
 
@@ -126,17 +126,20 @@
 {#if $modalStore[0]}
     <div class="modal-example-form {cBase}">
         <header class={cHeader}>Modificar turno</header>
+        <header class={cHeader}>Fecha: {formData.fecha.toLocaleDateString('es-AR')}</header>
 
         <form class="modal-form {cForm}">     
                 <label class="label">
                     <span>Seleccione el perro:</span>
-                    <select id="seleccionPerro" style="color: black;" bind:value={perroSelect} on:change={actualizarFormPerro}>
-                        {#each formData.perros as perro}
-                            <option value={perro}>
-                                <span>{perro.nombre} </span>
-                            </option>
-                        {/each}
-                    </select>
+                        <select class="select" bind:value={perroSelect} on:change={actualizarFormPerro}>
+                            <option value={perroSelect} disabled selected>{perroSelect.nombre}</option>
+                            {#each formData.perros as perro}
+                                <option value={perro}>
+                                    <span>{perro.nombre} </span>
+                                </option>
+                            {/each}
+                        </select>
+
                 </label>
 
                 <label class="label">
@@ -151,13 +154,13 @@
                 </label>
                 
 
-                <label class="label" for="fecha">Fecha deL turno:</label>
+                <label class="label" for="formData.fecha">Fecha deL turno:</label>
                 <input
                     bind:value={formData.fecha}
                     class="input"
                     type="date"
-                    min={fechaMin}
-                    name="fecha"
+                    min={fechaMin.toJSON().slice(0,10)}
+                    name="formData.fecha"
                     required
                 />
 

@@ -8,6 +8,7 @@
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { goto } from "$app/navigation";
     import ModificarTurno from "./modificarTurno.svelte";
+
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
 
     let cliente = $user?.email;
@@ -115,15 +116,14 @@
 
 
     //----------------------------Cancelar turno----------------------------------------//
-    const TurnoCancelado: ModalSettings = {
-        type: 'alert',
-        title: 'Turno cancelado',
-        body: 'Turno cancelado',
-        buttonTextCancel: "Ok",
-        response: () => location.reload() // Como hago para que se recargue al seleccionar ok
-    };
-
     const handleModalConfirmCancelación  = async(cancelado: boolean) =>  {
+        const TurnoCancelado: ModalSettings = {
+            type: 'alert',
+            title: 'Turno cancelado',
+            body: 'Turno cancelado',
+            buttonTextCancel: "Ok",
+            response: (r: boolean) => goto("/turnos/mis-turnos-cliente"),
+        };
         if (cancelado === true) {
             await fetch("http://localhost:3000/turnos/cancelar-turno",{
                 method:"POST",
@@ -161,10 +161,13 @@
             });
 
         }
-        location.reload()
     }
 
+
+
     const handleCancelar = (fecha:Date, rango:string, cliente:string, id:number) => {
+       
+        
         const modal1: ModalSettings = {
             type: 'confirm',
             title: 'Confirmar cancelar turno',
@@ -172,11 +175,13 @@
             buttonTextCancel:"Cancelar",
             buttonTextConfirm:"Confirmar",
 
-            response: handleModalConfirmCancelación,
+            response:  handleModalConfirmCancelación,
         }
         modalStore.clear();
         modalStore.trigger(modal1);
         idTurnoSelec = id; 
+        modalStore.clear();
+        modalStore.trigger(modal1);
     } 
       
 </script>
