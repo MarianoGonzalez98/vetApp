@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    //----------------------------ACEPTADOS-------------------------------//
+    //----------------------------PENDIENTES-------------------------------//
 
     import { onMount } from "svelte";
     import type { Turno } from "$lib/interfaces/Turno.interface";
@@ -19,18 +19,6 @@
         let nuevaFechaDate = new Date(nuevaFecha);
 
         return nuevaFechaDate.toLocaleDateString('es-AR');
-    }
-
-    const compararFechas = (fechaTurno: Date) => { //la fecha del turno debe ser un dia mas (por lo menos) a la fecha de hoy
-        let fechaHoy = new Date();
-        let fechaHoyTiempo = fechaHoy.getTime();
-
-        const nuevaFechaTurnoString = fechaTurno.toString();
-        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
-        let nuevaFechaDate = new Date(nuevaFecha);
-        let fechaTurnoTiempo = nuevaFechaDate.getTime();
-
-        return fechaTurnoTiempo >= fechaHoyTiempo 
     }
 
     onMount(async () => { 
@@ -63,6 +51,71 @@
         buttonTextCancel: "Ok",
     };
 
+
+    //----------------------------Aceptar turno----------------------------------------//
+    const TurnoAceptado: ModalSettings = {
+        type: 'alert',
+        title: 'Turno aceptado',
+        body: 'Turno aceptado',
+        buttonTextCancel: "Ok",
+        response: () => location.reload() // Como hago para que se recargue al seleccionar ok
+    };
+
+    const handleModalConfirmAceptación = async(aceptado: boolean) =>  {
+        if (aceptado === true) {
+            await fetch("http://localhost:3000/turnos/aceptar-turno",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    aceptado,
+                    idTurnoSelec
+                })
+            })
+            .then((res) => {
+                if (res.status < 299) {
+                        modalStore.clear();
+                        modalStore.trigger(TurnoAceptado);
+                        return res;
+                }
+                if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        goto("/auth/login");
+                        return;
+                }
+                if (res.status === 500) {
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                }
+            })
+            .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log("Error en la aceptación del turno desconocido: ", error);
+            });
+
+        }
+    }
+
+    const handleAceptar = (fecha:Date, rango:string, cliente:string, id:number) => {
+        const modal: ModalSettings = {
+            type: 'confirm',
+            title: 'Confirmar aceptación de turno',
+            body: `¿Está seguro de aceptar el turno del cliente ${cliente}  
+            en el rango horario ${rango} de la fecha ${fecha.toString().slice(0,10)}?`,
+            buttonTextCancel:"Cancelar",
+            buttonTextConfirm:"Confirmar",
+
+            response: handleModalConfirmAceptación,
+        }
+        modalStore.clear();
+        modalStore.trigger(modal);
+        idTurnoSelec = id;
+    }
 
 
     //----------------------------Rechazar turno----------------------------------------//
@@ -160,21 +213,14 @@
         {#if turnos.length === 0}
             No hay turnos para visualizar
         {/if}
-        {#if (turno.rechazado === false)&&(turno.aceptado === true)}
+        {#if (turno.rechazado === false)&&(turno.aceptado === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
-                <div class="flex flex-col justify-start p-6">
-                    {#if turno.urgencia === true}
-                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Urgencia
-                            </h6>
-                    {/if}    
-                    {#if turno.urgencia === false}
-                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Turno Aceptado
-                            </h6>
-                    {/if}   
+                <div class="flex flex-col justify-start p-6">  
+                        <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
+                        Turno Pendiente
+                        </h6>  
                     <h5
                         class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                     >
@@ -206,15 +252,16 @@
                             {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
-                    <footer class="flex">
-                        {#if (turno.urgencia === false)&&(compararFechas(turno.fecha))}
+                        <footer class="flex">
+                            <button on:click={(event) => handleAceptar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface mr-2" 
+                                >Aceptar </button
+                            >
                             <button on:click={(event) => handleRechazar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
                                 >Rechazar</button
                             >
-                        {/if}
-                    </footer>          
-                </div>
-            </div>
+                        </footer>                   
+                    </div>
+             </div>
         {/if}
     {/each}
 </div>

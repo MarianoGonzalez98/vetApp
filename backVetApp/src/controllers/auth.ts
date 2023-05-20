@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword, getUserCompleto, updatePerfilUsuario, getUserConDni } from "../services/auth.service";
-import { Auth, UserData, Persona } from "../interfaces/User.interface";
+import { Auth, UserData, Persona, Foto } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
 import { generateRandomString } from "../utils/random.handle";
@@ -148,12 +148,14 @@ const loginController = async (req: Request, res: Response) => {
         res.status(401).send({ data: "password incorrecto", statusCode: 402 })
         return
     }
-    const userData: UserData = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword }; //creo q se puede mejorar
+    let userData: UserData = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword }; //creo q se puede mejorar
     console.log("LOGIN CRONTROLLER:")
     console.log(userData);
     const token = await generateToken(userData); //genero jwt token
     res.cookie('jwt', token, { httpOnly: true, maxAge:11704085200 }); //mando el jwt en una cookie httpOnly
-    res.send({ data: { userData, token: token } })
+    let userDataConFoto:UserData&Foto = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword, foto:decodeToHTML_JPEG(result.foto)}
+    console.log(userDataConFoto);
+    res.send({ data: { userData:userDataConFoto, token: token } })
 };
 
 const logoutController = async (req: Request, res: Response) => {

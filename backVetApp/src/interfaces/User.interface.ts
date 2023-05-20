@@ -9,6 +9,10 @@ export interface User extends Auth {
     seCambioPassword:boolean,
 }
 
+export interface Foto{
+    foto:string,
+}
+
 export interface UserData {
     email:string,
     rol:string

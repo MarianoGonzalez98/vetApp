@@ -11,7 +11,7 @@
 
     let fecha = new Date();
     let fechaMin = new Date();
-    let format = 'dd-MM-yyyy'
+    let format = 'dd/MM/yyyy'
     let placeholder= 'Elija una fecha'
 
     let rangoHorario = '';
@@ -57,7 +57,7 @@
 	title: 'Solicitud de turno',
 	body: 'Solicitud enviada',
     buttonTextCancel: "Ok",
-    response: (r: boolean) => goto("/"),
+    response: (r: boolean) => goto("/turnos/"),
     };
 
     const fallaDesconocida: ModalSettings = {
