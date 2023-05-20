@@ -31,8 +31,6 @@
 					}
                     modalStore.clear();
                     modalStore.trigger(perroMarcadoAdoptadoModal);
-
-                    
                     return res;
                 }
                 return Promise.reject(res);

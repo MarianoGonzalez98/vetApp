@@ -134,8 +134,8 @@
 				<p>Sólo números</p>
 				<div class="arrow variant-filled" />
 			</div>
-			<button type="button" class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-			<button class="btn {parent.buttonPositive}">Submit Form</button>
+			<button type="button" class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
+			<button class="btn {parent.buttonPositive}">Enviar contacto</button>
 		</form>
 		<footer class="modal-footer {parent.regionFooter}">
 

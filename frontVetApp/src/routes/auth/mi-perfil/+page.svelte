@@ -56,7 +56,7 @@
                 {#if foto}
                     <img class="object-contain h-32 w-32" src="{foto}" alt="foto de perfil" />
                 {:else}
-                    <img class="object-contain h-32 w-32" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" />  <!-- guardar en static!! -->
+                    <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt="" />  <!-- guardar en static!! -->
                 {/if}
             </div>
         </div>

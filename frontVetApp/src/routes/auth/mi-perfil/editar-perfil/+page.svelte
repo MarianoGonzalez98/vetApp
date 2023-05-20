@@ -152,6 +152,9 @@ const modalConfirmarEliminarFoto: ModalSettings = {
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(clienteCargado);
+                    if ($user){
+                        $user.foto=foto;
+                    }
                     return res;
                 }
                 if (res.status === 400) {

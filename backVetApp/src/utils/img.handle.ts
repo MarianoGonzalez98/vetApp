@@ -19,5 +19,8 @@ import sharp from "sharp";
 
 //si, hice un método para solo esto...
 export const decodeToHTML_JPEG = (base64JPEG:string) => {
-    return "data:image/jpeg;base64,"+base64JPEG;
+    if (base64JPEG){
+        return "data:image/jpeg;base64,"+base64JPEG;
+    }
+    return "";
 }
