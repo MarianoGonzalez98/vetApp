@@ -135,7 +135,7 @@ export const cancelarTurno = async (id:number) => {
         return 'ok';
     }
     catch(err){
-        console.error("----Error en acceso a BD:aceptarTurno------");
+        console.error("----Error en acceso a BD:cancelarTurno------");
         console.log(err);
         return "error";
     }

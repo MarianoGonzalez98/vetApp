@@ -12,6 +12,7 @@ export interface UserData {
     email: string,
     rol: string,
     seCambioPassword: boolean,
+    foto:string,
 }
 
 export interface Persona{

@@ -72,7 +72,7 @@ export const toggleDisponible = async (paseadorcuidador: PaseadorCuidador) => {
         return 'ok';
     }
     catch (err) {
-        console.error("----Error en acceso a BD:insertPaseadorCuidador------");
+        console.error("----Error en acceso a BD:toggleDisponible------");
         console.log(err);
         return "error";
     }

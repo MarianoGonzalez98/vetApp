@@ -1,5 +1,7 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
+    import type{  PopupSettings, } from "@skeletonlabs/skeleton";
+	import {popup} from "@skeletonlabs/skeleton";
 
 	// Props
 	/** Exposes parent props to this component. */
@@ -87,10 +89,22 @@
         body: "No se pudo realizar el contacto",
         buttonTextCancel: "Ok",
     };
+
+	const popupFocusBlur: PopupSettings = {
+        event: "focus-blur",
+        target: "popupFocusBlur",
+        placement: "top",
+    };
 	// Base Classes for css
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';
 	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
+
+	const emailPattern: string =
+        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
+	const numbersPattern: string = "^[0-9]*$";
+	const letrasEspaciosComaPattern: string =
+        "^[a-zA-Zàáâäãåąčćęèéêëėį,ìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 </script>
 
 <!-- @component This example creates a simple form modal. -->
@@ -101,24 +115,30 @@
 		<header class={cHeader}>Contactar a un paseador</header>
 		<article>Ingrese sus datos de contacto:</article>
 
-		<form class="modal-form {cForm}">
+		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
 			<label class="label">
 				<span>Apellido y nombre</span>
-				<input class="input" type="text" bind:value={formData.nombreApellido} placeholder="Ingrese su apellido y nombre" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre y apellido válido" bind:value={formData.nombreApellido} pattern={letrasEspaciosComaPattern} required placeholder="Ingrese su apellido y nombre" />
 			</label>
-			<label class="label">
+
+			<label use:popup={popupFocusBlur}  class="label">
 				<span>Teléfono</span>
-				<input class="input" type="tel" bind:value={formData.telefono} placeholder="Ingrese su teléfono" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un teléfono válido con unicamente números" bind:value={formData.telefono} pattern={numbersPattern}  required placeholder="Ingrese su teléfono. Ej. 2219876543" />
 			</label>
+
 			<label class="label">
 				<span>Email</span>
-				<input class="input" type="email" bind:value={formData.email} placeholder="Ingrese su email" />
+				<input class="input focus:invalid:border-red-500" title="Ingrese un mail valido" type="text" bind:value={formData.email} pattern={emailPattern} required placeholder="Ingrese su email" />
 			</label>
+			<div class="card p-2 variant-filled" data-popup="popupFocusBlur">
+				<p>Sólo números</p>
+				<div class="arrow variant-filled" />
+			</div>
+			<button type="button" class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
+			<button class="btn {parent.buttonPositive}">Enviar contacto</button>
 		</form>
-
 		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Submit Form</button>
+
     </footer>
 	</div>
 {/if}

@@ -5,6 +5,8 @@
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import { onMount } from "svelte";
     import ModalExampleForm from "./ModalExampleForm.svelte";
+    import type { Id } from "$lib/interfaces/Id.interface";
+    import ModalConfirmarMarcarAdoptado from "./ModalConfirmarMarcarAdoptado.svelte";
 
 	let misDatos = {
 		nombreApellido: '',
@@ -13,10 +15,19 @@
 	};
 
     let emailSeleccionado:string="";
-    let publicaciones:PublicacionAdopcion[] = [];
+    let publicaciones:(PublicacionAdopcion&Id)[] = [];
     let inputRaza:string;
 
-    let publicacionSeleccionada:PublicacionAdopcion;
+
+    let publicacionSeleccionada:PublicacionAdopcion&Id;
+    $: publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
+            if (!a.adoptado && b.adoptado) return -1;
+            if (a.adoptado && !b.adoptado) return 1;
+            if (a.fechaPublicacion > b.fechaPublicacion) return -1;
+            if (a.fechaPublicacion <= b.fechaPublicacion) return 1;
+            return 1
+        })
+
     $: publicacionesVisibles = inputRaza ?
 		publicaciones.filter(pub => {
 			return pub.raza.toLowerCase().match(`${inputRaza.toLowerCase()}.*`)
@@ -37,13 +48,6 @@
             )
             .then((res) => res.json())
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
-        
-        publicaciones = publicaciones.sort( (a,b) => { //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
-            if (!a.adoptado && b.adoptado) return -1;
-            if (a.fechaNacimiento > b.fechaNacimiento) return -1;
-            if (a.fechaNacimiento <= b.fechaNacimiento) return 1;
-            return 1
-        })
 
         if ($user){
             await fetch('http://localhost:3000/getPerfil',{
@@ -58,7 +62,6 @@
                 }
                 return Promise.reject(res);
             }).then( (res) => {
-                console.log(res);
                 misDatos.nombreApellido=res.apellido+", "+res.nombre;
                 misDatos.telefono=res.telefono;
                 misDatos.email=$user?.email || '';
@@ -68,8 +71,29 @@
         }
     });
 
+    const handleMarcarAdoptado = async (publicacion:PublicacionAdopcion&Id) => {
+        let modalComponent = {
+            ref: ModalConfirmarMarcarAdoptado,
+            props: { publicacion:publicacion, publicacionesVisibles:publicacionesVisibles},
+        };
 
-    const handleContactar = (publicacion:PublicacionAdopcion) => {
+        let modalConfirm: ModalSettings = { //esto sí lo uso
+            type: 'component',
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+                if (confirmo){
+                    publicacion.adoptado=true; //marco como adoptada a la publicacion en el front tmb
+                    publicacionesVisibles= publicacionesVisibles; //esta asignación es por la reactividad
+                }
+            },
+        };
+        modalStore.clear();
+        modalStore.trigger(modalConfirm);
+
+    }
+
+    const handleContactar = (publicacion:PublicacionAdopcion&Id) => {
         publicacionSeleccionada= publicacion;
         emailSeleccionado = publicacion.email;
         let modalComponent = {
@@ -77,7 +101,7 @@
             props: { datosParaContacto:misDatos, publicacion:publicacionSeleccionada},
         };
 
-        let modalTest: ModalSettings = { //esto sí lo uso
+        let modalForm: ModalSettings = { //esto sí lo uso
             type: 'component',
             // Pass the component directly:
             component: modalComponent,
@@ -85,10 +109,23 @@
         };
 
         modalStore.clear();
-        modalStore.trigger(modalTest);
+        modalStore.trigger(modalForm);
     }
     
 
+    const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Error desconocido",
+        body: "No se pudo marcar como adoptado",
+        buttonTextCancel: "Ok",
+    };
+
+    const perroMarcadoAdoptadoModal: ModalSettings = {
+        type: "alert",
+        title: "Perro marcado adoptado",
+        body: "Se ha marcado correctamente adoptado al perro seleccionado",
+        buttonTextCancel: "Ok",
+    };
 </script>
 
 <Modal />
@@ -123,11 +160,13 @@
                     <div>
                         {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
                             <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
-                            {#if (publicacion.email === $user?.email)}
-                            <button class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
+                            {#if (publicacion.autorEmail === $user?.email)}
+                            <button on:click={(event) => handleMarcarAdoptado(publicacion)} class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
                             {/if}
                         {/if}
+
                     </div>
+                    <p>Fecha de publicación: {new Date(publicacion.fechaPublicacion).toLocaleDateString('es-AR')}</p>
                 </footer>
             </div>
 

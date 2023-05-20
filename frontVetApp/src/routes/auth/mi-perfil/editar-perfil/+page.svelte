@@ -57,9 +57,23 @@
         placement: "top",
     };
 
+const modalConfirmarEliminarFoto: ModalSettings = {
+	type: 'confirm',
+	title: 'Confirme su acción',
+	body: '¿Está seguro de eliminar su foto? La eliminación se hará efectiva al actualizar su perfil',
+    buttonTextConfirm: 'Si',
+    buttonTextCancel: 'No',
+	response: (confirma: boolean) => {
+        if (confirma){
+            foto="";
+            FotoFile="";
+        }
+    },
+};
+
     const eliminarFoto = () => {
-        foto="";
-        FotoFile="";
+        modalStore.clear();
+        modalStore.trigger(modalConfirmarEliminarFoto);
     }
 
     onMount( () => {
@@ -138,6 +152,9 @@
                 if (res.status < 299) {
                     modalStore.clear();
                     modalStore.trigger(clienteCargado);
+                    if ($user){
+                        $user.foto=foto;
+                    }
                     return res;
                 }
                 if (res.status === 400) {
