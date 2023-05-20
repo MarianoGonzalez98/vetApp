@@ -9,6 +9,19 @@
     let errorClass = '';
     const passRegex = "(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`\´#$\"¿%^&*_=+\-]).{6,32}"
 
+    let isVisible = false;
+    $: type = isVisible ? "text" : "password";
+
+    const toggleVisibility = () => {
+        isVisible = !isVisible;
+    };
+    function handleInputPass1(e:any) {
+        password = e.target.value;
+    }
+    function handleInputPass2(e:any) {
+        password2 = e.target.value;
+    }
+
     const popupFocusBlur: PopupSettings = {
 	event: 'focus-blur',
 	target: 'targetPopup',
@@ -89,13 +102,17 @@
     <form on:submit|preventDefault={changePass} class='space-y-2 mx-20 mt-10'>
         <label class="label" for="password">Nueva contraseña: </label>
         <div>
-            <input bind:value={password} class="input max-w-md focus:invalid:border-red-500 {errorClass}" type="password" pattern={passRegex} use:popup={popupFocusBlur} placeholder="Ingrese su nueva contraseña" name="password" required>
+            <input on:input={handleInputPass1} class="input max-w-md focus:invalid:border-red-500 {errorClass}"  pattern={passRegex} use:popup={popupFocusBlur} {type} placeholder="Ingrese su nueva contraseña" name="password" required>
             <p class="text-red-500">{errorMsj}</p>
         </div>
         <label class="label" for="password2">Confirme su nueva contraseña: </label>
         <div>
-            <input bind:value={password2} pattern={passRegex} class="input max-w-md focus:invalid:border-red-500" type="password" placeholder="Repita la contraseña" name="password2" required>
+            <input on:input={handleInputPass2} pattern={passRegex} class="input max-w-md focus:invalid:border-red-500" {type} placeholder="Repita la contraseña" name="password2" required>
             <p class="text-red-500">{errorMsj2}</p>
+        </div>
+        <div class="flex content-center">
+            <input class="checkbox self-center mr-2" on:change={toggleVisibility} type=checkbox name="toggle" id="toggle">
+            <label for="toggle" >Mostrar contraseña</label>
         </div>
 
         <button class="btn rounded-lg variant-filled" type="submit">Cambiar contraseña</button>

@@ -8,7 +8,6 @@
 	/** Exposes parent props to this component. */
 	export let parent: any;
 	export let publicacion:PublicacionAdopcion&Id;
-	export let publicacionesVisibles:PublicacionAdopcion&Id;
 
 	// Stores
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
@@ -66,13 +65,13 @@
 	let buttonNeutral = 'variant-ghost-surface';
 	/** Provide classes for positive actions, such as Confirm or Submit. */
 	let buttonPositive = 'variant-filled';
+	
 	function onClose(): void {
 		if ($modalStore[0].response) $modalStore[0].response(false);
 		modalStore.close();
 	}
 </script>
 
-<!-- @component This example creates a simple form modal. -->
 
 {#if $modalStore[0]}
 	<slot></slot>
