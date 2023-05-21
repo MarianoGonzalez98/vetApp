@@ -67,22 +67,18 @@ const enviarMailSolicituTurno = async (req:Request, res:Response) => {
     //let emailDestinatario = veterinarios;
     let asunto = "Nueva solicitud de turno"
     let texto = `¡Un cliente solicitó un nuevo turno!
-    <br>
-    <br>
-    A continuación te dejamos los datos del turno.
-    <br>
-    Cliente: ${turno.emailOwner}
-    <br>
-    Fecha: ${nuevaFechaDate.toLocaleDateString('es-AR')}
-    <br>
-    Rango horario: ${turno.rangoHorario}
-    <br>
+    <br><br>
+    A continuación te dejamos los datos del turno.<br>
+    
+    Cliente: ${turno.emailOwner}<br>
+    Fecha: ${nuevaFechaDate.toLocaleDateString('es-AR')}<br>
+    Rango horario: ${turno.rangoHorario}<br>
     Perro: ${turno.perroNombre}`;
     
     sendMailTest(email, asunto, texto);
 }
 
-export const SolicitarTurnoController = async (req:Request, res:Response) => { //FALTA MANDAR MAIL A LOS VETERINARIOS
+export const SolicitarTurnoController = async (req:Request, res:Response) => { 
 
     let turno:Turno = req.body;
     turno.urgencia = false;
@@ -118,12 +114,12 @@ const enviarMailModificarTurno = async (perroNombre:string,fecha:Date,rango:stri
     //let emailDestinatario = veterinarios;
     let asunto = "Solicitud de turnoModificado"
     let texto = `¡Un cliente solicitó un nuevo turno!
+    <br><br>
+    A continuación te dejamos los datos del turno.<br>
     
-    A continuación te dejamos los datos del turno.
-    
-    Cliente: ${emailOwner}
-    Fecha: ${fecha}
-    Rango horario: ${rango}
+    Cliente: ${emailOwner}<br>
+    Fecha: ${fecha}<br>
+    Rango horario: ${rango}<br>
     Perro: ${perroNombre}`;
     
     sendMailTest(email, asunto, texto);
@@ -266,14 +262,14 @@ const enviarMailRechazarTurno = async (perroNombre:string,fecha:Date,rango:strin
 
 
 export const rechazarTurnoController = async(req:Request, res:Response) => {
-    let rechazado:boolean = req.body.rechazado;
     let turno:number = req.body.idTurnoSelec;
     let justificacion:string = req.body.justificacion;
+
     let fechaParaRecomendar:Date= new Date();
     let recomendacion:Date = new Date();
     let encontreFecha:boolean = false;
 
-    const dbResult = await rechazarTurno(rechazado,turno);
+    const dbResult = await rechazarTurno(true,turno);
 
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
