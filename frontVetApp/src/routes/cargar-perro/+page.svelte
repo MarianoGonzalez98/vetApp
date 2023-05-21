@@ -66,69 +66,73 @@
         .toString()
         .padStart(2, "0")}-${fechaHoy.getDate().toString().padStart(2, "0")}`;
 
-
-    afterNavigate((nav:AfterNavigate) => {
-        if (($user?.rol==='veterinario') &&(nav.from?.route.id !=='/cargar-cliente')){
-            goto('/');
+    afterNavigate((nav: AfterNavigate) => {
+        if (
+            $user?.rol === "veterinario" &&
+            nav.from?.route.id !== "/cargar-cliente"
+        ) {
+            goto("/");
         }
     });
-    beforeNavigate((nav:BeforeNavigate) => {
-        if (nav?.to?.route.id !== '/cargar-cliente'){
-            $dataRegistroCliente=null;
+    beforeNavigate((nav: BeforeNavigate) => {
+        if (nav?.to?.route.id !== "/cargar-cliente") {
+            $dataRegistroCliente = null;
         }
     });
 
     const handleCarga = async () => {
+        if ($user?.rol === "veterinario") {
+            owner = $dataRegistroCliente?.email;
+        }
+        let error = false;
 
-        if($user?.rol==='veterinario'){
-            owner= $dataRegistroCliente?.email;
-            }
-        let error=false;
-
-        if(($user?.rol==='veterinario')&&(!error)){
+        if ($user?.rol === "veterinario" && !error) {
             await fetch("http://localhost:3000/registrar-cliente", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                ...$dataRegistroCliente,
-                foto: null,
-            }),
-        })
-            .then((res) => {
-                if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(perroClienteCargado);
-                    return res;
-                }
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    error=true;
-                    goto("/auth/login");
-                    return;
-                }
-                if (res.status === 409) {
-                    error=true;
-                    return res;
-                }
-                if (res.status === 500) {
-                    error=true;
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    ...$dataRegistroCliente,
+                    foto: null,
+                }),
             })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log("Error en carga del cliente desconocido: ", error);
-            });
+                .then((res) => {
+                    if (res.status < 299) {
+                        modalStore.clear();
+                        modalStore.trigger(perroClienteCargado);
+                        return res;
+                    }
+                    if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        error = true;
+                        goto("/auth/login");
+                        return;
+                    }
+                    if (res.status === 409) {
+                        error = true;
+                        return res;
+                    }
+                    if (res.status === 500) {
+                        error = true;
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                    }
+                })
+                .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log(
+                        "Error en carga del cliente desconocido: ",
+                        error
+                    );
+                });
         }
 
-        if (error){
+        if (error) {
             modalStore.clear();
             modalStore.trigger(fallaDesconocidaCliente);
             return;
@@ -148,8 +152,9 @@
                 peso,
                 vacunasAplicadas,
                 owner,
+                foto: null,
             }),
-            })
+        })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();

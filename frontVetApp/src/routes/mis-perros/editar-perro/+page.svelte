@@ -279,7 +279,7 @@
                 {:else}
                     <img
                         class="object-contain h-32 w-32"
-                        src="/no_foto_perfil.png"
+                        src="/no_foto_perro.png"
                         alt=""
                     />
                 {/if}

@@ -74,14 +74,22 @@
 <div class="ml-2 flex flex-wrap">
     {#each mostrar as perro}
         <div
-            class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
+            class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary max-w-sm md:flex-row min-h-0 h-auto"
         >
             <header>
-                <img
-                    class="object-cover h-full w-full rounded-t-lg"
-                    src="https://i.pinimg.com/originals/ce/80/f5/ce80f5cdff3aa5ec3eb7072348d41075.jpg"
-                    alt=""
-                />
+                {#if perro.foto}
+                    <img
+                        class="object-cover h-full w-full rounded-t-lg"
+                        src={perro.foto}
+                        alt="foto de perfil"
+                    />
+                {:else}
+                    <img
+                        class="object-cover h-full w-full rounded-t-lg p-5"
+                        src="/no_foto_perro.png"
+                        alt=""
+                    />
+                {/if}
             </header>
             <div class="flex flex-col justify-start p-6">
                 <h5
@@ -102,7 +110,7 @@
                     </p>
                     <p>
                         <span class="font-medium">Fecha de nacimiento: </span>
-                        {perro.fechaNacimiento}
+                        {new Date(perro.fechaNacimiento).toJSON().slice(0, 10)}
                     </p>
                     <p>
                         <span class="font-medium">Observaciones: </span>

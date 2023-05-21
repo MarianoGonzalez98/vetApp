@@ -41,7 +41,6 @@ export const listarPerrosController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    console.log(result);
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
@@ -56,7 +55,6 @@ export const getPerroController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    console.log(result);
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
@@ -72,10 +70,6 @@ export const marcarComoFallecidoController = async (req: Request, res: Response)
     }
 
     let turnos = getTurnosPerro(perro.id);
-    console.log(perro.id);
-
-
-    console.log(turnos);
 
     let mensajeCliente = `Se cancelaron los siguientes turnos pendientes correspondientes al perro ${perro.nombre}`;
     let mensajeVeterinario = mensajeCliente + ` del cliente ${perro.owner}:<br><br>`;
@@ -108,7 +102,6 @@ export const marcarComoFallecidoController = async (req: Request, res: Response)
 }
 
 export const actualizarPerroController = async (req: Request, res: Response) => {
-    console.log(req.body);
     const perro: Perro = req.body;
     const nombreAnterior = req.body.nombreAnterior;
 
