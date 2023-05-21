@@ -11,6 +11,7 @@ export interface Perro {
     libretaSanitaria: null, //LibretaSanitaria[]
     foto: null,
     owner: string;
+    fallecido: boolean,
 }
 
 export interface VacunaAplicada {
