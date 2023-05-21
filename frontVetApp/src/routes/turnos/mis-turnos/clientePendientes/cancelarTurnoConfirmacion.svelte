@@ -1,6 +1,9 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { user } from "$lib/stores/user";
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import type { Turno } from '$lib/interfaces/Turno.interface';
+    import { onMount } from 'svelte';
 
 
 	// Props

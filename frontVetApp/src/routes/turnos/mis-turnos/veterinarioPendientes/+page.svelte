@@ -7,6 +7,8 @@
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import RechazarTurno from "./rechazarTurno.svelte";
+    import ConfirmarRechazo from "./confirmarRechazo.svelte";
 
     
     let turnos: Turno[] = [];
@@ -119,86 +121,25 @@
 
 
     //----------------------------Rechazar turno----------------------------------------//
-     const TurnoRechazado: ModalSettings = {
-        type: 'alert',
-        title: 'Turno rechazado',
-        body: 'Turno rechazado, se enviará al cliente su justificación',
-        buttonTextCancel: "Ok",
-        response: () => location.reload() // Como hago para que se recargue al seleccionar ok
-    };
 
-    const handleModalConfirmRechazo = async(justificacion:string, rechazado:boolean) =>  {
-        if (rechazado === true) {
-            await fetch("http://localhost:3000/turnos/rechazar-turno",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    rechazado,
-                    idTurnoSelec,
-                    justificacion
-                })
-            })
-            .then((res) => {
-                if (res.status < 299) {
-                        modalStore.clear();
-                        modalStore.trigger(TurnoRechazado);
-                        return res;
-                }
-                if (res.status === 400) {
-                        //error por modificacion del token jwt.
-                        $user = null;
-                        goto("/auth/login");
-                        return;
-                }
-                if (res.status === 500) {
-                        modalStore.clear();
-                        modalStore.trigger(fallaServidor);
-                        return res;
-                }
-            })
-            .catch((error) => {
-                    modalStore.clear();
-                    modalStore.trigger(fallaDesconocida);
-                    console.log("Error en el rechazo del turno desconocido: ", error);
-            }); 
-        }   
-    }
-
-    const handleRechazo = async(rechazado: boolean) =>  {
-        if (rechazado === true) {
-            const modal2: ModalSettings = {
-                type: 'prompt',
-                // Data
-                title: 'Turno rechazado',
-                body: 'Ingrese una justificación',
-                // Populates the input value and attributes
-                value: '',
-                valueAttr: { type: 'text', minlength: 3, required: true },
-                // Returns the updated response value
-                response: (r: string) => handleModalConfirmRechazo(r,rechazado),
+    const handleRechazar = (turno:Turno) =>  {
+            let modalComponent = {
+                ref: ConfirmarRechazo,
+                props: { idTurnoSelec:turno.id, 
+                        turnoFecha:turno.fecha,
+                        },
             };
-            modalStore.trigger(modal2);
-        }
+            
+            let modalConfirm: ModalSettings = { 
+                type: 'component',
+                // Pass the component directly:
+                component: modalComponent,
+                response: (confirmo: any) => {
+                },
+            };
+            modalStore.clear();
+            modalStore.trigger(modalConfirm);
     }
-
-    const handleRechazar = (fecha:Date, rango:string, cliente:string, id:number) => {
-        const modal1: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirmar rechazar turno',
-            body: `¿Está seguro de rechazar el turno del cliente ${cliente}  
-            en el rango horario ${rango} de la fecha ${fecha.toString().slice(0,10)}?`,
-            buttonTextCancel:"Cancelar",
-            buttonTextConfirm:"Confirmar",
-
-            response: handleRechazo,
-        }
-        modalStore.clear();
-        modalStore.trigger(modal1);
-        idTurnoSelec = id; 
-    } 
 
 
 </script>
@@ -207,12 +148,13 @@
 
 
 <h1>Turnos</h1>
-
+{#if (turnos.filter((turno)=> {
+    return (turno.aceptado === false)&&(turno.rechazado === false)}).length === 0)
+}
+    <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos pendientes</h6>
+{/if}
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
-        {#if turnos.length === 0}
-            No hay turnos para visualizar
-        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
@@ -256,13 +198,15 @@
                             <button on:click={(event) => handleAceptar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface mr-2" 
                                 >Aceptar </button
                             >
-                            <button on:click={(event) => handleRechazar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface"
+                            <button on:click={(event) => handleRechazar(turno)} class="btn btn-sm variant-ghost-surface"
                                 >Rechazar</button
                             >
                         </footer>                   
                     </div>
              </div>
         {/if}
+        
+
     {/each}
 </div>
 

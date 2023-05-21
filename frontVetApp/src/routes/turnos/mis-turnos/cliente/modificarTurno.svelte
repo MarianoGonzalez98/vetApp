@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-    import { goto } from "$app/navigation";
 
     
     let fechaMin = new Date();
