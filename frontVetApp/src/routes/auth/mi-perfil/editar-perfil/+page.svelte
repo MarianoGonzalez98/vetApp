@@ -27,7 +27,7 @@
         "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
     const numbersPattern: string = "^[0-9]*$";
-    let emailErrorMsj = "";
+    let dniErrorMsj = "";
     let fileErrorMsj = "";
     const clienteCargado: ModalSettings = {
         type: "alert",
@@ -132,6 +132,7 @@ const modalConfirmarEliminarFoto: ModalSettings = {
     }
 
     const handleCarga = () => {
+        dniErrorMsj="";
         fetch("http://localhost:3000/updatePerfil", {
             method: "PUT",
             headers: {
@@ -165,6 +166,11 @@ const modalConfirmarEliminarFoto: ModalSettings = {
                 }
                 if (res.status === 404) {
                     console.log("El usuario no existe...");
+                    return res;
+                }
+                if (res.status === 409) {
+                    console.log("Ya hay un usuario con ese dni");
+                    dniErrorMsj="Ya hay un usuario registrado con ese dni";
                     return res;
                 }
                 if (res.status === 500) {
@@ -209,7 +215,7 @@ const modalConfirmarEliminarFoto: ModalSettings = {
     
             <label class="label" for="dni">DNI:</label>
             <input bind:value={dni} class="input focus:invalid:border-red-500" type="text" max="9999999999" placeholder="Ingrese dni del cliente" name="dni" autocomplete="off" pattern={numbersPattern} required />
-
+            <p class="text-red-500">{dniErrorMsj}</p>
             <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
             <input bind:value={fechaNacimiento} class="input" type="date" placeholder="Ingrese fecha de nacimiento del cliente" name="fechaNacimiento" max={fechaMax} required/>
     
