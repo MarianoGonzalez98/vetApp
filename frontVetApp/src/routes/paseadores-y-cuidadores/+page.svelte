@@ -126,7 +126,7 @@
             ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
             : true;
         const horarioMatch = inputHorario
-            ? pc.disponibilidad
+            ? pc.horarios
                   .toLowerCase()
                   .match(`.*${inputHorario.toLowerCase()}.*`)
             : true;
@@ -251,8 +251,8 @@
                             {pc.telefono}
                         </p>
                         <p>
-                            <span class="font-medium">Disponibilidad: </span>
-                            {pc.disponibilidad}
+                            <span class="font-medium">Horarios: </span>
+                            {pc.horarios}
                         </p>
                     </div>
                     {#if $user?.rol === "veterinario"}
