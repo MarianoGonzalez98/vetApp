@@ -8,3 +8,14 @@ export const generateRandomString = () => {
     }
     return randomString;
 }
+
+export const generateRandomPassword = () => {
+    const regex = new RegExp("(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`\´#$\"¿%^&*_=+\-]).{6,32}");
+    let password = generateRandomString();
+    console.log(password);
+    while (!regex.test(password)){
+        password = generateRandomString();
+        console.log(password);
+    }
+    return password;
+}

@@ -26,7 +26,7 @@
         "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
     const numbersPattern: string = "^[0-9]*$";
-    let emailErrorMsj = "";
+    let dniErrorMsj = "";
     let fileErrorMsj = "";
     const clienteCargado: ModalSettings = {
         type: "alert",
@@ -136,6 +136,7 @@
     };
 
     const handleCarga = () => {
+        dniErrorMsj = "";
         fetch("http://localhost:3000/updatePerfil", {
             method: "PUT",
             headers: {
@@ -169,6 +170,11 @@
                 }
                 if (res.status === 404) {
                     console.log("El usuario no existe...");
+                    return res;
+                }
+                if (res.status === 409) {
+                    console.log("Ya hay un usuario con ese dni");
+                    dniErrorMsj = "Ya hay un usuario registrado con ese dni";
                     return res;
                 }
                 if (res.status === 500) {
@@ -243,7 +249,7 @@
                 pattern={numbersPattern}
                 required
             />
-
+            <p class="text-red-500">{dniErrorMsj}</p>
             <label class="label" for="fechaNacimiento"
                 >Fecha de nacimiento:</label
             >

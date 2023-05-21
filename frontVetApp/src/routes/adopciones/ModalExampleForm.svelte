@@ -112,7 +112,7 @@
 {#if $modalStore[0]}
 	<slot></slot>
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>Contactar a un paseador</header>
+		<header class={cHeader}>Contactar al dueño del perro publicado</header>
 		<article>Ingrese sus datos de contacto:</article>
 
 		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
