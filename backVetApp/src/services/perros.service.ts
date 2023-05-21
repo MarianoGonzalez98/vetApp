@@ -26,7 +26,7 @@ export const getPerros = async (owner: string) => {
     const query = `
     SELECT *
     FROM public.perros p
-    WHERE p.owner = $1
+    WHERE (p.owner = $1) AND (p.fallecido = false)
     `
 
     const values = [owner]

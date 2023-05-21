@@ -171,60 +171,8 @@
             class="input rounded-3xl"
             placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
             name="observaciones"
+            required
         />
-
-        <!--
-            
-            PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
-            
-            <div class="flex">
-            <button
-                class="btn rounded-lg variant-ghost-secondary mr-2 grayscale"
-                type="submit">Domingo</button
-            >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div>
-        <div class="flex">
-            <button
-                class="btn rounded-lg variant-filled-secondary mr-2"
-                type="submit">Domingo</button
-            >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div> -->
 
         <label class="label" for="dni">Teléfono:</label>
         <input

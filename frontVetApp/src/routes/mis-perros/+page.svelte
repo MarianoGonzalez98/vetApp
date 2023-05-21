@@ -71,7 +71,7 @@
 
 <h1>Mis perros</h1>
 
-<div class="ml-2 flex flex-wrap">
+<div class="ml-2 flex flex-wrap items-start">
     {#each mostrar as perro}
         <div
             class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary max-w-sm md:flex-row min-h-0 h-auto"

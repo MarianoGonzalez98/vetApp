@@ -1,8 +1,14 @@
 <script lang="ts">
     import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+    import type { Vacuna } from "$lib/interfaces/Perro.interface";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
-    import type { ModalSettings } from "@skeletonlabs/skeleton";
+    import {
+        CodeBlock,
+        ListBox,
+        ListBoxItem,
+        type ModalSettings,
+    } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import type { AfterNavigate, BeforeNavigate } from "@sveltejs/kit";
 
@@ -50,15 +56,25 @@
         buttonTextCancel: "Ok",
     };
 
+    let valueMultiple: string[] = ["books", "movies"];
+
     let nombre = "";
     let raza = "";
     let sexo = "";
     let fechaNacimiento: string = new Date().toJSON().slice(0, 10);
     let observaciones = "";
     let peso: number;
-    let vacunasAplicadas: string[] = [];
+    let vacunasAplicadas: Vacuna[] = [];
+    let vacunas: string[] = [];
     let foto: null;
     let owner = $user?.email;
+    let castrado: string[] = [];
+
+    const prueba = () => {
+        console.log(vacunas);
+        console.log(castrado);
+    };
+
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
         fechaHoy.getMonth() + 1
@@ -85,6 +101,10 @@
             owner = $dataRegistroCliente?.email;
         }
         let error = false;
+
+        for (const vacuna of vacunas) {
+            vacunasAplicadas.concat;
+        }
 
         if ($user?.rol === "veterinario" && !error) {
             await fetch("http://localhost:3000/registrar-cliente", {
@@ -153,6 +173,7 @@
                 vacunasAplicadas,
                 owner,
                 foto: null,
+                castrado: castrado.length === 1,
             }),
         })
             .then((res) => {
@@ -189,9 +210,12 @@
 <Modal />
 
 <div
-    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center"
+    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center w-full"
 >
-    <form on:submit|preventDefault={handleCarga} class="space-y-2">
+    <form
+        on:submit|preventDefault={handleCarga}
+        class="space-y-2 w-full h-full max-w-md"
+    >
         <label class="label" for="nombre">Nombre:</label>
         <input
             bind:value={nombre}
@@ -254,15 +278,46 @@
             required
         />
 
+        <label class="label" for="castrado">Castración:</label>
+        <ListBox
+            active="variant-filled-primary"
+            hover="hover:variant-soft-primary"
+            multiple
+            class="w-full max-w-[480px]"
+        >
+            <ListBoxItem
+                bind:group={castrado}
+                name="medium"
+                value="Castrado"
+                class="border"
+            >
+                Está castrado
+            </ListBoxItem>
+        </ListBox>
+
         <label class="label" for="vacunasAplicadas">Vacunas aplicadas:</label>
-        {#each ["Vacuna A", "Vacuna B"] as vacuna}
-            <input
-                bind:group={vacunasAplicadas}
-                type="checkbox"
-                value={vacuna}
-            />
-            {vacuna}
-        {/each}
+        <ListBox
+            active="variant-filled-primary"
+            hover="hover:variant-soft-primary"
+            multiple
+            class="w-full max-w-[480px]"
+        >
+            {#each ["Vacuna A", "Vacuna B"] as vacuna}
+                <ListBoxItem
+                    bind:group={vacunas}
+                    name="medium"
+                    value={vacuna}
+                    class="border"
+                >
+                    {vacuna}
+                </ListBoxItem>
+            {/each}
+        </ListBox>
+
+        <button
+            class="btn rounded-lg variant-filled-primary"
+            on:click|preventDefault={prueba}>Probar</button
+        >
 
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Cargar perro</button

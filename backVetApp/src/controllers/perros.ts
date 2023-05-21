@@ -89,10 +89,10 @@ export const marcarComoFallecidoController = async (req: Request, res: Response)
 
     mensajeCliente += "<br><br>Lamentamos su pérdida."
 
-    let emailCliente = "felipetamburri@gmail.com"; //solo para testear
+    let emailCliente = perro.owner;
     let asuntoCliente = `Cancelación de los turnos de ${perro.nombre}`
 
-    let emailVeterinario = "felipetamburri@gmail.com"; //solo para testear
+    let emailVeterinario = "pedrovetapp@gmail.com"; //solo para la demo
     let asuntoVeterinario = asuntoCliente += ` del cliente ${perro.owner}`;
 
     sendMailTest(emailCliente, asuntoCliente, mensajeCliente);
