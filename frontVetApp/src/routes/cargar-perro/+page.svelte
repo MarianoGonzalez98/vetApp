@@ -73,6 +73,7 @@
     const prueba = () => {
         console.log(vacunas);
         console.log(castrado);
+        console.log(fechaNacimiento);
     };
 
     const fechaHoy = new Date(Date.now());
@@ -103,7 +104,11 @@
         let error = false;
 
         for (const vacuna of vacunas) {
-            vacunasAplicadas.concat;
+            let vacunaAplicada: Vacuna = {
+                nombre: vacuna,
+                fechaDeAplicacion: new Date().toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
         }
 
         if ($user?.rol === "veterinario" && !error) {
@@ -170,9 +175,9 @@
                 fechaNacimiento,
                 observaciones,
                 peso,
-                vacunasAplicadas,
+                vacunas: JSON.stringify(vacunasAplicadas),
+                antiparasitarios: "[]",
                 owner,
-                foto: null,
                 castrado: castrado.length === 1,
             }),
         })
@@ -273,6 +278,7 @@
             bind:value={peso}
             class="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             type="number"
+            step="0.01"
             placeholder="Ej: 20"
             name="direccion"
             required

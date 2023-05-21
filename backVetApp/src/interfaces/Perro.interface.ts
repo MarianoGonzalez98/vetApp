@@ -1,5 +1,15 @@
 export type Sexo = "Macho" | "Hembra"
 
+export interface Vacuna {
+    nombre: string;
+    fechaDeAplicacion: string;
+}
+
+export interface Antiparasitario {
+    nombre: string;
+    cantidadAplicada: number;
+}
+
 export interface Perro {
     id: number
     nombre: string,
@@ -7,25 +17,11 @@ export interface Perro {
     sexo: Sexo,
     fechaNacimiento: Date,
     observaciones: string;
-    historiaClinica: null, //Turno[]
-    libretaSanitaria: null, //LibretaSanitaria[]
+    vacunas: string;
+    antiparasitarios: string;
+    peso: number;
     foto: null,
     owner: string;
     fallecido: boolean,
-}
-
-export interface VacunaAplicada {
-    nombre: string,
-    fechaDeAplicacion: Date
-}
-
-export interface AntiparasitarioAplicado {
-    nombre: string,
-    cantidadAplicada: number
-}
-
-export interface LibretaSanitaria {
-    peso: number,
-    vacunasAplicadas: VacunaAplicada[],
-    antiparasitariosAplicados: AntiparasitarioAplicado[]
+    castrado: boolean,
 }

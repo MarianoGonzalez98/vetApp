@@ -45,10 +45,10 @@ export const getPerros = async (owner: string) => {
 export const insertPerro = async (perro: Perro) => {
     const query = `
     INSERT INTO public.perros(
-        nombre, raza, sexo, "fechaNacimiento", observaciones, foto, owner)
-        VALUES ($1, $2, $3, $4, $5, $6, $7);
+        nombre, raza, sexo, "fechaNacimiento", observaciones, owner, peso, vacunas, antiparasitarios, castrado)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
     `
-    const values = [perro.nombre, perro.raza, perro.sexo, perro.fechaNacimiento, perro.observaciones, perro.foto, perro.owner]
+    const values = [perro.nombre, perro.raza, perro.sexo, perro.fechaNacimiento, perro.observaciones, perro.owner, perro.peso, perro.vacunas, perro.antiparasitarios, perro.castrado];
 
     try {
         const response: QueryResult = await pool.query(query, values)

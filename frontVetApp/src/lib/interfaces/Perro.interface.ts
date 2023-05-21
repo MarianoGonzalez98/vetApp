@@ -17,13 +17,13 @@ export interface Perro {
     sexo: Sexo,
     fechaNacimiento: string,
     observaciones: string;
-    vacunas: Vacuna[];
-    antiparasitarios: Antiparasitario[];
+    vacunas: string;
+    antiparasitarios: string;
     peso: number;
     foto: null,
     owner: string;
     fallecido: boolean,
-    castrado: boolean
+    castrado: boolean,
 }
 
 export interface Id {

@@ -41,7 +41,8 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (perros = apiResponse.data));
-        mostrar = perros.filter((perro) => !perro.fallecido);
+        mostrar = perros;
+        console.log(typeof perros[0].vacunas);
     });
 
     const handleMarcarFallecido = async (perro: Perro) => {
@@ -65,6 +66,7 @@
         modalStore.clear();
         modalStore.trigger(modalConfirm);
     };
+    const espacio = " ";
 </script>
 
 <Modal />
@@ -114,14 +116,43 @@
                     </p>
                     <p>
                         <span class="font-medium">Observaciones: </span>
+                        {perro.observaciones}
                     </p>
                     <p>
-                        <span class="font-medium">Peso: COMPLETAR</span>
+                        <span class="font-medium">Peso: {perro.peso} Kg</span>
+                    </p>
+                    <p>
+                        <span class="font-medium">Vacunas aplicadas: </span>
+                        {#if perro.vacunas !== "[]"}
+                            {#each JSON.parse(perro.vacunas) as vacuna}
+                                {espacio}{vacuna.nombre}, aplicada el {vacuna.fechaDeAplicacion}.
+                            {/each}
+                        {:else}
+                            No se le aplicaron vacunas.
+                        {/if}
                     </p>
                     <p>
                         <span class="font-medium"
-                            >Vacunas aplicadas: COMPLETAR</span
-                        >
+                            >Antiparasitarios aplicados:
+                        </span>
+                        {#if perro.antiparasitarios !== "[]"}
+                            {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
+                                {espacio}{antiparasitario.nombre}, aplicada el {antiparasitario.cantidadAplicada}.
+                            {/each}
+                        {:else}
+                            No se le aplicaron antiparasitarios.
+                        {/if}
+                    </p>
+                    <p class="font-medium">
+                        {#if !perro.castrado}
+                            No está
+                        {:else}
+                            Está
+                        {/if}castrad{#if perro.sexo === "Macho"}
+                            o.
+                        {:else}
+                            a.
+                        {/if}
                     </p>
                 </div>
                 {#if $user?.rol === "veterinario"}
