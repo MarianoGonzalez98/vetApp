@@ -223,3 +223,23 @@ export const getTurnosPerro = async (perroId: number) => {
         return [];
     }
 }
+
+
+export const getTurnosPendientesPasados = async () => {
+    const query = `
+    SELECT * 
+    FROM public.turnos
+    WHERE (fecha < CURRENT_DATE)AND(aceptado = false)AND(rechazado = false)
+    `;
+
+    try {
+        const response: QueryResult = await pool.query(query)
+        const result: Turno[] = await response.rows;
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:cancelarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
