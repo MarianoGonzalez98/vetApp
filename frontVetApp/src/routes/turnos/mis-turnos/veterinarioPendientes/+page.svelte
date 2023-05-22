@@ -7,8 +7,8 @@
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import RechazarTurno from "./rechazarTurno.svelte";
     import ConfirmarRechazo from "./confirmarRechazo.svelte";
+    import ConfirmarAceptacion from "./confirmarAceptacion.svelte";
 
     
     let turnos: Turno[] = [];
@@ -63,60 +63,23 @@
         response: () => location.reload() // Como hago para que se recargue al seleccionar ok
     };
 
-    const handleModalConfirmAceptación = async(aceptado: boolean) =>  {
-        if (aceptado === true) {
-            await fetch("http://localhost:3000/turnos/aceptar-turno",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    aceptado,
-                    idTurnoSelec
-                })
-            })
-            .then((res) => {
-                if (res.status < 299) {
-                        modalStore.clear();
-                        modalStore.trigger(TurnoAceptado);
-                        return res;
-                }
-                if (res.status === 400) {
-                        //error por modificacion del token jwt.
-                        $user = null;
-                        goto("/auth/login");
-                        return;
-                }
-                if (res.status === 500) {
-                        modalStore.clear();
-                        modalStore.trigger(fallaServidor);
-                        return res;
-                }
-            })
-            .catch((error) => {
-                    modalStore.clear();
-                    modalStore.trigger(fallaDesconocida);
-                    console.log("Error en la aceptación del turno desconocido: ", error);
-            });
+    
 
-        }
-    }
+    const handleAceptar = (turno:Turno) => {
+        let modalComponent = {
+            ref: ConfirmarAceptacion,
+            props: { turnoInfo:turno},
+        };
 
-    const handleAceptar = (fecha:Date, rango:string, cliente:string, id:number) => {
-        const modal: ModalSettings = {
-            type: 'confirm',
-            title: 'Confirmar aceptación de turno',
-            body: `¿Está seguro de aceptar el turno del cliente ${cliente}  
-            en el rango horario ${rango} de la fecha ${fecha.toString().slice(0,10)}?`,
-            buttonTextCancel:"Cancelar",
-            buttonTextConfirm:"Confirmar",
-
-            response: handleModalConfirmAceptación,
-        }
+        let modalConfirm: ModalSettings = { 
+            type: 'component',
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+            },
+        };
         modalStore.clear();
-        modalStore.trigger(modal);
-        idTurnoSelec = id;
+        modalStore.trigger(modalConfirm);
     }
 
 
@@ -146,13 +109,13 @@
 
 <Modal />
 
-
-<h1>Turnos</h1>
+<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver turnos</a>
+<h1 class="h1 m-4 mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">Turnos</h1>
 {#if (turnos.filter((turno)=> {
     return (turno.aceptado === false)&&(turno.rechazado === false)}).length === 0)
 }
     <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos pendientes</h6>
-{/if}
+{/if} 
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
         {#if (turno.rechazado === false)&&(turno.aceptado === false)}
@@ -187,15 +150,9 @@
                             {turno.motivo} 
                         
                         </p>
-                        <p>
-                            <span class="font-medium">Descripción: </span>
-                            {#if turno.descripcion !== null} {turno.descripcion} {/if}
-                            {#if turno.descripcion === null} Sin descripción {/if}
-                            {#if turno.descripcion === ""} Sin descripción {/if}
-                        </p>
                     </div>
                         <footer class="flex">
-                            <button on:click={(event) => handleAceptar(turno.fecha,turno.rangoHorario,turno.emailOwner,turno.id)} class="btn btn-sm variant-ghost-surface mr-2" 
+                            <button on:click={(event) => handleAceptar(turno)} class="btn btn-sm variant-ghost-surface mr-2" 
                                 >Aceptar </button
                             >
                             <button on:click={(event) => handleRechazar(turno)} class="btn btn-sm variant-ghost-surface"

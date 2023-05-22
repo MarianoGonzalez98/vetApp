@@ -75,8 +75,9 @@
 <Modal />
 
 
-<h1>Mis TURNOS</h1>
 
+
+<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver turnos</a>
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
         {#if turnos.length === 0}
@@ -103,12 +104,6 @@
                             <span class="font-medium">Motivo: </span>
                             {turno.motivo} 
                         
-                        </p>
-                        <p>
-                            <span class="font-medium">Descripción: </span>
-                            {#if turno.descripcion !== null} {turno.descripcion} {/if}
-                            {#if turno.descripcion === null} Sin descripción {/if}
-                            {#if turno.descripcion === ""} Sin descripción {/if}
                         </p>
                     </div>
                         <footer class="flex">

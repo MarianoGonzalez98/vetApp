@@ -131,21 +131,17 @@
 
 <h1>Mis TURNOS</h1>
 
+<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver turnos</a>
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
         {#if turnos.length === 0}
             No hay turnos para visualizar
         {/if}
-        {#if (turno.rechazado === false)&&(turno.aceptado === true)}
+        {#if (turno.rechazado === false)&&(turno.aceptado === true)&&(turno.urgencia === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
-                <div class="flex flex-col justify-start p-6">
-                    {#if turno.urgencia === true}
-                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Urgencia
-                            </h6>
-                    {/if}    
+                <div class="flex flex-col justify-start p-6">  
                     {#if turno.urgencia === false}
                             <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
                             Turno Aceptado
@@ -170,14 +166,8 @@
                             {turno.motivo} 
                         
                         </p>
-                        <p>
-                            <span class="font-medium">Descripción: </span>
-                            {#if turno.descripcion !== null} {turno.descripcion} {/if}
-                            {#if turno.descripcion === null} Sin descripción {/if}
-                            {#if turno.descripcion === ""} Sin descripción {/if}
-                        </p>
                     </div>
-                        {#if (turno.urgencia === false)&& compararFechas(turno.fecha)}
+                        {#if compararFechas(turno.fecha)}
                             <footer class="flex">
                                 <button  on:click={(event) => handleModificar(turno)} class="btn btn-sm variant-ghost-surface"
                                     >Modificar</button

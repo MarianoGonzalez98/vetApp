@@ -5,8 +5,8 @@
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
-	export let turnoInfo:Turno;
-    let justificacion:string="";   
+	export let idTurnoSelec:number;
+    let justificacion:string;   
 
     
     const TurnoRechazado: ModalSettings = {
@@ -23,6 +23,13 @@
         body: "No se pudo solicitar el nuevo turno",
         buttonTextCancel: "Ok",
     };
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo en actualizacion del perfil",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+    
     
 
     async function onFormSubmit() {
@@ -33,9 +40,8 @@
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    rechazado:true,
-                    idTurnoSelec:turnoInfo.id,
-                    justificacion
+                    idTurnoSelec:idTurnoSelec,
+                    justificacion:justificacion
                 })
             })
             .then((res) => {
@@ -44,7 +50,11 @@
                     modalStore.trigger(TurnoRechazado);
                     return res;
                 }
-                return Promise.reject(res);
+                if (res.status === 500) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
             })
             .catch((error) => {
                     modalStore.clear();
@@ -61,6 +71,7 @@
    
 </script>
 
+<!-- @component This example creates a simple form modal. -->
 
 {#if $modalStore[0]}
 	<div class="modal-example-form {cBase}">
