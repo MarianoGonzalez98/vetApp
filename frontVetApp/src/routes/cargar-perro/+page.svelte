@@ -56,8 +56,6 @@
         buttonTextCancel: "Ok",
     };
 
-    let valueMultiple: string[] = ["books", "movies"];
-
     let nombre = "";
     let raza = "";
     let sexo = "";
@@ -69,12 +67,6 @@
     let foto: null;
     let owner = $user?.email;
     let castrado: string[] = [];
-
-    const prueba = () => {
-        console.log(vacunas);
-        console.log(castrado);
-        console.log(fechaNacimiento);
-    };
 
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
@@ -319,11 +311,6 @@
                 </ListBoxItem>
             {/each}
         </ListBox>
-
-        <button
-            class="btn rounded-lg variant-filled-primary"
-            on:click|preventDefault={prueba}>Probar</button
-        >
 
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Cargar perro</button
