@@ -77,7 +77,7 @@
 
 
 
-<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver turnos</a>
+<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 <div class="ml-2 flex flex-wrap">
     {#each turnos as turno}
         {#if turnos.length === 0}

@@ -109,8 +109,7 @@
 
 <Modal />
 
-<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver turnos</a>
-<h1 class="h1 m-4 mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">Turnos</h1>
+<a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 {#if (turnos.filter((turno)=> {
     return (turno.aceptado === false)&&(turno.rechazado === false)}).length === 0)
 }
