@@ -95,8 +95,12 @@ export const marcarComoFallecidoController = async (req: Request, res: Response)
     let emailVeterinario = "pedrovetapp@gmail.com"; //solo para la demo
     let asuntoVeterinario = asuntoCliente += ` del cliente ${perro.owner}`;
 
-    // sendMailTest(emailCliente, asuntoCliente, mensajeCliente);
-    // sendMailTest(emailVeterinario, asuntoVeterinario, mensajeVeterinario);
+    try {
+        await sendMailTest(emailCliente, asuntoCliente, mensajeCliente);
+        await sendMailTest(emailVeterinario, asuntoVeterinario, mensajeVeterinario);
+    } catch (error) {
+        console.log(error);
+    }
 
     res.status(201).send('Se marcó correctamente el perro como fallecido.');
 }

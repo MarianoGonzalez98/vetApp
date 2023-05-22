@@ -46,7 +46,12 @@ cron.schedule('* * * * *', async () => {
       Rango horario: ${result[i].rangoHorario}<br>
       Perro: ${result[i].perroNombre}`;
       
-      sendMailTest(email, asunto, texto);
+      try {
+        sendMailTest(email, asunto, texto);
+      } catch (error) {
+        console.log(error);
+      }
+      
     }
   } 
   
