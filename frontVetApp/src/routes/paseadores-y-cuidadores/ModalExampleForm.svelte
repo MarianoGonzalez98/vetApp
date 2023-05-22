@@ -151,7 +151,7 @@
         <!-- prettier-ignore -->
         <footer class="modal-footer {parent.regionFooter}">
         <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Contactar paseador</button>
+        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Contactar paseador/cuidador</button>
     </footer>
     </div>
 {/if}

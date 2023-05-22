@@ -43,7 +43,7 @@
     });
 </script>
 
-<h1 class="h1 m-4 font-medium">Mis clientes</h1>
+<h1 class="h1 m-4 font-medium">Clientes</h1>
 {#if clientes.length > 0}
     <div class="flex">
         <div class="mt-6">

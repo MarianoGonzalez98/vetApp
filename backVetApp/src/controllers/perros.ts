@@ -87,13 +87,11 @@ export const marcarComoFallecidoController = async (req: Request, res: Response)
         mensajeVeterinario += ".<br>";
     }
 
-    mensajeCliente += "<br><br>Lamentamos su pérdida."
-
     let emailCliente = perro.owner;
     let asuntoCliente = `Cancelación de los turnos de ${perro.nombre}`
 
     let emailVeterinario = "pedrovetapp@gmail.com"; //solo para la demo
-    let asuntoVeterinario = asuntoCliente += ` del cliente ${perro.owner}`;
+    let asuntoVeterinario = asuntoCliente + ` del cliente ${perro.owner}`;
 
     try {
         await sendMailTest(emailCliente, asuntoCliente, mensajeCliente);
