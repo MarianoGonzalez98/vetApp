@@ -145,7 +145,7 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
     let nuevaFechaDate = new Date(nuevaFecha);
     
 
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = "pedrovetapp@gmail.com" //solo para testear
     //let emailDestinatario = veterinarios;
     let asunto = "Nueva solicitud de turno"
     let texto = `¡Un cliente solicitó un nuevo turno!
@@ -213,7 +213,7 @@ export const modificarTurnoController = async (req:Request, res:Response) => {
         return
     }
 
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = "pedrovetapp@gmail.com" //solo para testear
     //let emailDestinatario = veterinarios;
     let asunto = "Solicitud de turnoModificado"
     let texto = `¡Un cliente solicitó un nuevo turno!
@@ -319,7 +319,7 @@ export const aceptarTurnoController = async (req:Request, res:Response) => {
     let nuevaFechaDate = new Date(nuevaFecha);
     
 
-    let email = "julinaranja2014@gmail.com"//solo para testear
+    let email = turnoInfo.emailOwner//solo para testear
     //let emailDestinatario = ${emailOwner};
     let asunto = "Turno Aceptado"
     let texto = `¡Su turno fue aceptado!
@@ -424,7 +424,7 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
     const nuevaFechaR = Date.parse(nuevaFechaTurnoStringR);
     let nuevaFechaDateR = new Date(nuevaFechaR);
     
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = turnoInfo.emailOwner //solo para testear
     //let emailDestinatario = ${emailOwner};
     let asunto = "Turno Rechazado"
     let texto = `Disculpe las molestias, su turno ha sido rechazado.
