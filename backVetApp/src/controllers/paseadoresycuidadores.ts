@@ -75,7 +75,12 @@ export const enviarMailController = async (req: Request, res: Response) => {
         Mensaje del cliente: ${emailInfo.mensaje}`;
     }
 
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+    
 
     //email = EMAIL DE LA VETERINARIA;
     asunto = "Un cliente contactó a un paseador/cuidador a través del sistema"

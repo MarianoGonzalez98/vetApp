@@ -63,7 +63,7 @@ export const insertTurno = async (turno: Turno) => {
 
 export const getTurno = async (id: number) => {
     const query = `
-    SELECT id
+    SELECT *
     FROM public.turnos 
     WHERE id = $1
     `
@@ -71,8 +71,8 @@ export const getTurno = async (id: number) => {
 
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
-        const result: number = await response.rows[0];
-        return "ok";
+        const result: Turno = await response.rows[0];
+        return result;
     }
     catch (err) {
         console.error("----Error en acceso a BD:getTurno------");
@@ -221,5 +221,25 @@ export const getTurnosPerro = async (perroId: number) => {
         console.error("----Error en acceso a BD:getTurnosPerro------");
         console.log(err);
         return [];
+    }
+}
+
+
+export const getTurnosPendientesPasados = async () => {
+    const query = `
+    SELECT * 
+    FROM public.turnos
+    WHERE (fecha > CURRENT_DATE)AND(aceptado = false)AND(rechazado = false)
+    `;
+
+    try {
+        const response: QueryResult = await pool.query(query)
+        const result: Turno[] = await response.rows;
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:cancelarTurno------");
+        console.log(err);
+        return "error";
     }
 }

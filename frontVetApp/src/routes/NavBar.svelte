@@ -36,10 +36,8 @@
   </svelte:fragment>
 
   <svelte:fragment slot="trail">
-    {#if !$user}
-      <a class="btn variant-ghost-surface" href="/auth/login" rel="noreferrer"
-        >Login</a
-      >
+    {#if (!$user)}
+      <a class="btn variant-ghost-surface" href="/auth/login" rel="noreferrer">Iniciar sesión</a>
     {:else}
       <Avatar
         src={$user.foto || "/no_foto_perfil.png"}

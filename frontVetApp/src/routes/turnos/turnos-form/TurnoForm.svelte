@@ -161,7 +161,7 @@
             <!-- El perro va a tener que elegirse de la lista de perros del cliente   -->
 
             <label class="label" for="fecha">Fecha del turno</label>
-            <DateInput bind:value={fecha} bind:format={format}  bind:min={fechaMin} bind:placeholder={placeholder}/> 
+            <DateInput class="DateInput" bind:value={fecha} bind:format={format}  bind:min={fechaMin} /> 
 
             <label class="label" for="rangoHorario">Rango Horario</label>
             <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
