@@ -11,6 +11,11 @@
 					rel="noreferrer"
 					href="/cargar-cliente">Cargar nuevo cliente</a
 				>
+				<a
+					class="btn bg-gradient-to-br variant-gradient-primary-secondary"
+					rel="noreferrer"
+					href="/clientes">Ver clientes</a
+				>
 			{:else}
 				<a
 					class="btn variant-ghost-surface"

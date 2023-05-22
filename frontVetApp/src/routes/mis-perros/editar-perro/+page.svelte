@@ -1,21 +1,28 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { afterNavigate, goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
     import {
-        popup,
+        Modal,
+        modalStore,
         type ModalSettings,
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
-    import { Modal, modalStore } from "@skeletonlabs/skeleton";
-    import { error } from "@sveltejs/kit";
+    import type { AfterNavigate } from "@sveltejs/kit";
     import { onMount } from "svelte";
 
-    let nombre = "";
-    let apellido = "";
-    let dni = "";
-    let direccion = "";
-    let telefono = "";
+    const nombreAnterior: string =
+        new URLSearchParams(window.location.search).get("nombre") ??
+        $user?.email ??
+        "";
+
+    let owner: string =
+        new URLSearchParams(window.location.search).get("owner") ?? "";
+
+    let nombre = nombreAnterior;
+    let raza = "";
+    let sexo = "";
     let fechaNacimiento: string; //
+    let observaciones = "";
     let foto: any;
 
     let FotoFile: any; //por ahora ni tiene utilidad
@@ -26,27 +33,34 @@
         "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
     const numbersPattern: string = "^[0-9]*$";
-    let dniErrorMsj = "";
+    let emailErrorMsj = "";
     let fileErrorMsj = "";
-    const clienteCargado: ModalSettings = {
+    const perroActualizado: ModalSettings = {
         type: "alert",
-        title: "Perfil actualizado",
-        body: "Perfil actualizado correctamente",
+        title: "Perro actualizado",
+        body: "La información del perro se actualizó correctamente.",
         buttonTextCancel: "Ok",
-        response: (r: boolean) => goto("/auth/mi-perfil"),
+        response: (r: boolean) => goto(`/mis-perros?cliente=${owner}`),
     };
 
     const fallaDesconocida: ModalSettings = {
         type: "alert",
         title: "Error desconocido",
-        body: "No se pudo actualizar el perfil",
+        body: "No se pudo actualizar la información del perro.",
         buttonTextCancel: "Ok",
     };
 
     const fallaServidor: ModalSettings = {
         type: "alert",
-        title: "Fallo en actualizacion del perfil",
+        title: "Fallo en actualizacion de la información del perro.",
         body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaYaCargado: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del perro",
+        body: "Ya tiene un perro con ese nombre.",
         buttonTextCancel: "Ok",
     };
 
@@ -59,7 +73,7 @@
     const modalConfirmarEliminarFoto: ModalSettings = {
         type: "confirm",
         title: "Confirme su acción",
-        body: "¿Está seguro de eliminar su foto? La eliminación se hará efectiva al actualizar su perfil",
+        body: "¿Está seguro de eliminar la foto del perro? La eliminación se hará efectiva al actualizar la información",
         buttonTextConfirm: "Si",
         buttonTextCancel: "No",
         response: (confirma: boolean) => {
@@ -76,13 +90,16 @@
     };
 
     onMount(() => {
-        fetch("http://localhost:3000/getPerfil", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
+        fetch(
+            `http://localhost:3000/get-perro?owner=${owner}&nombre=${nombre}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
             .then((res) => {
                 if (res.status < 299) {
                     //si entra acá no hubo error
@@ -91,13 +108,12 @@
                 return Promise.reject(res);
             })
             .then((res) => {
-                nombre = res.nombre;
-                apellido = res.apellido;
-                dni = res.dni;
-                direccion = res.direccion;
-                telefono = res.telefono;
-                fechaNacimiento = res.fechaNacimiento.slice(0, 10); //despues capaz tenga que cambiar el formato??
-                foto = res.foto;
+                nombre = res.data.nombre;
+                raza = res.data.raza;
+                sexo = res.data.sexo;
+                fechaNacimiento = res.data.fechaNacimiento.slice(0, 10); //despues capaz tenga que cambiar el formato??
+                observaciones = res.data.observaciones;
+                foto = res.data.foto;
             })
             .catch((e) => {
                 console.log("ERROR:");
@@ -136,8 +152,7 @@
     };
 
     const handleCarga = () => {
-        dniErrorMsj = "";
-        fetch("http://localhost:3000/updatePerfil", {
+        fetch("http://localhost:3000/actualizar-perro", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -145,21 +160,19 @@
             credentials: "include",
             body: JSON.stringify({
                 nombre,
-                apellido,
-                dni,
-                direccion,
-                telefono,
+                owner,
+                raza,
+                sexo,
                 fechaNacimiento,
+                observaciones,
                 foto: foto,
+                nombreAnterior,
             }),
         })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
-                    modalStore.trigger(clienteCargado);
-                    if ($user) {
-                        $user.foto = foto;
-                    }
+                    modalStore.trigger(perroActualizado);
                     return res;
                 }
                 if (res.status === 400) {
@@ -173,8 +186,8 @@
                     return res;
                 }
                 if (res.status === 409) {
-                    console.log("Ya hay un usuario con ese dni");
-                    dniErrorMsj = "Ya hay un usuario registrado con ese dni";
+                    modalStore.clear();
+                    modalStore.trigger(fallaYaCargado);
                     return res;
                 }
                 if (res.status === 500) {
@@ -209,47 +222,31 @@
                 required
             />
 
-            <label class="label" for="apellido">Apellido:</label>
+            <label class="label" for="raza">Raza:</label>
             <input
-                bind:value={apellido}
+                bind:value={raza}
                 class="input focus:invalid:border-red-500"
                 type="text"
-                placeholder="Ingrese su apellido"
-                name="apellido"
+                placeholder="Ej: Dálmata"
+                name="raza"
                 pattern={letrasEspaciosPattern}
                 required
             />
 
-            <label class="label" for="dni">Teléfono:</label>
-            <input
-                bind:value={telefono}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese teléfono del cliente. Ej: 2214687634"
-                use:popup={popupFocusBlur}
-                name="telefono"
-                pattern={numbersPattern}
+            <label class="label" for="sexo">Sexo:</label>
+            <select
+                bind:value={sexo}
+                class="input"
+                placeholder="Ej: Macho"
+                name="sexo"
                 required
-            />
+            >
+                <option value="" disabled selected>{sexo}</option>
+                {#each ["Macho", "Hembra"] as value}
+                    <option {value}>{value}</option>
+                {/each}
+            </select>
 
-            <div class="card p-4 variant-filled" data-popup="popupFocusBlur">
-                <p>Sólo números</p>
-                <div class="arrow variant-filled" />
-            </div>
-
-            <label class="label" for="dni">DNI:</label>
-            <input
-                bind:value={dni}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                max="9999999999"
-                placeholder="Ingrese dni del cliente"
-                name="dni"
-                autocomplete="off"
-                pattern={numbersPattern}
-                required
-            />
-            <p class="text-red-500">{dniErrorMsj}</p>
             <label class="label" for="fechaNacimiento"
                 >Fecha de nacimiento:</label
             >
@@ -257,23 +254,21 @@
                 bind:value={fechaNacimiento}
                 class="input"
                 type="date"
-                placeholder="Ingrese fecha de nacimiento del cliente"
+                placeholder="Ej: 21/08/2022"
                 name="fechaNacimiento"
                 max={fechaMax}
                 required
             />
 
-            <label class="label" for="direccion">Dirección:</label>
-            <input
-                bind:value={direccion}
-                class="input focus:invalid:border-red-500"
-                type="text"
-                placeholder="Ingrese dirección del cliente"
-                name="direccion"
-                required
+            <label class="label" for="observaciones">Observaciones:</label>
+            <textarea
+                bind:value={observaciones}
+                class="input rounded-3xl"
+                placeholder="Ej: Es blanco, tiene la cola cortada, etc..."
+                name="observaciones"
             />
 
-            <p>Foto de perfil:</p>
+            <p>Foto:</p>
             <div>
                 {#if foto}
                     <img
@@ -284,7 +279,7 @@
                 {:else}
                     <img
                         class="object-contain h-32 w-32"
-                        src="/no_foto_perfil.png"
+                        src="/no_foto_perro.png"
                         alt=""
                     />
                 {/if}
@@ -304,14 +299,14 @@
             />
         </div>
 
-        <a href="/auth/mi-perfil/"
+        <a href="/mis-perros/"
             ><button class="btn rounded-lg variant-filled-secondary"
                 >Cancelar edición</button
             ></a
         >
 
         <button class="btn rounded-lg variant-filled-primary" type="submit"
-            >Actualizar mi perfil</button
+            >Actualizar información</button
         >
     </form>
 </div>

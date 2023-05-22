@@ -8,5 +8,5 @@ export interface PaseadorCuidador {
     email: string,
     oficio: Oficio,
     disponible: boolean;
-    disponibilidad: string;
+    horarios: string;
 }
