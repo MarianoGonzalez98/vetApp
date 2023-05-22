@@ -34,7 +34,7 @@ cron.schedule('* * * * *', async () => {
         result[i].rangoHorario = "Mañana";
     }
 
-      let email = "julinaranja2014@gmail.com" //solo para testear
+      let email = result[i].emailOwner;
       //let emailDestinatario = result[i].emailOwner;
       let asunto = "Solicitud de turno Cancelado"
       let texto = `¡Se le ha cancelado un turno!
