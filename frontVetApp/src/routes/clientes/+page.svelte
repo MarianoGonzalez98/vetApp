@@ -39,7 +39,7 @@
         const dniMatch = inputDni
             ? cliente.dni.toLowerCase().match(`.*${inputDni.toLowerCase()}.*`)
             : true;
-        return nombreMatch && emailMatch && nombreMatch;
+        return nombreMatch && emailMatch && dniMatch;
     });
 </script>
 
@@ -117,7 +117,9 @@
                             <span class="font-medium"
                                 >Fecha de nacimiento:
                             </span>
-                            {cliente.fechaNacimiento}
+                            {new Date(cliente.fechaNacimiento)
+                                .toJSON()
+                                .slice(0, 10)}
                         </p>
                         <p>
                             <span class="font-medium">Dirección: </span>
