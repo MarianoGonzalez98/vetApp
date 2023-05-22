@@ -18,9 +18,38 @@ app.use(cookieParser());
 
 var cron = require('node-cron');
 
-cron.schedule('* * * * *', () => {
-  console.log('running a task every minute');
-});
+/* cron.schedule('* * * * *', async () => {
+  const result = await getTurnosPendientesPasados();
+
+  if (result === "error") {
+    //que debería hacer
+  }
+
+  if (result.length > 0) { // Hay turnos pasados
+    for (var i = 0; i<result.length; i++) {
+      cancelarTurno(result[i].id) // los elimina uno a uno y envia el mail correspondiente
+
+      if (result[i].rangoHorario === "Manana"){
+        result[i].rangoHorario = "Mañana";
+    }
+
+      let email = "julinaranja2014@gmail.com" //solo para testear
+      //let emailDestinatario = result[i].emailOwner;
+      let asunto = "Solicitud de turno Cancelado"
+      let texto = `¡Se le ha cancelado un turno!
+      <br><br>
+      El veterinario no respondió a su solicitud.<br>
+      A continuación te dejamos los datos del turno.<br>
+      
+      Fecha: ${result[i].fecha}<br>
+      Rango horario: ${result[i].rangoHorario}<br>
+      Perro: ${result[i].perroNombre}`;
+      
+      sendMailTest(email, asunto, texto);
+    }
+  } 
+  
+});*/
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
@@ -32,6 +61,9 @@ import { PerrosRouter } from "./routes/perros.routes";
 import { ClientesRouter } from "./routes/clientes.routes";
 import { PaseadoresCuidadoresRouter } from "./routes/paseadoresycuidadores.routes";
 import { MailerRouter } from "./routes/mailer.routes";
+import { cancelarTurno, getTurnosPendientesPasados } from "./services/turno.service";
+import { Turno } from "./interfaces/Turno.interface";
+import { sendMailTest } from "./utils/mailer.handle";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -57,3 +89,4 @@ app.get('/api/mensaje', (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
 })
+
