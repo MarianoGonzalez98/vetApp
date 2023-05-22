@@ -144,8 +144,46 @@
 </div>
 {/if}
 <div class="container my-8 mx-auto ">
+    <h1 class="h1 ml-20">Para adoptar:</h1>
     <div class="flex flex-wrap place-content-center ">
-        {#each publicacionesVisibles as publicacion}
+        {#each publicacionesVisibles.filter( (pub) => {
+            return (!pub.adoptado)
+        }) as publicacion}
+
+            <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
+                {#if publicacion.adoptado}
+                    <h1 class="h1 text-amber-800">ADOPTADO</h1>
+                {/if}
+                <header class="card-header">Raza: {publicacion.raza}</header>
+                <section class="p-2">
+                    <p>Nombre: {publicacion.nombre}</p>
+                    <p>Fecha nacimiento: {new Date(publicacion.fechaNacimiento).toLocaleDateString('es-AR')}</p>
+                </section>
+                <footer class="card-footer">
+                    <div>
+                        {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
+                            {#if (publicacion.autorEmail !== $user?.email)}
+                            <button on:click={(event) => handleContactar(publicacion)} class="btn rounded-sm variant-filled-primary block">Contactar</button>
+                            {/if}
+                            {#if (publicacion.autorEmail === $user?.email)}
+                            <button on:click={(event) => handleMarcarAdoptado(publicacion)} class="btn rounded-sm variant-filled-secondary block mt-2">Marcar adoptado</button>
+                            {/if}
+                        {/if}
+
+                    </div>
+                    <p>Fecha de publicación: {new Date(publicacion.fechaPublicacion).toLocaleDateString('es-AR')}</p>
+                </footer>
+            </div>
+        {/each}
+    </div>
+
+    <hr class="h-px my-8 bg-gray-200 border-2 dark:bg-gray-700">
+    <h1 class="h1 ml-20">Adoptados</h1>
+
+    <div class="flex flex-wrap place-content-center ">
+        {#each publicacionesVisibles.filter( (pub) => {
+            return pub.adoptado
+        })   as publicacion}
 
             <div class="card variant-ghost-secondary p-1 max-w-xs m-2 ">
                 {#if publicacion.adoptado}
@@ -169,11 +207,6 @@
                     <p>Fecha de publicación: {new Date(publicacion.fechaPublicacion).toLocaleDateString('es-AR')}</p>
                 </footer>
             </div>
-
-
         {/each}
-
-
     </div>
-
 </div>
