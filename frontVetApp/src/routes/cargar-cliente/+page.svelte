@@ -184,9 +184,12 @@
 </script>
 
 <Modal />
+<div class="flex justify-center">
+    <h1 class="h1 mt-5 font-medium">Cargar nuevo cliente</h1>
+</div>
 
 <div
-    class="container mt-10 mb-10 h-full mx-auto flex justify-center items-center"
+    class="container mt-5 mb-1 h-full mx-auto flex justify-center items-center"
 >
     <form
         on:submit|preventDefault={handleRegistro}
