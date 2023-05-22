@@ -145,7 +145,7 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
     let nuevaFechaDate = new Date(nuevaFecha);
     
 
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = "pedrovetapp@gmail.com" //solo para testear
     //let emailDestinatario = veterinarios;
     let asunto = "Nueva solicitud de turno"
     let texto = `¡Un cliente solicitó un nuevo turno!
@@ -157,7 +157,11 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
     Rango horario: ${turno.rangoHorario}<br>
     Perro: ${turno.perroNombre}`;
     
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
 
     res.status(201).send('Se cargó correctamente la solicitud del turno'); //¿Cómo notifico que se guardó para el año sig también?
 }
@@ -209,7 +213,7 @@ export const modificarTurnoController = async (req:Request, res:Response) => {
         return
     }
 
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = "pedrovetapp@gmail.com" //solo para testear
     //let emailDestinatario = veterinarios;
     let asunto = "Solicitud de turnoModificado"
     let texto = `¡Un cliente solicitó un nuevo turno!
@@ -221,7 +225,12 @@ export const modificarTurnoController = async (req:Request, res:Response) => {
     Rango horario: ${rango}<br>
     Perro: ${perroNombre}`;
     
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
 
     return res.status(200).send('Se actualizó el turno correctamente.');
 }
@@ -310,7 +319,7 @@ export const aceptarTurnoController = async (req:Request, res:Response) => {
     let nuevaFechaDate = new Date(nuevaFecha);
     
 
-    let email = "julinaranja2014@gmail.com"//solo para testear
+    let email = turnoInfo.emailOwner//solo para testear
     //let emailDestinatario = ${emailOwner};
     let asunto = "Turno Aceptado"
     let texto = `¡Su turno fue aceptado!
@@ -321,7 +330,12 @@ export const aceptarTurnoController = async (req:Request, res:Response) => {
     Rango horario: ${turnoInfo.rangoHorario}<br>
     Perro: ${turnoInfo.perroNombre}`;
     
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
 
     res.status(201).send('Se aceptó correctamente el turno');
 }
@@ -410,7 +424,7 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
     const nuevaFechaR = Date.parse(nuevaFechaTurnoStringR);
     let nuevaFechaDateR = new Date(nuevaFechaR);
     
-    let email = "julinaranja2014@gmail.com" //solo para testear
+    let email = turnoInfo.emailOwner //solo para testear
     //let emailDestinatario = ${emailOwner};
     let asunto = "Turno Rechazado"
     let texto = `Disculpe las molestias, su turno ha sido rechazado.
@@ -424,7 +438,12 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
     Justificación del veterinario: ${justificacion}<br>
     Sugerencia para el nuevo turno, la fecha con disponibilidad más próxima: ${nuevaFechaDateR.toLocaleDateString('es-AR')}`;
     
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
 
     res.status(201).send('Se rechazó correctamente el turno');
 }

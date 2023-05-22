@@ -18,11 +18,12 @@ app.use(cookieParser());
 
 var cron = require('node-cron');
 
-/* cron.schedule('* * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   const result = await getTurnosPendientesPasados();
 
   if (result === "error") {
-    //que debería hacer
+    console.log("Falló la eliminacion automática de turnos pasados no aceptados ni rechazados")
+    return 
   }
 
   if (result.length > 0) { // Hay turnos pasados
@@ -33,7 +34,7 @@ var cron = require('node-cron');
         result[i].rangoHorario = "Mañana";
     }
 
-      let email = "julinaranja2014@gmail.com" //solo para testear
+      let email = result[i].emailOwner;
       //let emailDestinatario = result[i].emailOwner;
       let asunto = "Solicitud de turno Cancelado"
       let texto = `¡Se le ha cancelado un turno!
@@ -45,11 +46,16 @@ var cron = require('node-cron');
       Rango horario: ${result[i].rangoHorario}<br>
       Perro: ${result[i].perroNombre}`;
       
-      sendMailTest(email, asunto, texto);
+      try {
+        sendMailTest(email, asunto, texto);
+      } catch (error) {
+        console.log(error);
+      }
+      
     }
   } 
   
-});*/
+});
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"

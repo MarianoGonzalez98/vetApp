@@ -126,12 +126,14 @@ const registrarController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
-/*     let asunto="Contraseña del sitio web Oh my dog!"
-    let texto="Su contraseña es: "+ randomPassword;
-    sendMailTest(cliente.email,asunto,texto); */
-    //SOLO EN DEVELOP-------------------------
 
+    let asunto="Contraseña del sitio web Oh my dog!"
+    let texto="Su contraseña es: "+ randomPassword;
+    try {
+        await sendMailTest(cliente.email,asunto,texto);
+      } catch (error) {
+        console.log(error);
+      }
     await insertPassword(cliente.email, randomPassword);
 
     //FIN SOLO DEVELOP-------------

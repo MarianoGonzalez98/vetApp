@@ -75,9 +75,14 @@ export const enviarMailController = async (req: Request, res: Response) => {
         Mensaje del cliente: ${emailInfo.mensaje}`;
     }
 
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
 
-    //email = EMAIL DE LA VETERINARIA;
+
+    email = "pedrovetapp@gmail.com"; //solo para la demo
     asunto = "Un cliente contactó a un paseador/cuidador a través del sistema"
     texto = `A continuación se muestran los datos del contacto.<br>
     <br>
@@ -85,7 +90,11 @@ export const enviarMailController = async (req: Request, res: Response) => {
     Email del paseador/cuidador: ${emailInfo.emailDestinatario}<br>
     Mensaje: ${emailInfo.mensaje}`;
 
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
 
     res.status(201).send('Se envió correctamente el mail al paseador/cuidador y a la veterinaria');
 }

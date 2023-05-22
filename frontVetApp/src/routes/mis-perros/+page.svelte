@@ -71,7 +71,7 @@
 
 <Modal />
 
-<h1>Mis perros</h1>
+<h1 class="h1 m-4 font-medium">Perros</h1>
 
 <div class="ml-2 flex flex-wrap items-start">
     {#each mostrar as perro}
@@ -165,8 +165,7 @@
                         >
                         <button
                             on:click={(event) => handleMarcarFallecido(perro)}
-                            class="btn btn-sm bg-red-500"
-                            >Marcar perro como fallecido</button
+                            class="btn btn-sm bg-red-500">Ocultar perro</button
                         >
                     </footer>
                 {/if}

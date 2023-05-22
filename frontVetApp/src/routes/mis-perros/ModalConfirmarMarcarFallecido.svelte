@@ -73,8 +73,8 @@
     <div class="modal-example-form {cBase}">
         <header class={cHeader}>Confirme su acción</header>
         <article>
-            ¿Está seguro de marcar al perro {perro.nombre} del cliente {perro.owner}
-            como fallecido? Esta acción no puede deshacerse.
+            ¿Está seguro de ocultar al perro {perro.nombre} del cliente {perro.owner}?
+            Esta acción no puede deshacerse.
         </article>
 
         <button type="button" class="btn {buttonNeutral}" on:click={onClose}

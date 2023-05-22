@@ -24,8 +24,8 @@ export const getClientes = async () => {
 export const getClientesCompletos = async () => {
     const query = `
     SELECT *
-    FROM public.usuarios 
-    WHERE u.rol = 'cliente'
+    FROM public.usuarios
+    WHERE rol = 'cliente'
     `
     try {
         const response: QueryResult = await pool.query(query)

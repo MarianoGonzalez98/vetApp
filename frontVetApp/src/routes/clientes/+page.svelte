@@ -39,11 +39,11 @@
         const dniMatch = inputDni
             ? cliente.dni.toLowerCase().match(`.*${inputDni.toLowerCase()}.*`)
             : true;
-        return nombreMatch && emailMatch && nombreMatch;
+        return nombreMatch && emailMatch && dniMatch;
     });
 </script>
 
-<h1>Paseadores y Cuidadores</h1>
+<h1 class="h1 m-4 font-medium">Clientes</h1>
 {#if clientes.length > 0}
     <div class="flex">
         <div class="mt-6">
@@ -117,7 +117,9 @@
                             <span class="font-medium"
                                 >Fecha de nacimiento:
                             </span>
-                            {cliente.fechaNacimiento}
+                            {new Date(cliente.fechaNacimiento)
+                                .toJSON()
+                                .slice(0, 10)}
                         </p>
                         <p>
                             <span class="font-medium">Dirección: </span>
