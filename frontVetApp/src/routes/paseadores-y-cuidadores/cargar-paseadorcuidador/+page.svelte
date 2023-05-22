@@ -6,6 +6,8 @@
         popup,
         type ModalSettings,
         type PopupSettings,
+        Autocomplete,
+        type AutocompleteOption,
     } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
@@ -54,33 +56,6 @@
         buttonTextCancel: "Ok",
     };
 
-    const zonas = [
-        "Plaza Alsina",
-        "Plaza Olazábal",
-        "Plaza Belgrano",
-        "Plaza Güemes",
-        "Parque Alberti",
-        "Plaza 19 De Noviembre",
-        "Plaza Azcuénaga",
-        "Paza Paso",
-        "Plaza Italia",
-        "Parque Vucetich (San Martín)",
-        "Plaza Islas Malvinas",
-        "Plaza Moreno",
-        "Plaza San Martín",
-        "Plaza Rivadavia",
-        "Paseo Del Bosque",
-        "Plaza Juan D. Perón",
-        "Plaza Yrigoyen",
-        "Plaza Rocha",
-        "Parque Castelli",
-        "Plaza Sarmiento",
-        "Parque Saavedra",
-        "Plaza España",
-        "Plaza Matheu",
-        "Parque Meridiano V",
-        "Plaza Máximo Paz",
-    ];
     let nombre = "";
     let apellido = "";
     let zona = "";
@@ -140,6 +115,144 @@
                 );
             });
     };
+
+    let popupSettings: PopupSettings = {
+        event: "focus-click",
+        target: "popupAutocomplete",
+        placement: "bottom",
+    };
+
+    const zonas: AutocompleteOption[] = [
+        {
+            label: "Plaza Alsina",
+            value: "Plaza Alsina",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Olazábal",
+            value: "Plaza Olazábal",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Belgrano",
+            value: "Plaza Belgrano",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Güemes",
+            value: "Plaza Güemes",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Alberti",
+            value: "Parque Alberti",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza 19 De Noviembre",
+            value: "Plaza 19 De Noviembre",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Azcuénaga",
+            value: "Plaza Azcuénaga",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Paso",
+            value: "Plaza Paso",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Italia",
+            value: "Plaza Italia",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Vucetich (San Martín)",
+            value: "Parque Vucetich (San Martín)",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Islas Malvinas",
+            value: "Plaza Islas Malvinas",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Moreno",
+            value: "Plaza Moreno",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza San Martín",
+            value: "Plaza San Martín",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Rivadavia",
+            value: "Plaza Rivadavia",
+            keywords: "plaza",
+        },
+        {
+            label: "Paseo Del Bosque",
+            value: "Paseo Del Bosque",
+            keywords: "paseo",
+        },
+        {
+            label: "Plaza Juan D. Perón",
+            value: "Plaza Juan D. Perón",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Yrigoyen",
+            value: "Plaza Yrigoyen",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Rocha",
+            value: "Plaza Rocha",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Castelli",
+            value: "Parque Castelli",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Sarmiento",
+            value: "Plaza Sarmiento",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Saavedra",
+            value: "Parque Saavedra",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza España",
+            value: "Plaza España",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Matheu",
+            value: "Plaza Matheu",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Meridiano V",
+            value: "Parque Meridiano V",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Máximo Paz",
+            value: "Plaza Máximo Paz",
+            keywords: "plaza",
+        },
+    ];
+
+    function onPopupDemoSelect(event: any): void {
+        zona = event.detail.label;
+    }
 </script>
 
 <Modal />
@@ -174,18 +287,27 @@
         />
 
         <label class="label" for="zona">Zona:</label>
-        <select
-            bind:value={zona}
-            class="input"
-            placeholder="Zona"
-            name="zona"
-            required
-        >
-            <option value="" disabled selected>Seleccione una</option>
-            {#each zonas as value}
-                <option {value}>{value}</option>
-            {/each}
-        </select>
+
+        <div class="text-token w-full max-w-sm space-y-2">
+            <input
+                class="input autocomplete"
+                type="search"
+                name="autocomplete-search"
+                bind:value={zona}
+                placeholder="Ej: Plaza Moreno"
+                use:popup={popupSettings}
+            />
+            <div
+                data-popup="popupAutocomplete"
+                class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto"
+            >
+                <Autocomplete
+                    bind:input={zona}
+                    options={zonas}
+                    on:selection={onPopupDemoSelect}
+                />
+            </div>
+        </div>
 
         <p>Disponibilidad horaria:</p>
         <textarea
