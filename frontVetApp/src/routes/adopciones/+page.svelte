@@ -162,7 +162,7 @@
                 <footer class="card-footer">
                     <div>
                         {#if !publicacion.adoptado} <!-- si no fue adoptado muestro los botones -->
-                            {#if (publicacion.autorEmail !== $user?.email)}
+                            {#if (publicacion.email !== $user?.email)}
                             <button on:click={(event) => handleContactar(publicacion)} class="btn variant-filled-primary">Contactar</button>
                             {/if}
                             {#if (publicacion.autorEmail === $user?.email)}
