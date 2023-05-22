@@ -181,7 +181,7 @@
     <h1 class="h1 ml-20">Adoptados</h1>
 
     <div class="flex flex-wrap place-content-center ">
-        {#each publicacionesVisibles.filter( (pub) => {
+        {#each publicaciones.filter( (pub) => {
             return pub.adoptado
         })   as publicacion}
 
