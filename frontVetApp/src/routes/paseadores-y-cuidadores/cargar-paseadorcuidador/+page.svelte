@@ -54,13 +54,40 @@
         buttonTextCancel: "Ok",
     };
 
+    const zonas = [
+        "Plaza Alsina",
+        "Plaza Olazábal",
+        "Plaza Belgrano",
+        "Plaza Güemes",
+        "Parque Alberti",
+        "Plaza 19 De Noviembre",
+        "Plaza Azcuénaga",
+        "Paza Paso",
+        "Plaza Italia",
+        "Parque Vucetich (San Martín)",
+        "Plaza Islas Malvinas",
+        "Plaza Moreno",
+        "Plaza San Martín",
+        "Plaza Rivadavia",
+        "Paseo Del Bosque",
+        "Plaza Juan D. Perón",
+        "Plaza Yrigoyen",
+        "Plaza Rocha",
+        "Parque Castelli",
+        "Plaza Sarmiento",
+        "Parque Saavedra",
+        "Plaza España",
+        "Plaza Matheu",
+        "Parque Meridiano V",
+        "Plaza Máximo Paz",
+    ];
     let nombre = "";
     let apellido = "";
     let zona = "";
     let telefono = "";
     let email = "";
     let oficio: Oficio;
-    let disponibilidad = "";
+    let horarios = "";
 
     const handleRegistro = async () => {
         let error: boolean = false;
@@ -78,7 +105,7 @@
                 telefono: telefono,
                 email: email,
                 oficio: oficio,
-                disponibilidad: disponibilidad,
+                horarios: horarios,
             }),
         })
             .then((res) => {
@@ -113,15 +140,6 @@
                 );
             });
     };
-    /*
-
-    PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
-
-    let fecha = new Date();
-    let fechaMin = new Date();
-    let format = "dd-MM-yyyy";
-    let placeholder = "Elija una fecha";
-    */
 </script>
 
 <Modal />
@@ -156,75 +174,27 @@
         />
 
         <label class="label" for="zona">Zona:</label>
-        <input
+        <select
             bind:value={zona}
-            class="input focus:invalid:border-red-500"
-            type="text"
-            placeholder="Ej: Parque Castelli"
+            class="input"
+            placeholder="Zona"
             name="zona"
             required
-        />
+        >
+            <option value="" disabled selected>Seleccione una</option>
+            {#each zonas as value}
+                <option {value}>{value}</option>
+            {/each}
+        </select>
 
         <p>Disponibilidad horaria:</p>
         <textarea
-            bind:value={disponibilidad}
+            bind:value={horarios}
             class="input rounded-3xl"
             placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
             name="observaciones"
+            required
         />
-
-        <!--
-            
-            PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
-            
-            <div class="flex">
-            <button
-                class="btn rounded-lg variant-ghost-secondary mr-2 grayscale"
-                type="submit">Domingo</button
-            >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div>
-        <div class="flex">
-            <button
-                class="btn rounded-lg variant-filled-secondary mr-2"
-                type="submit">Domingo</button
-            >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div> -->
 
         <label class="label" for="dni">Teléfono:</label>
         <input

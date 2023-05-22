@@ -1,8 +1,14 @@
 <script lang="ts">
     import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+    import type { Vacuna } from "$lib/interfaces/Perro.interface";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
-    import type { ModalSettings } from "@skeletonlabs/skeleton";
+    import {
+        CodeBlock,
+        ListBox,
+        ListBoxItem,
+        type ModalSettings,
+    } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import type { AfterNavigate, BeforeNavigate } from "@sveltejs/kit";
 
@@ -50,15 +56,26 @@
         buttonTextCancel: "Ok",
     };
 
+    let valueMultiple: string[] = ["books", "movies"];
+
     let nombre = "";
     let raza = "";
     let sexo = "";
     let fechaNacimiento: string = new Date().toJSON().slice(0, 10);
     let observaciones = "";
     let peso: number;
-    let vacunasAplicadas: string[] = [];
+    let vacunasAplicadas: Vacuna[] = [];
+    let vacunas: string[] = [];
     let foto: null;
     let owner = $user?.email;
+    let castrado: string[] = [];
+
+    const prueba = () => {
+        console.log(vacunas);
+        console.log(castrado);
+        console.log(fechaNacimiento);
+    };
+
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
         fechaHoy.getMonth() + 1
@@ -66,69 +83,81 @@
         .toString()
         .padStart(2, "0")}-${fechaHoy.getDate().toString().padStart(2, "0")}`;
 
-
-    afterNavigate((nav:AfterNavigate) => {
-        if (($user?.rol==='veterinario') &&(nav.from?.route.id !=='/cargar-cliente')){
-            goto('/');
+    afterNavigate((nav: AfterNavigate) => {
+        if (
+            $user?.rol === "veterinario" &&
+            nav.from?.route.id !== "/cargar-cliente"
+        ) {
+            goto("/");
         }
     });
-    beforeNavigate((nav:BeforeNavigate) => {
-        if (nav?.to?.route.id !== '/cargar-cliente'){
-            $dataRegistroCliente=null;
+    beforeNavigate((nav: BeforeNavigate) => {
+        if (nav?.to?.route.id !== "/cargar-cliente") {
+            $dataRegistroCliente = null;
         }
     });
 
     const handleCarga = async () => {
+        if ($user?.rol === "veterinario") {
+            owner = $dataRegistroCliente?.email;
+        }
+        let error = false;
 
-        if($user?.rol==='veterinario'){
-            owner= $dataRegistroCliente?.email;
-            }
-        let error=false;
-
-        if(($user?.rol==='veterinario')&&(!error)){
-            await fetch("http://localhost:3000/registrar-cliente", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                ...$dataRegistroCliente,
-                foto: null,
-            }),
-        })
-            .then((res) => {
-                if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(perroClienteCargado);
-                    return res;
-                }
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    error=true;
-                    goto("/auth/login");
-                    return;
-                }
-                if (res.status === 409) {
-                    error=true;
-                    return res;
-                }
-                if (res.status === 500) {
-                    error=true;
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
-            })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log("Error en carga del cliente desconocido: ", error);
-            });
+        for (const vacuna of vacunas) {
+            let vacunaAplicada: Vacuna = {
+                nombre: vacuna,
+                fechaDeAplicacion: new Date().toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
         }
 
-        if (error){
+        if ($user?.rol === "veterinario" && !error) {
+            await fetch("http://localhost:3000/registrar-cliente", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    ...$dataRegistroCliente,
+                    foto: null,
+                }),
+            })
+                .then((res) => {
+                    if (res.status < 299) {
+                        modalStore.clear();
+                        modalStore.trigger(perroClienteCargado);
+                        return res;
+                    }
+                    if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        error = true;
+                        goto("/auth/login");
+                        return;
+                    }
+                    if (res.status === 409) {
+                        error = true;
+                        return res;
+                    }
+                    if (res.status === 500) {
+                        error = true;
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                    }
+                })
+                .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log(
+                        "Error en carga del cliente desconocido: ",
+                        error
+                    );
+                });
+        }
+
+        if (error) {
             modalStore.clear();
             modalStore.trigger(fallaDesconocidaCliente);
             return;
@@ -146,10 +175,12 @@
                 fechaNacimiento,
                 observaciones,
                 peso,
-                vacunasAplicadas,
+                vacunas: JSON.stringify(vacunasAplicadas),
+                antiparasitarios: "[]",
                 owner,
+                castrado: castrado.length === 1,
             }),
-            })
+        })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
@@ -184,9 +215,12 @@
 <Modal />
 
 <div
-    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center"
+    class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center w-full"
 >
-    <form on:submit|preventDefault={handleCarga} class="space-y-2">
+    <form
+        on:submit|preventDefault={handleCarga}
+        class="space-y-2 w-full h-full max-w-md"
+    >
         <label class="label" for="nombre">Nombre:</label>
         <input
             bind:value={nombre}
@@ -244,20 +278,52 @@
             bind:value={peso}
             class="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             type="number"
+            step="0.01"
             placeholder="Ej: 20"
             name="direccion"
             required
         />
 
+        <label class="label" for="castrado">Castración:</label>
+        <ListBox
+            active="variant-filled-primary"
+            hover="hover:variant-soft-primary"
+            multiple
+            class="w-full max-w-[480px]"
+        >
+            <ListBoxItem
+                bind:group={castrado}
+                name="medium"
+                value="Castrado"
+                class="border"
+            >
+                Está castrado
+            </ListBoxItem>
+        </ListBox>
+
         <label class="label" for="vacunasAplicadas">Vacunas aplicadas:</label>
-        {#each ["Vacuna A", "Vacuna B"] as vacuna}
-            <input
-                bind:group={vacunasAplicadas}
-                type="checkbox"
-                value={vacuna}
-            />
-            {vacuna}
-        {/each}
+        <ListBox
+            active="variant-filled-primary"
+            hover="hover:variant-soft-primary"
+            multiple
+            class="w-full max-w-[480px]"
+        >
+            {#each ["Vacuna A", "Vacuna B"] as vacuna}
+                <ListBoxItem
+                    bind:group={vacunas}
+                    name="medium"
+                    value={vacuna}
+                    class="border"
+                >
+                    {vacuna}
+                </ListBoxItem>
+            {/each}
+        </ListBox>
+
+        <button
+            class="btn rounded-lg variant-filled-primary"
+            on:click|preventDefault={prueba}>Probar</button
+        >
 
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Cargar perro</button

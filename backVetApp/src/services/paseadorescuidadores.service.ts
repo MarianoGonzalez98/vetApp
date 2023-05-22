@@ -25,10 +25,10 @@ export const getPaseadorCuidador = async (email: String) => {
 export const insertPaseadorCuidador = async (paseadorcuidador: PaseadorCuidador) => {
     const query = `
     INSERT INTO public.paseadoresycuidadores(
-        nombre, apellido, zona, telefono, email, oficio, disponibilidad)
+        nombre, apellido, zona, telefono, email, oficio, horarios)
         VALUES ($1, $2, $3, $4, $5, $6, $7);
     `
-    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio, paseadorcuidador.disponibilidad]
+    const values = [paseadorcuidador.nombre, paseadorcuidador.apellido, paseadorcuidador.zona, paseadorcuidador.telefono, paseadorcuidador.email, paseadorcuidador.oficio, paseadorcuidador.horarios]
 
     try {
         const response: QueryResult = await pool.query(query, values)

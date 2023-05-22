@@ -126,7 +126,7 @@
             ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
             : true;
         const horarioMatch = inputHorario
-            ? pc.disponibilidad
+            ? pc.horarios
                   .toLowerCase()
                   .match(`.*${inputHorario.toLowerCase()}.*`)
             : true;
@@ -169,7 +169,7 @@
 
 <Modal />
 
-<h1>Paseadores y Cuidadores</h1>
+<h1 class="h1 m-4 font-medium">Paseadores y Cuidadores</h1>
 {#if paseadorescuidadores.length > 0}
     <div class="flex">
         {#if $user?.rol === "veterinario"}
@@ -251,8 +251,8 @@
                             {pc.telefono}
                         </p>
                         <p>
-                            <span class="font-medium">Disponibilidad: </span>
-                            {pc.disponibilidad}
+                            <span class="font-medium">Horarios: </span>
+                            {pc.horarios}
                         </p>
                     </div>
                     {#if $user?.rol === "veterinario"}
@@ -295,7 +295,7 @@
                 </h1>
                 <div class="flex justify-center">
                     <a
-                        class="btn variant-filled-secondary"
+                        class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
                         rel="noreferrer"
                         href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
                         >Cargar paseador/cuidador</a
