@@ -229,7 +229,7 @@ export const getTurnosPendientesPasados = async () => {
     const query = `
     SELECT * 
     FROM public.turnos
-    WHERE (fecha > CURRENT_DATE)AND(aceptado = false)AND(rechazado = false)
+    WHERE (fecha < CURRENT_DATE)AND(aceptado = false)AND(rechazado = false)
     `;
 
     try {
