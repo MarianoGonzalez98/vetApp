@@ -201,3 +201,12 @@ export const modificarTurno = async (id:number,perroId:number,perroNombre:string
         return "error";
     }
 }
+
+export const cancelarTurnosPasados = async () => {
+    const query = `
+    DELETE 
+    FROM public.turnos
+    WHERE id = $1
+    `;
+    
+}

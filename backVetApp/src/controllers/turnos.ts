@@ -25,7 +25,7 @@ export const listarTurnosClienteController = async (req:Request, res:Response) =
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
-const verificarDisponibilidad = async (fecha:Date, rangoHorario:string, res:Response) => {
+/* const verificarDisponibilidad = async (fecha:Date, rangoHorario:string, res:Response) => {
 
     const result = await getCantDeTurnosRangoHorarioFechab(fecha,rangoHorario);
 
@@ -38,9 +38,9 @@ const verificarDisponibilidad = async (fecha:Date, rangoHorario:string, res:Resp
         res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
         return
     }
-}
+} */
 
-const insertarTurno = async (req:Request, res:Response) => { 
+/* const insertarTurno = async (req:Request, res:Response) => { 
     let turno:Turno = req.body;
     
     const dbResult = await insertTurno(turno);
@@ -50,9 +50,9 @@ const insertarTurno = async (req:Request, res:Response) => {
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
     }
-}
+} */
 
-const enviarMailSolicituTurno = async (req:Request, res:Response) => {
+/* const enviarMailSolicituTurno = async (req:Request, res:Response) => {
     let turno:Turno = req.body;
     if (turno.rangoHorario === "Manana"){
         turno.rangoHorario = "Mañana";
@@ -76,7 +76,7 @@ const enviarMailSolicituTurno = async (req:Request, res:Response) => {
     Perro: ${turno.perroNombre}`;
     
     sendMailTest(email, asunto, texto);
-}
+} */
 
 export const SolicitarTurnoController = async (req:Request, res:Response) => { 
 
@@ -85,9 +85,25 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
     turno.aceptado = false;
     req.body = turno;
 
-    verificarDisponibilidad(turno.fecha,turno.rangoHorario,res);
+    const result = await getCantDeTurnosRangoHorarioFechab(turno.fecha,turno.rangoHorario);
 
-    insertarTurno (req,res);
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (result.length >= 20) { 
+        res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
+        return
+    }
+    
+    const dbResult = await insertTurno(turno);
+    
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
 
 
     if (turno.motivo === "Vacunación b") { //Debe sacarse otro turno para el año siguiente
@@ -99,17 +115,54 @@ export const SolicitarTurnoController = async (req:Request, res:Response) => {
 
         turno.fecha = nuevaFechaDate;
 
-        verificarDisponibilidad(turno.fecha,turno.rangoHorario,res);
+        const result = await getCantDeTurnosRangoHorarioFechab(turno.fecha,turno.rangoHorario);
 
-        insertarTurno(req,res);
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (result.length >= 20) { 
+        res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
+        return
+    }
+    
+    const dbResult = await insertTurno(turno);
+    
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
     }
 
-    enviarMailSolicituTurno (req,res);
+    if (turno.rangoHorario === "Manana"){
+        turno.rangoHorario = "Mañana";
+    }
+
+    const nuevaFechaTurnoString = turno.fecha.toString();
+    const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+    let nuevaFechaDate = new Date(nuevaFecha);
+    
+
+    let email = "julinaranja2014@gmail.com" //solo para testear
+    //let emailDestinatario = veterinarios;
+    let asunto = "Nueva solicitud de turno"
+    let texto = `¡Un cliente solicitó un nuevo turno!
+    <br><br>
+    A continuación te dejamos los datos del turno.<br>
+    
+    Cliente: ${turno.emailOwner}<br>
+    Fecha: ${nuevaFechaDate.toLocaleDateString('es-AR')}<br>
+    Rango horario: ${turno.rangoHorario}<br>
+    Perro: ${turno.perroNombre}`;
+    
+    sendMailTest(email, asunto, texto);
 
     res.status(201).send('Se cargó correctamente la solicitud del turno'); //¿Cómo notifico que se guardó para el año sig también?
 }
 
-const enviarMailModificarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string) => {
+/* const enviarMailModificarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string) => {
     let email = "julinaranja2014@gmail.com" //solo para testear
     //let emailDestinatario = veterinarios;
     let asunto = "Solicitud de turnoModificado"
@@ -123,7 +176,7 @@ const enviarMailModificarTurno = async (perroNombre:string,fecha:Date,rango:stri
     Perro: ${perroNombre}`;
     
     sendMailTest(email, asunto, texto);
-}
+} */
 
 export const modificarTurnoController = async (req:Request, res:Response) => {
 
@@ -136,7 +189,17 @@ export const modificarTurnoController = async (req:Request, res:Response) => {
    const rango:string = req.body.rango;
    
     
-   verificarDisponibilidad(fecha,rango,res);
+   const result1 = await getCantDeTurnosRangoHorarioFechab(fecha,rango);
+
+    if (result1 === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+    if (result1.length >= 20) { 
+        res.status(409).send({ data: "No hay disponibilidad de turnos para el rango horario seleccionado en la fecha seleccionada", statusCode: 409 })
+        return
+    }
 
     const result = await modificarTurno(id,perroId,perroNombre,motivo,fecha,rango);
 
@@ -146,7 +209,19 @@ export const modificarTurnoController = async (req:Request, res:Response) => {
         return
     }
 
-    enviarMailModificarTurno(perroNombre,fecha,rango,emailOwner);
+    let email = "julinaranja2014@gmail.com" //solo para testear
+    //let emailDestinatario = veterinarios;
+    let asunto = "Solicitud de turnoModificado"
+    let texto = `¡Un cliente solicitó un nuevo turno!
+    <br><br>
+    A continuación te dejamos los datos del turno.<br>
+    
+    Cliente: ${emailOwner}<br>
+    Fecha: ${fecha}<br>
+    Rango horario: ${rango}<br>
+    Perro: ${perroNombre}`;
+    
+    sendMailTest(email, asunto, texto);
 
     return res.status(200).send('Se actualizó el turno correctamente.');
 }
@@ -181,7 +256,7 @@ export const listarTurnosVeterinarioController = async (req:Request, res:Respons
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
-const enviarMailAceptarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string) => {
+/* const enviarMailAceptarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string) => {
     if (rango === "Manana"){
         rango = "Mañana";
     }
@@ -203,7 +278,7 @@ const enviarMailAceptarTurno = async (perroNombre:string,fecha:Date,rango:string
     Perro: ${perroNombre}`;
     
     sendMailTest(email, asunto, texto);
-}
+} */
 
 
 export const aceptarTurnoController = async (req:Request, res:Response) => {
@@ -224,13 +299,35 @@ export const aceptarTurnoController = async (req:Request, res:Response) => {
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
     }
-    enviarMailAceptarTurno (turnoInfo.perroNombre,turnoInfo.fecha,turnoInfo.rangoHorario,turnoInfo.emailOwner);
+    
+    
+    if (turnoInfo.rangoHorario === "Manana"){
+        turnoInfo.rangoHorario = "Mañana";
+    }
+
+    const nuevaFechaTurnoString = turnoInfo.fecha.toString();
+    const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+    let nuevaFechaDate = new Date(nuevaFecha);
+    
+
+    let email = "julinaranja2014@gmail.com"//solo para testear
+    //let emailDestinatario = ${emailOwner};
+    let asunto = "Turno Aceptado"
+    let texto = `¡Su turno fue aceptado!
+    <br><br>
+    A continuación te dejamos los datos del turno.
+    <br>
+    Fecha: ${nuevaFechaDate.toLocaleDateString('es-AR')}<br>
+    Rango horario: ${turnoInfo.rangoHorario}<br>
+    Perro: ${turnoInfo.perroNombre}`;
+    
+    sendMailTest(email, asunto, texto);
 
     res.status(201).send('Se aceptó correctamente el turno');
 }
 
 
-const enviarMailRechazarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string,fechaNueva:Date,justificacion:string) => {
+/* const enviarMailRechazarTurno = async (perroNombre:string,fecha:Date,rango:string,emailOwner:string,fechaNueva:Date,justificacion:string) => {
     if (rango === "Manana"){
         rango = "Mañana";
     }
@@ -258,7 +355,7 @@ const enviarMailRechazarTurno = async (perroNombre:string,fecha:Date,rango:strin
     Sugerencia para el nuevo turno, la fecha con disponibilidad más próxima: ${nuevaFechaDateR.toLocaleDateString('es-AR')}`;
     
     sendMailTest(email, asunto, texto);
-}
+} */
 
 
 export const rechazarTurnoController = async(req:Request, res:Response) => {
@@ -301,7 +398,33 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
         }
     }
 
-    enviarMailRechazarTurno(turnoInfo.perroNombre,turnoInfo.fecha,turnoInfo.rangoHorario,turnoInfo.emailOwner,recomendacion,justificacion)
+    if (turnoInfo.rangoHorario === "Manana"){
+        turnoInfo.rangoHorario = "Mañana";
+    }
+
+    const nuevaFechaTurnoString = turnoInfo.fecha.toString();
+    const nuevaFecha = Date.parse(nuevaFechaTurnoString);
+    let nuevaFechaDate = new Date(nuevaFecha);
+
+    const nuevaFechaTurnoStringR = recomendacion.toString();
+    const nuevaFechaR = Date.parse(nuevaFechaTurnoStringR);
+    let nuevaFechaDateR = new Date(nuevaFechaR);
+    
+    let email = "julinaranja2014@gmail.com" //solo para testear
+    //let emailDestinatario = ${emailOwner};
+    let asunto = "Turno Rechazado"
+    let texto = `Disculpe las molestias, su turno ha sido rechazado.
+    <br><br>
+    
+    A continuación te dejamos los datos del turno rechazado.<br>
+    Fecha: ${nuevaFechaDate.toLocaleDateString('es-AR')}<br>
+    Rango horario: ${turnoInfo.rangoHorario}<br>
+    Perro: ${turnoInfo.perroNombre}<br><br>
+
+    Justificación del veterinario: ${justificacion}<br>
+    Sugerencia para el nuevo turno, la fecha con disponibilidad más próxima: ${nuevaFechaDateR.toLocaleDateString('es-AR')}`;
+    
+    sendMailTest(email, asunto, texto);
 
     res.status(201).send('Se rechazó correctamente el turno');
 }
@@ -321,7 +444,14 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
     turno.aceptado = true;
     req.body = turno;
 
-    insertarTurno (req,res);
+    
+    const dbResult = await insertTurno(turno);
+    
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
 }
 
 
