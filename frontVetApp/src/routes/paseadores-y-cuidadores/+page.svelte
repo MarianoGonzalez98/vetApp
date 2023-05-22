@@ -169,7 +169,7 @@
 
 <Modal />
 
-<h1>Paseadores y Cuidadores</h1>
+<h1 class="h1 m-4 font-medium">Paseadores y Cuidadores</h1>
 {#if paseadorescuidadores.length > 0}
     <div class="flex">
         {#if $user?.rol === "veterinario"}
