@@ -18,11 +18,12 @@ app.use(cookieParser());
 
 var cron = require('node-cron');
 
-/* cron.schedule('* * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   const result = await getTurnosPendientesPasados();
 
   if (result === "error") {
-    //que debería hacer
+    console.log("Falló la eliminacion automática de turnos pasados no aceptados ni rechazados")
+    return 
   }
 
   if (result.length > 0) { // Hay turnos pasados
@@ -49,7 +50,7 @@ var cron = require('node-cron');
     }
   } 
   
-});*/
+});
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
