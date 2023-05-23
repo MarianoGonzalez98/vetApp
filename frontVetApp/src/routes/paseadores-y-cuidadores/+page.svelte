@@ -291,7 +291,7 @@
         {#if $user?.rol === "veterinario"}
             <div class="flex-none">
                 <h1 class="text-4xl font-bold mb-6">
-                    Todavía no cargaste ningún paseador o cuidador.
+                    No hay paseadores cargados.
                 </h1>
                 <div class="flex justify-center">
                     <a
