@@ -45,11 +45,6 @@
             .then((res) => res.json())
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
 
-        if (!($user?.rol === "veterinario")) {
-            paseadorescuidadores = paseadorescuidadores.filter(
-                (pc) => pc.disponible
-            );
-        }
         if ($user) {
             fetch("http://localhost:3000/getPerfil", {
                 method: "GET",
@@ -273,7 +268,7 @@
                                 {/if}
                             </button>
                         </footer>
-                    {:else}
+                    {:else if pc.disponible}
                         <footer class="flex mt-4">
                             <button
                                 on:click={(event) => handleContactar(pc)}
@@ -304,7 +299,7 @@
             </div>
         {:else}
             <h1 class="text-4xl font-bold">
-                Ups! Parece que no hay paseadores disponibles.
+                Ups! Parece que no hay paseadores cargados.
             </h1>
         {/if}
     </div>
