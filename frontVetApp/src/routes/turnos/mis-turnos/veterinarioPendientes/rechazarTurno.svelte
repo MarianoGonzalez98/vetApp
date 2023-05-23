@@ -87,9 +87,5 @@
             <button class="btn {parent.buttonPositive}" type="submit">Aceptar</button>
         </form>
 
-   
-    <!-- prettier-ignore -->
-    <footer class="modal-footer {parent.regionFooter}">
-    </footer>
 	</div>
 {/if}
