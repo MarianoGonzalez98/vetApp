@@ -77,18 +77,16 @@
 	<div class="modal-example-form {cBase}">
 		<header class={cHeader}>Rechazar el turno</header>
 		
-        <form class="modal-form {cForm}">  
+        <form class="modal-form {cForm}" on:submit|preventDefault={onFormSubmit}>  
             <label class="label">
 				<span>Ingrese una justificación</span>
 				<input class="input" bind:value={justificacion} type="text" required/>
 			</label>
+
+            <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
+            <button class="btn {parent.buttonPositive}" type="submit">Aceptar</button>
         </form>
 
    
-    <!-- prettier-ignore -->
-    <footer class="modal-footer {parent.regionFooter}">
-    <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-    <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Aceptar</button>
-    </footer>
 	</div>
 {/if}
