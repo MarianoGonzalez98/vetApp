@@ -191,7 +191,7 @@
         </div>
         <div class="ml-2">
             <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por disponibilidad:
+                >Filtrar por horarios:
             </label>
             <input
                 type="text"
