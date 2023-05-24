@@ -135,13 +135,29 @@
     });
 
     const handleContactar = (pc: PaseadorCuidador) => {
+        console.log(pc);
         emailSeleccionado = pc.email;
+        let modalComponent = {
+        // Pass a reference to your custom component
+        ref: ModalExampleForm,
+        // Add the component properties as key/value pairs
+        props: {
+            miNombre: nombre,
+            miApellido: apellido,
+            miEmail: email,
+            miTelefono: telefono,
+            emailDestinatario: emailSeleccionado,
+        },
+        // Provide a template literal for the default component slot
+        slot: "<p>Skeleton</p>",
+    };
         const modalTest: ModalSettings = {
             type: "component",
             // Pass the component directly:
             component: modalComponent,
             response: (r: any) => console.log("response:", r),
         };
+
         modalStore.clear();
         modalStore.trigger(modalTest);
     };
