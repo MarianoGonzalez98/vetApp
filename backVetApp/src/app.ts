@@ -70,6 +70,7 @@ import { MailerRouter } from "./routes/mailer.routes";
 import { cancelarTurno, getTurnosPendientesPasados } from "./services/turno.service";
 import { sendMailTest } from "./utils/mailer.handle";
 import { DonacionesRouter } from "./routes/donaciones.routes";
+import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -80,6 +81,7 @@ app.use(ClientesRouter)
 app.use(PaseadoresCuidadoresRouter);
 app.use(MailerRouter)
 app.use(DonacionesRouter)
+app.use(MercadoPagoRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

@@ -1,3 +1,10 @@
+
+<svelte:head>
+	<script src="https://sdk.mercadopago.com/js/v2"></script>
+	<!--   <script src="https://sdk.mercadopago.com/js/v2" on:load={initializeRemarkable}></script> -->
+</svelte:head>
+
+
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
     import type { Campaign } from '$lib/interfaces/Donaciones.interface';
@@ -10,9 +17,47 @@
     let monto=100;
     let montoInputDisabled = false;
 
-    const onConfirm = () => {
+	async function getPreferenceId(){
+		const res = await fetch(`http://localhost:3000/create_preference_donacion`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body:JSON.stringify({
+				monto:Number(monto),
+				campaign:campaign,
+			})
+		});
+		const json = await res.json();
+
+		if (res.ok){
+			return json.id;
+		} else {
+			throw new Error(json);
+		}
+	}
+	const createMercadoPagoButton = async () => {
+        let preferenceIdResponse = await getPreferenceId();
+        const preferenceId = await preferenceIdResponse;
+          // @ts-ignore
+        const mp = new MercadoPago('TEST-31b0da2a-cecf-4c04-9602-8ac2e8df1590', {
+		locale: 'es-AR',
+	})
+
+        console.log(mp);
+        const bricksBuilder = mp.bricks(); //creo que se puede borrar
+        mp.bricks().create("wallet", "wallet_container", {
+            initialization: {
+				preferenceId: preferenceId,
+            },
+		});
+	}
+
+    const onConfirm = async () => {
         montoInputDisabled = true;
+		await createMercadoPagoButton()
     }
+
 
 
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
@@ -39,5 +84,6 @@
 		<footer class="modal-footer {parent.regionFooter}">
 
     </footer>
+	<div id="wallet_container"></div> <!-- boton de mercadoPago -->
 	</div>
 {/if}
