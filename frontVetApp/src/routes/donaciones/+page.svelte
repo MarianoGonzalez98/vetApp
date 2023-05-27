@@ -10,6 +10,7 @@
     } from "@skeletonlabs/skeleton";
     import { goto, preloadCode } from "$app/navigation";
     import type { Campaign } from "$lib/interfaces/Donaciones.interface";
+    import ModalDonar from "./ModalDonar.svelte";
 
     let campaigns: Campaign[] = [];
 
@@ -122,15 +123,21 @@
         return nombreMatch;
     }) as Campaign[];
 
-    const handleContactar = (pc: PaseadorCuidador) => {
-        emailSeleccionado = pc.email;
-        const modalTest: ModalSettings = {
+    const handleDonar = (campaign: Campaign) => {
+
+        let modalDonarComponent = {
+            ref: ModalDonar,
+            props: {
+                campaign: campaign,
+            },
+        };
+        const modalDonar: ModalSettings = {
             type: "component",
-            // Pass the component directly:
+            component:modalDonarComponent,
             response: (r: any) => console.log("response:", r),
         };
         modalStore.clear();
-        modalStore.trigger(modalTest);
+        modalStore.trigger(modalDonar);
     };
 </script>
 
@@ -200,7 +207,8 @@
                         </p>
                     </div>
                     <footer class="flex mt-4">
-                        <button class="btn btn-sm variant-ghost-surface mr-2"
+                        <button on:click={(event) =>
+                            handleDonar(campaign)} class="btn btn-sm variant-ghost-surface mr-2"
                             >Donar
                         </button>
                         <!-- 
