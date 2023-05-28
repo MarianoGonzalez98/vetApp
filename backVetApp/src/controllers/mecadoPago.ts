@@ -6,7 +6,7 @@ import { Campaign } from "../interfaces/Donaciones.interface";
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
     console.log("Configurando")
     mercadopago.configure({
-        access_token: "TEST-4664934486174510-010415-11e61427f31f86cf06bc92cdba2ab972-131223255",
+        access_token: process.env.MP_ACCESS_TOKEN || "",
     });
     const monto:number = req.body.monto;
     const campaign:Campaign = req.body.campaign;
@@ -26,7 +26,7 @@ export const createPrefrerenceDonacionController = async (req: Request, res: Res
             "failure": "http://localhost:5173/donaciones",
             "pending": "http://localhost:5173/donaciones"
         },
-        notification_url:`https://1e51-186-127-125-154.ngrok-free.app/notificacion_mp_donacion`, //cambiar url de ngrok
+        notification_url:`https://36a6-186-127-125-154.ngrok-free.app/notificacion_mp_donacion`, //cambiar url de ngrok
     };
 
     mercadopago.preferences.create(preference)
@@ -44,7 +44,7 @@ export const createPrefrerenceDonacionController = async (req: Request, res: Res
 export const notificacionDonacionController = async (req: Request, res: Response) => {
     console.log("Configurando")
     mercadopago.configure({
-        access_token: "TEST-4664934486174510-010415-11e61427f31f86cf06bc92cdba2ab972-131223255",
+        access_token: process.env.MP_ACCESS_TOKEN || "",
     });
     
     console.log("NOTIFICACION MP:");
@@ -59,7 +59,7 @@ export const notificacionDonacionController = async (req: Request, res: Response
         case "payment":
             const paymentId = query.id || query['data.id'];
             console.log(topic,"obteniendo payment : ",paymentId);
-            const payment = await mercadopago.payment.findById(Number(paymentId)); //ver si funciona!!!!
+            const payment = await mercadopago.payment.findById(Number(paymentId));
             console.log("PAYMENT-----------")
             console.log(payment);
             console.log("FIN PAYMENT-----------")

@@ -40,7 +40,7 @@
         let preferenceIdResponse = await getPreferenceId();
         const preferenceId = await preferenceIdResponse;
           // @ts-ignore
-        const mp = new MercadoPago('TEST-31b0da2a-cecf-4c04-9602-8ac2e8df1590', {
+        const mp = new MercadoPago('APP_USR-22da8af9-1320-49f0-a159-4ca8370a1414', {
 		locale: 'es-AR',
 	})
 
