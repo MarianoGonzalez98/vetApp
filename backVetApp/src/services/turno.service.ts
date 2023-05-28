@@ -8,62 +8,62 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     FROM public.turnos t
     WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
     `
-    const valuesCantTurnos = [turno.fecha,turno.rangoHorario]
+    const valuesCantTurnos = [turno.fecha, turno.rangoHorario]
 
-    try{
-        const response:QueryResult = await pool.query(query,valuesCantTurnos) 
-        const result: Turno[]  = await response.rows;
+    try {
+        const response: QueryResult = await pool.query(query, valuesCantTurnos)
+        const result: Turno[] = await response.rows;
         return result;
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:getCantDeTurnosRangoHorarioFecha------");
         console.log(err);
         return "error";
     }
 }
 
-export const getCantDeTurnosRangoHorarioFechab = async (fecha:Date,rangoHorario:string) => {
+export const getCantDeTurnosRangoHorarioFechab = async (fecha: Date, rangoHorario: string) => {
     const query = `
     SELECT *
     FROM public.turnos t
     WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
     `
-    const valuesCantTurnos = [fecha,rangoHorario]
+    const valuesCantTurnos = [fecha, rangoHorario]
 
-    try{
-        const response:QueryResult = await pool.query(query,valuesCantTurnos) 
-        const result: Turno[]  = await response.rows;
+    try {
+        const response: QueryResult = await pool.query(query, valuesCantTurnos)
+        const result: Turno[] = await response.rows;
         return result;
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:getCantDeTurnosRangoHorarioFecha------");
         console.log(err);
         return "error";
     }
 }
 
-export const insertTurno = async (turno:Turno) => {
+export const insertTurno = async (turno: Turno) => {
     const queryTurno = `
     INSERT INTO public.turnos(
         motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre", urgencia) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
-    `; 
+    `;
     const valuesTurno = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.emailOwner, turno.aceptado, turno.descripcion, turno.perroNombre, turno.urgencia]
 
-    try{
-        const response:QueryResult = await pool.query(queryTurno,valuesTurno) 
+    try {
+        const response: QueryResult = await pool.query(queryTurno, valuesTurno)
         return 'ok';
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:insertTurno------");
         console.log(err);
         return "error";
     }
 }
 
-export const getTurno = async(id:number) => {
+export const getTurno = async (id: number) => {
     const query = `
-    SELECT id
+    SELECT *
     FROM public.turnos 
     WHERE id = $1
     `
@@ -71,8 +71,8 @@ export const getTurno = async(id:number) => {
 
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
-        const result: number = await response.rows[0];
-        return "ok";
+        const result: Turno = await response.rows[0];
+        return result;
     }
     catch (err) {
         console.error("----Error en acceso a BD:getTurno------");
@@ -89,13 +89,13 @@ export const getTurnos = async (owner: string) => {
     WHERE P."emailOwner" = $1
     `;
     const values = [owner]
-    
-    try{
-        const response:QueryResult = await pool.query(query,values) 
-        const result:Turno[] = await response.rows;
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: Turno[] = await response.rows;
         return result;
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:getTurnosCliente------");
         console.log(err);
         return "error";
@@ -107,21 +107,21 @@ export const getTurnosComoVeterinario = async () => {
     SELECT * 
     FROM public.turnos P
     `;
-    
-    
-    try{
-        const response:QueryResult = await pool.query(query) 
-        const result:Turno[] = await response.rows;
+
+
+    try {
+        const response: QueryResult = await pool.query(query)
+        const result: Turno[] = await response.rows;
         return result;
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:getTurnosVeterinario------");
         console.log(err);
         return "error";
     }
 }
 
-export const cancelarTurno = async (id:number) => {
+export const cancelarTurno = async (id: number) => {
     const query = `
     DELETE 
     FROM public.turnos
@@ -130,31 +130,31 @@ export const cancelarTurno = async (id:number) => {
 
     const values = [id]
 
-    try{
-        const response:QueryResult = await pool.query(query,values) 
+    try {
+        const response: QueryResult = await pool.query(query, values)
         return 'ok';
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:cancelarTurno------");
         console.log(err);
         return "error";
     }
 }
 
-export const aceptarTurno = async (aceptado:boolean, id:number) => {
+export const aceptarTurno = async (aceptado: boolean, id: number) => {
     const query = `
     UPDATE public.turnos 
     SET aceptado = $1
     WHERE id = $2
     `;
 
-    const values = [aceptado,id]
+    const values = [aceptado, id]
 
-    try{
-        const response:QueryResult = await pool.query(query,values) 
+    try {
+        const response: QueryResult = await pool.query(query, values)
         return 'ok';
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:aceptarTurno------");
         console.log(err);
         return "error";
@@ -162,27 +162,27 @@ export const aceptarTurno = async (aceptado:boolean, id:number) => {
 }
 
 
-export const rechazarTurno = async (rechazado:boolean, id:number) => {
+export const rechazarTurno = async (rechazado: boolean, id: number) => {
     const query = `
     UPDATE public.turnos 
     SET rechazado = $1
     WHERE id = $2
     `;
 
-    const values = [rechazado,id]
+    const values = [rechazado, id]
 
-    try{
-        const response:QueryResult = await pool.query(query,values) 
+    try {
+        const response: QueryResult = await pool.query(query, values)
         return 'ok';
     }
-    catch(err){
+    catch (err) {
         console.error("----Error en acceso a BD:rechazarTurno------");
         console.log(err);
         return "error";
     }
 }
 
-export const modificarTurno = async (id:number,perroId:number,perroNombre:string,motivo:string,fecha:Date,rango:string) => {
+export const modificarTurno = async (id: number, perroId: number, perroNombre: string, motivo: string, fecha: Date, rango: string) => {
     const query = `
     UPDATE public.turnos 
     SET motivo = $1, "perroId" = $2, fecha = $3, "rangoHorario" = $4, "perroNombre" = $6, aceptado = $7
@@ -197,6 +197,48 @@ export const modificarTurno = async (id:number,perroId:number,perroNombre:string
     }
     catch (err) {
         console.error("----Error en acceso a BD:modificarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getTurnosPerro = async (perroId: number) => {
+    const query = `
+    SELECT * 
+    FROM public.turnos
+    WHERE "perroId" = $1
+    `;
+    const values = [perroId]
+    console.log(perroId);
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: Turno[] = await response.rows;
+        console.log(result);
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getTurnosPerro------");
+        console.log(err);
+        return [];
+    }
+}
+
+
+export const getTurnosPendientesPasados = async () => {
+    const query = `
+    SELECT * 
+    FROM public.turnos
+    WHERE (fecha < CURRENT_DATE)AND(aceptado = false)AND(rechazado = false)
+    `;
+
+    try {
+        const response: QueryResult = await pool.query(query)
+        const result: Turno[] = await response.rows;
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:cancelarTurno------");
         console.log(err);
         return "error";
     }

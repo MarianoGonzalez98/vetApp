@@ -6,6 +6,8 @@
         popup,
         type ModalSettings,
         type PopupSettings,
+        Autocomplete,
+        type AutocompleteOption,
     } from "@skeletonlabs/skeleton";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
@@ -60,7 +62,7 @@
     let telefono = "";
     let email = "";
     let oficio: Oficio;
-    let disponibilidad = "";
+    let horarios = "";
 
     const handleRegistro = async () => {
         let error: boolean = false;
@@ -78,7 +80,7 @@
                 telefono: telefono,
                 email: email,
                 oficio: oficio,
-                disponibilidad: disponibilidad,
+                horarios: horarios,
             }),
         })
             .then((res) => {
@@ -113,15 +115,144 @@
                 );
             });
     };
-    /*
 
-    PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
+    let popupSettings: PopupSettings = {
+        event: "focus-click",
+        target: "popupAutocomplete",
+        placement: "bottom",
+    };
 
-    let fecha = new Date();
-    let fechaMin = new Date();
-    let format = "dd-MM-yyyy";
-    let placeholder = "Elija una fecha";
-    */
+    const zonas: AutocompleteOption[] = [
+        {
+            label: "Plaza Alsina",
+            value: "Plaza Alsina",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Olazábal",
+            value: "Plaza Olazábal",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Belgrano",
+            value: "Plaza Belgrano",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Güemes",
+            value: "Plaza Güemes",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Alberti",
+            value: "Parque Alberti",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza 19 De Noviembre",
+            value: "Plaza 19 De Noviembre",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Azcuénaga",
+            value: "Plaza Azcuénaga",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Paso",
+            value: "Plaza Paso",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Italia",
+            value: "Plaza Italia",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Vucetich (San Martín)",
+            value: "Parque Vucetich (San Martín)",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Islas Malvinas",
+            value: "Plaza Islas Malvinas",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Moreno",
+            value: "Plaza Moreno",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza San Martín",
+            value: "Plaza San Martín",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Rivadavia",
+            value: "Plaza Rivadavia",
+            keywords: "plaza",
+        },
+        {
+            label: "Paseo Del Bosque",
+            value: "Paseo Del Bosque",
+            keywords: "paseo",
+        },
+        {
+            label: "Plaza Juan D. Perón",
+            value: "Plaza Juan D. Perón",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Yrigoyen",
+            value: "Plaza Yrigoyen",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Rocha",
+            value: "Plaza Rocha",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Castelli",
+            value: "Parque Castelli",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Sarmiento",
+            value: "Plaza Sarmiento",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Saavedra",
+            value: "Parque Saavedra",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza España",
+            value: "Plaza España",
+            keywords: "plaza",
+        },
+        {
+            label: "Plaza Matheu",
+            value: "Plaza Matheu",
+            keywords: "plaza",
+        },
+        {
+            label: "Parque Meridiano V",
+            value: "Parque Meridiano V",
+            keywords: "parque",
+        },
+        {
+            label: "Plaza Máximo Paz",
+            value: "Plaza Máximo Paz",
+            keywords: "plaza",
+        },
+    ];
+
+    function onPopupDemoSelect(event: any): void {
+        zona = event.detail.label;
+    }
 </script>
 
 <Modal />
@@ -156,75 +287,36 @@
         />
 
         <label class="label" for="zona">Zona:</label>
-        <input
-            bind:value={zona}
-            class="input focus:invalid:border-red-500"
-            type="text"
-            placeholder="Ej: Parque Castelli"
-            name="zona"
-            required
-        />
 
-        <p>Disponibilidad horaria:</p>
-        <textarea
-            bind:value={disponibilidad}
-            class="input rounded-3xl"
-            placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
-            name="observaciones"
-        />
-
-        <!--
-            
-            PARA CUANDO QUIERA EMPROLIJAR LA SELECCIÓN DE DISPONIBILIDAD
-            
-            <div class="flex">
-            <button
-                class="btn rounded-lg variant-ghost-secondary mr-2 grayscale"
-                type="submit">Domingo</button
+        <div class="text-token w-full max-w-sm space-y-2">
+            <input
+                class="input autocomplete"
+                type="search"
+                name="autocomplete-search"
+                bind:value={zona}
+                placeholder="Ej: Plaza Moreno"
+                use:popup={popupSettings}
+            />
+            <div
+                data-popup="popupAutocomplete"
+                class="card w-full max-w-sm max-h-48 p-4 overflow-y-auto"
             >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500 pointer-events-none opacity-50"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
+                <Autocomplete
+                    bind:input={zona}
+                    options={zonas}
+                    on:selection={onPopupDemoSelect}
                 />
             </div>
         </div>
-        <div class="flex">
-            <button
-                class="btn rounded-lg variant-filled-secondary mr-2"
-                type="submit">Domingo</button
-            >
-            <div class="flex-none">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaDesde"
-                    required
-                />
-            </div>
-            <div class="flex-none ml-2">
-                <input
-                    bind:value={fecha}
-                    class="input focus:invalid:border-red-500"
-                    type="time"
-                    name="disponibilidadHorariaHasta"
-                    required
-                />
-            </div>
-        </div> -->
+
+        <p>Disponibilidad horaria:</p>
+        <textarea
+            bind:value={horarios}
+            class="input rounded-3xl"
+            placeholder="Ej: Sábados de 13:00hs a 17:00hs, domingos de 14:00hs a 18:00hs, etc..."
+            name="observaciones"
+            required
+        />
 
         <label class="label" for="dni">Teléfono:</label>
         <input

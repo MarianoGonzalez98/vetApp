@@ -12,7 +12,7 @@ export const mandarMailController = async (req: Request, res: Response) => {
     console.log(emailData);
 
     try {
-        /* await sendMailTest(emailData.emailDestino,asunto,texto); */
+        await sendMailTest(emailData.emailDestino,asunto,texto);
         console.log(emailData);
     } catch (error) {
         res.status(424).send("Falla en envio de mail.") //424 (Failed Dependency)

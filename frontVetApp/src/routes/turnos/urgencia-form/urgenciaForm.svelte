@@ -200,30 +200,28 @@ const handleUrgencia = async () =>{
     <div class="card p-4">
         <h2>Registar urgencia</h2>
         <br>
-        
-        <div>
-            <label for="seleccionCliente">Seleccione el cliente</label>
-            <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm}>
-                {#each clientes as cliente}
-                    <option value={cliente}>
-                        <span>{cliente.nombre} {cliente.apellido} (email: {cliente.email})</span>
-                    </option>
-                {/each}
-            </select>
-
-            <label for="seleccionPerro">Seleccione el perro</label>
-            <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro}>
-                {#each perros as perro}
-                    <option value={perro}>
-                        <span>{perro.nombre} </span>
-                    </option>
-                {/each}
-            </select>
-        </div>
 
 
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
-
+            <div>
+                <label for="seleccionCliente">Seleccione el cliente</label>
+                <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm} required>
+                    {#each clientes as cliente}
+                        <option value={cliente}>
+                            <span>{cliente.nombre} {cliente.apellido} (email: {cliente.email})</span>
+                        </option>
+                    {/each}
+                </select>
+    
+                <label for="seleccionPerro">Seleccione el perro</label>
+                <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro} required>
+                    {#each perros as perro}
+                        <option value={perro}>
+                            <span>{perro.nombre} </span>
+                        </option>
+                    {/each}
+                </select>
+            </div>
 
             <label class="label" for="motivo">Motivo/s</label> 
             <div class="flex items-center space-x-2">

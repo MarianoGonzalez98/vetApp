@@ -45,11 +45,6 @@
             .then((res) => res.json())
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
 
-        if (!($user?.rol === "veterinario")) {
-            paseadorescuidadores = paseadorescuidadores.filter(
-                (pc) => pc.disponible
-            );
-        }
         if ($user) {
             fetch("http://localhost:3000/getPerfil", {
                 method: "GET",
@@ -126,7 +121,7 @@
             ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
             : true;
         const horarioMatch = inputHorario
-            ? pc.disponibilidad
+            ? pc.horarios
                   .toLowerCase()
                   .match(`.*${inputHorario.toLowerCase()}.*`)
             : true;
@@ -140,13 +135,29 @@
     });
 
     const handleContactar = (pc: PaseadorCuidador) => {
+        console.log(pc);
         emailSeleccionado = pc.email;
+        let modalComponent = {
+        // Pass a reference to your custom component
+        ref: ModalExampleForm,
+        // Add the component properties as key/value pairs
+        props: {
+            miNombre: nombre,
+            miApellido: apellido,
+            miEmail: email,
+            miTelefono: telefono,
+            emailDestinatario: emailSeleccionado,
+        },
+        // Provide a template literal for the default component slot
+        slot: "<p>Skeleton</p>",
+    };
         const modalTest: ModalSettings = {
             type: "component",
             // Pass the component directly:
             component: modalComponent,
             response: (r: any) => console.log("response:", r),
         };
+
         modalStore.clear();
         modalStore.trigger(modalTest);
     };
@@ -169,7 +180,7 @@
 
 <Modal />
 
-<h1>Paseadores y Cuidadores</h1>
+<h1 class="h1 m-4 font-medium">Paseadores y Cuidadores</h1>
 {#if paseadorescuidadores.length > 0}
     <div class="flex">
         {#if $user?.rol === "veterinario"}
@@ -196,7 +207,7 @@
         </div>
         <div class="ml-2">
             <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por disponibilidad:
+                >Filtrar por horarios:
             </label>
             <input
                 type="text"
@@ -251,8 +262,8 @@
                             {pc.telefono}
                         </p>
                         <p>
-                            <span class="font-medium">Disponibilidad: </span>
-                            {pc.disponibilidad}
+                            <span class="font-medium">Horarios: </span>
+                            {pc.horarios}
                         </p>
                     </div>
                     {#if $user?.rol === "veterinario"}
@@ -273,7 +284,7 @@
                                 {/if}
                             </button>
                         </footer>
-                    {:else}
+                    {:else if pc.disponible}
                         <footer class="flex mt-4">
                             <button
                                 on:click={(event) => handleContactar(pc)}
@@ -291,11 +302,11 @@
         {#if $user?.rol === "veterinario"}
             <div class="flex-none">
                 <h1 class="text-4xl font-bold mb-6">
-                    Todavía no cargaste ningún paseador o cuidador.
+                    No hay paseadores cargados.
                 </h1>
                 <div class="flex justify-center">
                     <a
-                        class="btn variant-filled-secondary"
+                        class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
                         rel="noreferrer"
                         href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
                         >Cargar paseador/cuidador</a
@@ -304,7 +315,7 @@
             </div>
         {:else}
             <h1 class="text-4xl font-bold">
-                Ups! Parece que no hay paseadores disponibles.
+                Ups! Parece que no hay paseadores cargados.
             </h1>
         {/if}
     </div>

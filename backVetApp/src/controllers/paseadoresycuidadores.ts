@@ -58,25 +58,43 @@ export const cambiarDisponibleController = async (req: Request, res: Response) =
 export const enviarMailController = async (req: Request, res: Response) => {
     const emailInfo = req.body;
 
-    let email = "felipetamburri@gmail.com" //solo para testear
-    //let emailDestinatario = req.body.emailRemitente;
+    let email = emailInfo.emailDestinatario;
     let asunto = "¡Un cliente de ¡Oh my dog! te contactó!"
-    let texto = `¡Un cliente de ¡Oh my dog! está interesado en tus servicios!
-    
-    A continuación te dejamos los datos del cliente para que puedas comunicarte directamente con él.
-    
-    Nombre: ${emailInfo.nombre}
-    Apellido: ${emailInfo.apellido}
-    Teléfono: ${emailInfo.telefono}
+    let texto = `¡Un cliente de ¡Oh my dog! está interesado en tus servicios!<br>
+    <br>
+    A continuación te dejamos los datos del cliente para que puedas comunicarte directamente con él.<br>
+    <br>
+    Nombre: ${emailInfo.nombre}<br>
+    Apellido: ${emailInfo.apellido}<br>
+    Teléfono: ${emailInfo.telefono}<br>
     Email: ${emailInfo.emailRemitente}`;
 
     if (emailInfo.mensaje != "") {
-        texto += `
-        
+        texto += `<br>
+        <br>
         Mensaje del cliente: ${emailInfo.mensaje}`;
     }
 
-    sendMailTest(email, asunto, texto);
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
+
+    email = "pedrovetapp@gmail.com"; //solo para la demo
+    asunto = "Un cliente contactó a un paseador/cuidador a través del sistema"
+    texto = `A continuación se muestran los datos del contacto.<br>
+    <br>
+    Email del cliente: ${emailInfo.emailRemitente}<br>
+    Email del paseador/cuidador: ${emailInfo.emailDestinatario}<br>
+    Mensaje: ${emailInfo.mensaje}`;
+
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
 
     res.status(201).send('Se envió correctamente el mail al paseador/cuidador y a la veterinaria');
 }

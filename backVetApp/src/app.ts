@@ -13,12 +13,53 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json({limit: '5mb'}));
+app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
+
+var cron = require('node-cron');
+
+cron.schedule('* * * * *', async () => {
+  const result = await getTurnosPendientesPasados();
+
+  if (result === "error") {
+    console.log("Falló la eliminacion automática de turnos pasados no aceptados ni rechazados")
+    return
+  }
+
+  if (result.length > 0) { // Hay turnos pasados
+    for (var i = 0; i < result.length; i++) {
+      cancelarTurno(result[i].id) // los elimina uno a uno y envia el mail correspondiente
+
+      if (result[i].rangoHorario === "Manana") {
+        result[i].rangoHorario = "Mañana";
+      }
+
+      let email = result[i].emailOwner;
+      //let emailDestinatario = result[i].emailOwner;
+      let asunto = "Solicitud de turno Cancelado"
+      let texto = `¡Se le ha cancelado un turno!
+      <br><br>
+      El veterinario no respondió a su solicitud.<br>
+      A continuación te dejamos los datos del turno.<br>
+      
+      Fecha: ${result[i].fecha}<br>
+      Rango horario: ${result[i].rangoHorario}<br>
+      Perro: ${result[i].perroNombre}`;
+
+      try {
+        sendMailTest(email, asunto, texto);
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+  }
+
+});
 
 //importacion de rutas, mas adelante se cambia
 import { AdopcionesRouter } from "./routes/adopciones.routes"
-import { TurnosRouter  } from "./routes/turnos.routes"
+import { TurnosRouter } from "./routes/turnos.routes"
 import { ApiResponse } from "./interfaces/ApiResponse.interface"
 import { AuthRouter } from "./routes/auth.routes";
 import { TestRouter } from "./routes/test.routes";
@@ -26,6 +67,10 @@ import { PerrosRouter } from "./routes/perros.routes";
 import { ClientesRouter } from "./routes/clientes.routes";
 import { PaseadoresCuidadoresRouter } from "./routes/paseadoresycuidadores.routes";
 import { MailerRouter } from "./routes/mailer.routes";
+import { cancelarTurno, getTurnosPendientesPasados } from "./services/turno.service";
+import { sendMailTest } from "./utils/mailer.handle";
+import { DonacionesRouter } from "./routes/donaciones.routes";
+import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -35,6 +80,8 @@ app.use(PerrosRouter);
 app.use(ClientesRouter)
 app.use(PaseadoresCuidadoresRouter);
 app.use(MailerRouter)
+app.use(DonacionesRouter)
+app.use(MercadoPagoRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')
@@ -51,3 +98,4 @@ app.get('/api/mensaje', (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
 })
+

@@ -11,6 +11,6 @@ export const load = (async () => {
 
 
 //importante para que el build haga una página estática.
-export const prerender = true;
+export const prerender = false;
 export const trailingSlash = 'always';
 export const ssr = false

@@ -13,7 +13,7 @@ export interface PaseadorCuidador {
     nombre: string,
     apellido: string,
     zona: string,
-    disponibilidad: string,
+    horarios: string,
     telefono: string,
     email: string,
     oficio: Oficio,
