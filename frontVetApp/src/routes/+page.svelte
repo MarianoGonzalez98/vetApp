@@ -3,48 +3,62 @@
 </script>
 
 <div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-5">
+	<div class="space-y-10">
 		{#if $user}
 			{#if $user.rol === "veterinario"}
 				<a
-					class="btn bg-gradient-to-br variant-gradient-primary-secondary"
+					class="btn variant-filled"
 					rel="noreferrer"
 					href="/cargar-cliente">Cargar nuevo cliente</a
 				>
-
+				<a class="btn variant-filled" rel="noreferrer" href="/clientes"
+					>Ver clientes</a
+				>
 				<a
-					class="btn variant-ghost-surface"
-					href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
+					class="btn variant-filled"
+					rel="noreferrer"
+					href="/donaciones/crear-campaign">Crear campaña</a
 				>
 			{:else}
 				<a
-					class="btn variant-ghost-surface"
+					class="btn variant-filled"
 					rel="noreferrer"
 					href="/mis-perros">Mis perros</a
 				>
 				<a
+					class="btn variant-filled"
+					rel="noreferrer"
+					href="/cargar-perro">Cargar nuevo perro</a
+				>
+			{/if}
+			<a class="btn variant-filled" rel="noreferrer" href="/turnos"
+				>Ir a turnos</a
+			>
+		{/if}
+		<div class="flex justify-center">
+			<a
+				class="btn variant-ghost-surface mr-1"
+				href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
+			>
+			<a
 				class="btn variant-ghost-surface"
 				rel="noreferrer"
-				href="/cargar-perro">Cargar nuevo perro</a
+				href="/adopciones">Adopciones</a
 			>
-			{/if}
-		{/if}
-		<a
-		class="btn variant-ghost-surface"
-		rel="noreferrer"
-		href="/adopciones">Adopciones</a
-		>
+			<a
+			class="btn variant-ghost-surface"
+			rel="noreferrer"
+			href="/donaciones">Donaciones</a
+			>
+		</div>
 	</div>
 </div>
 
 <style>
-	.container{
-		background-image: url("/perrito-desde-abajo.png");	
-		background-repeat:no-repeat;
-		background-position: center bottom ;
+	.container {
+		background-image: url("/perrito-desde-abajo.png"), url("/perritos.png");
+		background-repeat: no-repeat;
+		background-position: center bottom, left bottom;
 		background-size: 20%;
-		
 	}
-
-			
 </style>

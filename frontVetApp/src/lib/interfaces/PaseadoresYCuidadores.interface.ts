@@ -1,16 +1,21 @@
-export interface RangoDate {
-    inicio: Date,
-    fin: Date,
+export type Oficio = "Paseador" | "Cuidador" | "Ambos"
+
+export interface Horario {
+    desde: string;
+    hasta: string;
 }
 
-type Oficio = "Paseador" | "Cuidador"
+export interface Disponibilidad {
+    [dia: string]: Horario;
+}
 
 export interface PaseadorCuidador {
     nombre: string,
     apellido: string,
-    horario: RangoDate,
-    fechas: RangoDate,
+    zona: string,
+    horarios: string,
     telefono: string,
-    mail: string,
+    email: string,
     oficio: Oficio,
+    disponible: boolean,
 }

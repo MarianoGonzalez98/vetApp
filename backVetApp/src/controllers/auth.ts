@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { getUser, changePass, getCurrentPass, insertUser, insertPassword, actualizarPasswordDevelop, setSeCambioPassword, getUserCompleto, updatePerfilUsuario, getUserConDni } from "../services/auth.service";
-import { Auth, UserData, Persona } from "../interfaces/User.interface";
+import { Auth, UserData, Persona, Foto } from "../interfaces/User.interface";
 import { decodeToken, generateToken } from "../utils/jwt.handle";
 import { encrypt, verified } from "../utils/bycrypt.handle";
-import { generateRandomString } from "../utils/random.handle";
+import { generateRandomPassword, generateRandomString } from "../utils/random.handle";
 import { User } from "../interfaces/User.interface";
 import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
 import { sendMailTest } from "../utils/mailer.handle";
@@ -61,10 +61,10 @@ export const getMiPerfilController = async (req: Request, res: Response) => {
 }
 
 export const updateMiPerfilController = async (req: Request, res: Response) => {
-    const cliente: Persona = req.body;
+    const datosNuevos: Persona = req.body;
     const emailJWT = res.locals.jwtData.user.email
-    const existeUsuario = await getUser(emailJWT);
-    if (existeUsuario === 'error'){
+    const existeUsuario = await getUserCompleto(emailJWT);
+    if (existeUsuario === 'error'){ //verifico que exista el usuario
         //HTTP 500 Internal server error
         res.status(500).send("posible error en base de datos")
         return
@@ -73,10 +73,21 @@ export const updateMiPerfilController = async (req: Request, res: Response) => {
         res.status(404).send('El usuario no existe');
     }
 
-    if (cliente.foto){
-        cliente.foto= await encodeRezizeImgToJPEG(cliente.foto) || "";
+    const poseedorDNI = await getUserConDni(datosNuevos.dni);
+    if (poseedorDNI === 'error'){
+        res.status(500).send("posible error en base de datos")
+        return
     }
-    const result = await updatePerfilUsuario(cliente,emailJWT)
+
+    if (poseedorDNI && (poseedorDNI.email !== emailJWT)){
+        res.status(409).send("Ya se encuentra un usuario registrado con ese dni")
+        return
+    }
+
+    if (datosNuevos.foto){
+        datosNuevos.foto= await encodeRezizeImgToJPEG(datosNuevos.foto) || "";
+    }
+    const result = await updatePerfilUsuario(datosNuevos,emailJWT)
     if (result === 'error'){
         //HTTP 500 Internal server error
         res.status(500).send("posible error en base de datos")
@@ -100,7 +111,14 @@ const registrarController = async (req: Request, res: Response) => {
         return
     }
 
-    const randomPassword = generateRandomString();
+    const existeUsuario = await getUserConDni(cliente.dni);
+    if (existeUsuario) { //si devuelve un elemento es que existe el usuario
+        //409 conflict
+        res.status(409).send({ data: "El dni del cliente ya se encuentra registrado", statusCode: 409 })
+        return
+    }
+
+    const randomPassword = generateRandomPassword();
     const hashedPassword = await encrypt(randomPassword);
     const dbResult = await insertUser({ ...cliente, password: hashedPassword, rol: 'cliente' });
     if (dbResult === 'error') {
@@ -108,12 +126,14 @@ const registrarController = async (req: Request, res: Response) => {
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    //enviarMail(cliente.email,randomPassword) //despues lo hago para no llenarme de mails
-/*     let asunto="Contraseña del sitio web Oh my dog!"
-    let texto="Su contraseña es: "+ randomPassword;
-    sendMailTest(cliente.email,asunto,texto); */
-    //SOLO EN DEVELOP-------------------------
 
+    let asunto="Contraseña del sitio web Oh my dog!"
+    let texto="Su contraseña es: "+ randomPassword;
+    try {
+        await sendMailTest(cliente.email,asunto,texto);
+      } catch (error) {
+        console.log(error);
+      }
     await insertPassword(cliente.email, randomPassword);
 
     //FIN SOLO DEVELOP-------------
@@ -141,12 +161,14 @@ const loginController = async (req: Request, res: Response) => {
         res.status(401).send({ data: "password incorrecto", statusCode: 402 })
         return
     }
-    const userData: UserData = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword }; //creo q se puede mejorar
+    let userData: UserData = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword }; //creo q se puede mejorar
     console.log("LOGIN CRONTROLLER:")
     console.log(userData);
     const token = await generateToken(userData); //genero jwt token
     res.cookie('jwt', token, { httpOnly: true, maxAge:11704085200 }); //mando el jwt en una cookie httpOnly
-    res.send({ data: { userData, token: token } })
+    let userDataConFoto:UserData&Foto = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword, foto:decodeToHTML_JPEG(result.foto)}
+    console.log(userDataConFoto);
+    res.send({ data: { userData:userDataConFoto, token: token } })
 };
 
 const logoutController = async (req: Request, res: Response) => {

@@ -1,28 +1,100 @@
 import { Request, Response } from "express"
-import { PaseadorCuidador, RangoDate } from "../../../frontVetApp/src/lib/interfaces/PaseadoresYCuidadores.interface"
+import { PaseadorCuidador } from "../interfaces/PaseadoresYCuidadores.interface";
+import { getPaseadorCuidador, getPaseadoresCuidadores, insertPaseadorCuidador, toggleDisponible } from "../services/paseadorescuidadores.service";
+import { sendMailTest } from "../utils/mailer.handle";
 
-export const getPaseadoresCuidadores = (req: Request, res: Response) => {
-    let rango: RangoDate = {
-        inicio: new Date(),
-        fin: new Date()
+export const cargarPaseadorCuidadorController = async (req: Request, res: Response) => {
+    const paseadorcuidador: PaseadorCuidador = req.body;
+
+    const result = await getPaseadorCuidador(paseadorcuidador.email);
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
     }
-    let paseador1: PaseadorCuidador = {
-        nombre: "nombre1",
-        apellido: "apellido1",
-        horario: rango,
-        fechas: rango,
-        telefono: "111 111-1111",
-        mail: "mail1",
-        oficio: "Paseador"
+    if (result) { //si devuelve un elemento es que existe el paseador
+        //409 conflict
+        res.status(409).send({ data: "El email del pasesador ya se encuentra cargado", statusCode: 409 })
+        return
     }
-    let paseador2: PaseadorCuidador = {
-        nombre: "nombre1",
-        apellido: "apellido1",
-        horario: rango,
-        fechas: rango,
-        telefono: "111 111-1111",
-        mail: "mail1",
-        oficio: "Paseador"
+
+    const dbResult = await insertPaseadorCuidador(paseadorcuidador);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
     }
-    res.send({ data: [paseador1, paseador2] })
+
+    res.status(201).send('Se cargó correctamente el paseador/cuidador');
+}
+
+export const listarPaseadoresCuidadoresController = async (req: Request, res: Response) => {
+    const result = await getPaseadoresCuidadores();
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    console.log(result);
+    res.status(200).send({ data: result, statusCode: 200 })
+}
+
+export const cambiarDisponibleController = async (req: Request, res: Response) => {
+    const paseadorcuidador: PaseadorCuidador = req.body;
+
+    const dbResult = await toggleDisponible(paseadorcuidador);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se actualizó correctamente la disponibilidad del paseador/cuidador');
+}
+
+export const enviarMailController = async (req: Request, res: Response) => {
+    const emailInfo = req.body;
+
+    let email = emailInfo.emailDestinatario;
+    let asunto = "¡Un cliente de ¡Oh my dog! te contactó!"
+    let texto = `¡Un cliente de ¡Oh my dog! está interesado en tus servicios!<br>
+    <br>
+    A continuación te dejamos los datos del cliente para que puedas comunicarte directamente con él.<br>
+    <br>
+    Nombre: ${emailInfo.nombre}<br>
+    Apellido: ${emailInfo.apellido}<br>
+    Teléfono: ${emailInfo.telefono}<br>
+    Email: ${emailInfo.emailRemitente}`;
+
+    if (emailInfo.mensaje != "") {
+        texto += `<br>
+        <br>
+        Mensaje del cliente: ${emailInfo.mensaje}`;
+    }
+
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
+
+    email = "pedrovetapp@gmail.com"; //solo para la demo
+    asunto = "Un cliente contactó a un paseador/cuidador a través del sistema"
+    texto = `A continuación se muestran los datos del contacto.<br>
+    <br>
+    Email del cliente: ${emailInfo.emailRemitente}<br>
+    Email del paseador/cuidador: ${emailInfo.emailDestinatario}<br>
+    Mensaje: ${emailInfo.mensaje}`;
+
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
+    res.status(201).send('Se envió correctamente el mail al paseador/cuidador y a la veterinaria');
 }

@@ -9,6 +9,10 @@ export interface User extends Auth {
     seCambioPassword:boolean,
 }
 
+export interface Foto{
+    foto:string,
+}
+
 export interface UserData {
     email:string,
     rol:string
@@ -36,6 +40,6 @@ export interface Cliente extends Persona{
 
 export interface NombreApellidoMailPersona{
     nombre:string,
-    apellido:string,
+    apellido:string, 
     email:string
 }

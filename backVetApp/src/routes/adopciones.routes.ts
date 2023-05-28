@@ -1,6 +1,6 @@
 import { Router } from "express"
 
-import { getAdopciones, insertAdopcion } from "../controllers/adopciones";
+import { getAdopciones, insertAdopcion, marcarComoAdoptado } from "../controllers/adopciones";
 import { checkJWT } from "../middleware/session";
 
 const AdopcionesRouter = Router();
@@ -9,6 +9,7 @@ const AdopcionesRouter = Router();
 */
 AdopcionesRouter.post('/adopciones/crear-publicacion', checkJWT,insertAdopcion)
 AdopcionesRouter.get('/adopciones/get-lista-adopciones',getAdopciones)
+AdopcionesRouter.post('/adopciones/marcar-adoptado', checkJWT,marcarComoAdoptado)
 
 
 export { AdopcionesRouter}

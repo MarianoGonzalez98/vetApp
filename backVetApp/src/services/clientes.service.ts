@@ -20,3 +20,22 @@ export const getClientes = async () => {
     }
 
 }
+
+export const getClientesCompletos = async () => {
+    const query = `
+    SELECT *
+    FROM public.usuarios
+    WHERE rol = 'cliente'
+    `
+    try {
+        const response: QueryResult = await pool.query(query)
+        const result: NombreApellidoMailPersona[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getClientesCompleto------");
+        console.log(err);
+        return "error";
+    }
+
+}
