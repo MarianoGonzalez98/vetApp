@@ -73,103 +73,131 @@
 
 <h1 class="h1 m-4 font-medium">Perros</h1>
 
-<div class="ml-2 flex flex-wrap items-start">
-    {#each mostrar as perro}
-        <div
-            class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary max-w-sm md:flex-row min-h-0 h-auto"
-        >
-            <header>
-                {#if perro.foto}
-                    <img
-                        class="object-cover h-full w-full rounded-t-lg"
-                        src={perro.foto}
-                        alt="foto de perfil"
-                    />
-                {:else}
-                    <img
-                        class="object-cover h-full w-full rounded-t-lg p-5"
-                        src="/no_foto_perro.png"
-                        alt=""
-                    />
-                {/if}
-            </header>
-            <div class="flex flex-col justify-start p-6">
-                <h5
-                    class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                >
-                    {perro.nombre}
-                </h5>
-                <div
-                    class="mb-4 text-base text-neutral-600 dark:text-neutral-200"
-                >
-                    <p>
-                        <span class="font-medium">Raza: </span>
-                        {perro.raza}
-                    </p>
-                    <p>
-                        <span class="font-medium">Sexo: </span>
-                        {perro.sexo}
-                    </p>
-                    <p>
-                        <span class="font-medium">Fecha de nacimiento: </span>
-                        {new Date(perro.fechaNacimiento).toJSON().slice(0, 10)}
-                    </p>
-                    <p>
-                        <span class="font-medium">Observaciones: </span>
-                        {perro.observaciones}
-                    </p>
-                    <p>
-                        <span class="font-medium">Peso: {perro.peso} Kg</span>
-                    </p>
-                    <p>
-                        <span class="font-medium">Vacunas aplicadas: </span>
-                        {#if perro.vacunas !== "[]"}
-                            {#each JSON.parse(perro.vacunas) as vacuna}
-                                {espacio}{vacuna.nombre}, aplicada el {vacuna.fechaDeAplicacion}.
-                            {/each}
-                        {:else}
-                            No se le aplicaron vacunas.
-                        {/if}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Antiparasitarios aplicados:
-                        </span>
-                        {#if perro.antiparasitarios !== "[]"}
-                            {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                {espacio}{antiparasitario.nombre}, aplicada el {antiparasitario.cantidadAplicada}.
-                            {/each}
-                        {:else}
-                            No se le aplicaron antiparasitarios.
-                        {/if}
-                    </p>
-                    <p class="font-medium">
-                        {#if !perro.castrado}
-                            No está
-                        {:else}
-                            Está
-                        {/if}castrad{#if perro.sexo === "Macho"}
-                            o.
-                        {:else}
-                            a.
-                        {/if}
-                    </p>
+{#if mostrar.length > 0}
+    <div class="ml-2 flex flex-wrap items-start">
+        {#each mostrar as perro}
+            <div
+                class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary max-w-sm md:flex-row min-h-0 h-auto"
+            >
+                <header>
+                    {#if perro.foto}
+                        <img
+                            class="object-cover h-full w-full rounded-t-lg"
+                            src={perro.foto}
+                            alt="foto de perfil"
+                        />
+                    {:else}
+                        <img
+                            class="object-cover h-full w-full rounded-t-lg p-5"
+                            src="/no_foto_perro.png"
+                            alt=""
+                        />
+                    {/if}
+                </header>
+                <div class="flex flex-col justify-start p-6">
+                    <h5
+                        class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
+                    >
+                        {perro.nombre}
+                    </h5>
+                    <div
+                        class="mb-4 text-base text-neutral-600 dark:text-neutral-200"
+                    >
+                        <p>
+                            <span class="font-medium">Raza: </span>
+                            {perro.raza}
+                        </p>
+                        <p>
+                            <span class="font-medium">Sexo: </span>
+                            {perro.sexo}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Fecha de nacimiento:
+                            </span>
+                            {new Date(perro.fechaNacimiento).toLocaleDateString(
+                                "es-AR"
+                            )}
+                        </p>
+                        <p>
+                            <span class="font-medium">Observaciones: </span>
+                            {perro.observaciones}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Peso: {perro.peso} Kg</span
+                            >
+                        </p>
+                        <p>
+                            <span class="font-medium">Vacunas aplicadas: </span>
+                            {#if perro.vacunas !== "[]"}
+                                {#each JSON.parse(perro.vacunas) as vacuna}
+                                    {espacio}{vacuna.nombre}, aplicada el {new Date(
+                                        vacuna.fechaDeAplicacion
+                                    ).toLocaleDateString("es-AR")}.
+                                {/each}
+                            {:else}
+                                No se le aplicaron vacunas.
+                            {/if}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Antiparasitarios aplicados:
+                            </span>
+                            {#if perro.antiparasitarios !== "[]"}
+                                {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
+                                    {espacio}{antiparasitario.nombre}, aplicada
+                                    el {antiparasitario.cantidadAplicada}.
+                                {/each}
+                            {:else}
+                                No se le aplicaron antiparasitarios.
+                            {/if}
+                        </p>
+                        <p class="font-medium">
+                            {#if !perro.castrado}
+                                No está
+                            {:else}
+                                Está
+                            {/if}castrad{#if perro.sexo === "Macho"}
+                                o.
+                            {:else}
+                                a.
+                            {/if}
+                        </p>
+                    </div>
+                    {#if $user?.rol === "veterinario"}
+                        <footer class="flex">
+                            <a
+                                class="btn variant-ghost-surface mr-2"
+                                rel="noreferrer"
+                                href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
+                                >Editar</a
+                            >
+                            <button
+                                on:click={(event) =>
+                                    handleMarcarFallecido(perro)}
+                                class="btn btn-sm bg-red-500"
+                                >Ocultar perro</button
+                            >
+                        </footer>
+                    {/if}
                 </div>
-                {#if $user?.rol === "veterinario"}
-                    <footer class="flex">
-                        <a
-                            class="btn variant-ghost-surface mr-2"
-                            rel="noreferrer"
-                            href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
-                            >Editar</a
-                        >
-                        <button
-                            on:click={(event) => handleMarcarFallecido(perro)}
-                            class="btn btn-sm bg-red-500">Ocultar perro</button
-                        >
-                    </footer>
-                {/if}
             </div>
+        {/each}
+    </div>
+{:else}
+    <div class="flex justify-center items-center h-screen">
+        <div class="flex-none">
+            <h1 class="text-4xl font-bold mb-6">No hay perros cargados.</h1>
+            {#if $user?.rol === "cliente"}
+                <div class="flex justify-center">
+                    <a
+                        class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
+                        rel="noreferrer"
+                        href="/cargar-cliente">Cargar perro</a
+                    >
+                </div>
+            {/if}
         </div>
-    {/each}
-</div>
+    </div>
+{/if}

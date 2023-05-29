@@ -92,7 +92,10 @@
 {#if $modalStore[0]}
     <div class="modal-example-form {cBase}">
         <header class={cHeader}>Contacto</header>
-        <form class="modal-form {cForm}">
+        <form
+            on:submit|preventDefault={onFormSubmit}
+            class="modal-form {cForm}"
+        >
             <label class="label">
                 <span>Nombre:</span>
                 <input
@@ -147,11 +150,15 @@
                     placeholder="Ej: Me gustaría contratar sus servicios para los días... en los horarios..."
                 />
             </label>
+            <footer class="modal-footer {parent.regionFooter}">
+                <button
+                    class="btn {parent.buttonNeutral}"
+                    on:click={parent.onClose}>Cancelar</button
+                >
+                <button class="btn {parent.buttonPositive}" type="submit"
+                    >Contactar paseador/cuidador</button
+                >
+            </footer>
         </form>
-        <!-- prettier-ignore -->
-        <footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>Contactar paseador/cuidador</button>
-    </footer>
     </div>
 {/if}

@@ -9,8 +9,10 @@
         type ModalComponent,
     } from "@skeletonlabs/skeleton";
     import { goto, preloadCode } from "$app/navigation";
-    import ModalExampleForm from "./ModalExampleForm.svelte";
-    let paseadorescuidadores: PaseadorCuidador[] = [];
+    import type { Campaign } from "$lib/interfaces/Donaciones.interface";
+    import ModalDonar from "./ModalDonar.svelte";
+
+    let campaigns: Campaign[] = [];
 
     const fallaServidor: ModalSettings = {
         type: "alert",
@@ -33,7 +35,7 @@
 
     onMount(async () => {
         const res = await fetch(
-            "http://localhost:3000/listar-paseadorescuidadores",
+            "http://localhost:3000/donaciones/listar-campaigns",
             {
                 method: "GET",
                 headers: {
@@ -43,7 +45,7 @@
             }
         )
             .then((res) => res.json())
-            .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
+            .then((apiResponse) => (campaigns = apiResponse.data));
 
         if ($user) {
             fetch("http://localhost:3000/getPerfil", {
@@ -111,127 +113,68 @@
             });
     };
 
-    let inputZona: string;
-    let inputHorario: string;
     let inputNombre: string;
     let emailSeleccionado: string;
 
-    $: mostrar = paseadorescuidadores.filter((pc) => {
-        const zonaMatch = inputZona
-            ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
-            : true;
-        const horarioMatch = inputHorario
-            ? pc.horarios
-                  .toLowerCase()
-                  .match(`.*${inputHorario.toLowerCase()}.*`)
-            : true;
+    $: mostrar = campaigns.filter((pc) => {
         const nombreMatch = inputNombre
-            ? pc.nombre
-                  .toLowerCase()
-                  .concat(" " + pc.apellido.toLowerCase())
-                  .match(`.*${inputNombre.toLowerCase()}.*`)
+            ? pc.nombre.toLowerCase().match(`.*${inputNombre.toLowerCase()}.*`)
             : true;
-        return zonaMatch && horarioMatch && nombreMatch;
-    });
+        return nombreMatch;
+    }) as Campaign[];
 
-    const handleContactar = (pc: PaseadorCuidador) => {
-        console.log(pc);
-        emailSeleccionado = pc.email;
-        let modalComponent = {
-        // Pass a reference to your custom component
-        ref: ModalExampleForm,
-        // Add the component properties as key/value pairs
-        props: {
-            miNombre: nombre,
-            miApellido: apellido,
-            miEmail: email,
-            miTelefono: telefono,
-            emailDestinatario: emailSeleccionado,
-        },
-        // Provide a template literal for the default component slot
-        slot: "<p>Skeleton</p>",
-    };
-        const modalTest: ModalSettings = {
+    const handleDonar = (campaign: Campaign) => {
+
+        let modalDonarComponent = {
+            ref: ModalDonar,
+            props: {
+                campaign: campaign,
+            },
+        };
+        const modalDonar: ModalSettings = {
             type: "component",
-            // Pass the component directly:
-            component: modalComponent,
+            component:modalDonarComponent,
             response: (r: any) => console.log("response:", r),
         };
-
         modalStore.clear();
-        modalStore.trigger(modalTest);
-    };
-
-    $: modalComponent = {
-        // Pass a reference to your custom component
-        ref: ModalExampleForm,
-        // Add the component properties as key/value pairs
-        props: {
-            miNombre: nombre,
-            miApellido: apellido,
-            miEmail: email,
-            miTelefono: telefono,
-            emailDestinatario: emailSeleccionado,
-        },
-        // Provide a template literal for the default component slot
-        slot: "<p>Skeleton</p>",
+        modalStore.trigger(modalDonar);
     };
 </script>
 
 <Modal />
 
-<h1 class="h1 m-4 font-medium">Paseadores y Cuidadores</h1>
-{#if paseadorescuidadores.length > 0}
-    <div class="flex">
+<div class="flex flex-wrap mb-4">
+    <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/donaciones"
+        >Atras</a
+    >
+    <h1 class="h1 pt-4 font-medium">Campañas de donación</h1>
+</div>
+{#if campaigns.length > 0}
+    <div class="ml-2 flex">
         {#if $user?.rol === "veterinario"}
             <div class="mt-6">
                 <a
-                    class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
+                    class="btn variant-ghost-secondary hover:variant-filled-secondary"
                     rel="noreferrer"
-                    href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
-                    >Cargar paseador/cuidador</a
+                    href="/donaciones/crear-campaign">Crear campaña</a
                 >
             </div>
         {/if}
         <div class="ml-2">
-            <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por zona:
-            </label>
-            <input
-                type="text"
-                bind:value={inputZona}
-                class="input"
-                name="filtroRaza"
-                id=""
-            />
-        </div>
-        <div class="ml-2">
-            <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por horarios:
-            </label>
-            <input
-                type="text"
-                bind:value={inputHorario}
-                class="input"
-                name="filtroRaza"
-                id=""
-            />
-        </div>
-        <div class="ml-2">
-            <label for="filtroRaza" class="text-left whitespace-nowrap"
+            <label for="filtroNombre" class="text-left whitespace-nowrap"
                 >Filtrar por nombre:
             </label>
             <input
                 type="text"
                 bind:value={inputNombre}
-                class="input"
-                name="filtroRaza"
+                class="input rounded-lg"
+                name="filtroNombre"
                 id=""
             />
         </div>
     </div>
     <div class="ml-2 flex flex-wrap">
-        {#each mostrar as pc}
+        {#each mostrar as campaign}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
@@ -239,35 +182,40 @@
                     <h5
                         class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                     >
-                        {pc.nombre}
-                        {pc.apellido}
+                        {campaign.nombre}
                     </h5>
                     <div
                         class="text-base text-neutral-600 dark:text-neutral-200"
                     >
                         <p>
-                            <span class="font-medium">Zona: </span>
-                            {pc.zona}
+                            <span class="font-medium">Monto a recaudar: </span>
+                            ${campaign.montoARecaudar}
                         </p>
                         <p>
-                            <span class="font-medium">Oficio: </span>
-                            {pc.oficio}
+                            <span class="font-medium">Monto recaudado: </span>
+                            ${campaign.montoRecaudado}
                         </p>
                         <p>
-                            <span class="font-medium">Email: </span>
-                            {pc.email}
+                            <span class="font-medium">Fecha límite: </span>
+                            {new Date(campaign.fechaLimite).toLocaleDateString(
+                                "es-AR"
+                            )}
                         </p>
                         <p>
-                            <span class="font-medium">Teléfono: </span>
-                            {pc.telefono}
-                        </p>
-                        <p>
-                            <span class="font-medium">Horarios: </span>
-                            {pc.horarios}
+                            <span class="font-medium">Descripción: </span>
+                            {campaign.descripcion}
                         </p>
                     </div>
-                    {#if $user?.rol === "veterinario"}
-                        <footer class="flex mt-4">
+                    <footer class="flex mt-4">
+                        <button on:click={(event) =>
+                            handleDonar(campaign)} class="btn btn-sm variant-ghost-surface mr-2"
+                            >Donar
+                        </button>
+                        <!-- 
+                            
+                            ···PARA HACER LO DE FINALIZAR···
+                            
+                            {#if $user?.rol === "veterinario"}
                             <button
                                 on:click={() => {
                                     pc.disponible = !pc.disponible;
@@ -283,39 +231,30 @@
                                     "Disponible"
                                 {/if}
                             </button>
-                        </footer>
-                    {:else if pc.disponible}
-                        <footer class="flex mt-4">
-                            <button
-                                on:click={(event) => handleContactar(pc)}
-                                class="btn btn-sm variant-ghost-surface mr-2"
-                                >Contactar
-                            </button>
-                        </footer>
-                    {/if}
+                        {/if} -->
+                    </footer>
                 </div>
             </div>
         {/each}
     </div>
 {:else}
-    <div class="flex justify-center items-center h-screen">
+    <div class="flex justify-center items-center h-full">
         {#if $user?.rol === "veterinario"}
             <div class="flex-none">
                 <h1 class="text-4xl font-bold mb-6">
-                    No hay paseadores cargados.
+                    No hay campañas de donación creadas.
                 </h1>
                 <div class="flex justify-center">
                     <a
                         class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
                         rel="noreferrer"
-                        href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
-                        >Cargar paseador/cuidador</a
+                        href="/donaciones/crear-campaign">Crear campaña</a
                     >
                 </div>
             </div>
         {:else}
             <h1 class="text-4xl font-bold">
-                Ups! Parece que no hay paseadores cargados.
+                Ups! Parece que no hay campañas de donación creadas.
             </h1>
         {/if}
     </div>

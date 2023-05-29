@@ -145,9 +145,7 @@
 {:else}
     <div class="flex justify-center items-center h-screen">
         <div class="flex-none">
-            <h1 class="text-4xl font-bold mb-6">
-                Todavía no cargaste ningún cliente.
-            </h1>
+            <h1 class="text-4xl font-bold mb-6">No hay clientes cargados.</h1>
             <div class="flex justify-center">
                 <a
                     class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
