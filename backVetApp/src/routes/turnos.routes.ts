@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { SolicitarTurnoController, aceptarTurnoController, cancelarTurnoController, listarTurnosClienteController, listarTurnosVeterinarioController, modificarTurnoController, rechazarTurnoController, registrarUrgenciaController } from "../controllers/turnos";
+import { SolicitarTurnoController, aceptarTurnoController, archivarTurnoController, cancelarTurnoController, listarTurnosClienteController, listarTurnosVeterinarioController, modificarTurnoController, rechazarTurnoController, registrarUrgenciaController } from "../controllers/turnos";
 import { checkJWT } from "../middleware/session"
 import { checkRol, checkRolCliente } from "../middleware/checkRol"
 
@@ -15,6 +15,7 @@ TurnosRouter.post("/turnos/rechazar-turno",checkJWT,rechazarTurnoController)
 
 TurnosRouter.post("/turnos/cancelar-turno",checkJWT,cancelarTurnoController)
 TurnosRouter.post("/turnos/modificar-turno",checkJWT,modificarTurnoController)
+TurnosRouter.post("/turnos/archivar-turno",checkJWT,archivarTurnoController)
 
 
 export { TurnosRouter}

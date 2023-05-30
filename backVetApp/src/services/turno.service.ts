@@ -6,7 +6,7 @@ export const getCantDeTurnosRangoHorarioFecha = async (turno: Turno) => {
     const query = `
     SELECT *
     FROM public.turnos t
-    WHERE (t.fecha = $1) AND (t."rangoHorario" = $2)
+    WHERE (t.fecha = $1) AND (t."rangoHorario" = $2) AND (t.finalizado = false)
     `
     const valuesCantTurnos = [turno.fecha, turno.rangoHorario]
 
@@ -45,10 +45,10 @@ export const getCantDeTurnosRangoHorarioFechab = async (fecha: Date, rangoHorari
 export const insertTurno = async (turno: Turno) => {
     const queryTurno = `
     INSERT INTO public.turnos(
-        motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre", urgencia) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+        motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre", urgencia, finalizado) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
     `;
-    const valuesTurno = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.emailOwner, turno.aceptado, turno.descripcion, turno.perroNombre, turno.urgencia]
+    const valuesTurno = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.emailOwner, turno.aceptado, turno.descripcion, turno.perroNombre, turno.urgencia, turno.finalizado]
 
     try {
         const response: QueryResult = await pool.query(queryTurno, valuesTurno)
@@ -239,6 +239,27 @@ export const getTurnosPendientesPasados = async () => {
     }
     catch (err) {
         console.error("----Error en acceso a BD:cancelarTurno------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+export const archivarTurno = async (id: number) => {
+    const query = `
+    UPDATE public.turnos 
+    SET archivado = $1
+    WHERE id = $2
+    `;
+
+    const values = [true, id]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:archivarTurno------");
         console.log(err);
         return "error";
     }
