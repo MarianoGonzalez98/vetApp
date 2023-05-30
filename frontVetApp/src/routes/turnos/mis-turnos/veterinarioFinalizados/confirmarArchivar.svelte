@@ -13,30 +13,30 @@
 	
 
     
-    const TurnoCancelado: ModalSettings = {
+    const TurnoArchivado: ModalSettings = {
             type: 'alert',
-            title: 'Turno cancelado',
-            body: 'Turno cancelado',
+            title: 'Turno archivado',
+            body: 'Turno archivado',
             buttonTextCancel: "Ok",
             response: () => location.reload(),
     };
 
     const fallaDesconocida: ModalSettings = {
         type: "alert",
-        title: "Fallo en la cancelación del turno",
-        body: "No se pudo cancelación el nuevo turno",
+        title: "Fallo en la archivo del turno",
+        body: "No se pudo archivo el nuevo turno",
         buttonTextCancel: "Ok",
     };
 
 	async function onConfirm() {
-        await fetch("http://localhost:3000/turnos/cancelar-turno",{
+        await fetch("http://localhost:3000/turnos/archivar-turno",{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    cancelado:true,
+                    archivado:true,
                     idTurnoSelec:turnoInfo.id
                 })
             })
@@ -46,7 +46,7 @@
                             $modalStore[0].response(true);
                         }
                         modalStore.clear();
-                        modalStore.trigger(TurnoCancelado);
+                        modalStore.trigger(TurnoArchivado);
                         return res;
                 }
                 return Promise.reject(res);
@@ -75,8 +75,8 @@
 {#if $modalStore[0]}
 	<slot></slot>
 	<div class="modal-example-form {cBase}">
-		<header class={cHeader}>Cancelar el turno</header>
-		<article>¿Está seguro de cancelar el turno con fecha {turnoInfo.fecha.toString().slice(0,10)}? </article>
+		<header class={cHeader}>Archivar el turno</header>
+		<article>¿Está seguro de archivar el turno con fecha {turnoInfo.fecha.toString().slice(0,10)}? </article>
 
 			<button type="button" class="btn {buttonNeutral}" on:click={onClose}>Cancelar</button>
 			<button type="button" class="btn {buttonPositive}" on:click={onConfirm}>Confirmar</button>

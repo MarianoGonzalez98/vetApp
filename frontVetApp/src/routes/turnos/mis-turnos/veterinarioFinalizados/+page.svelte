@@ -1,18 +1,13 @@
 <script lang="ts">
-
-    //----------------------------ACEPTADOS-------------------------------//
-
-    import { onMount } from "svelte";
     import type { Turno } from "$lib/interfaces/Turno.interface";
+    import { onMount } from "svelte";
+    import ConfirmarArchivar from "./confirmarArchivar.svelte";
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
-    import ConfirmarRechazo from "../veterinarioPendientes/confirmarRechazo.svelte";
-    import ConfirmarArchivar from "../veterinarioFinalizados/confirmarArchivar.svelte";
-  
 
-    
+    //----------------------------FINALIZADOS-------------------------------//
+
+
     let turnos: Turno[] = [];
-
-    let idTurnoSelec:number
 
     const mostarFechaArg = (fechaTurno:Date) => {
         const nuevaFechaTurnoString = fechaTurno.toString();
@@ -20,20 +15,6 @@
         let nuevaFechaDate = new Date(nuevaFecha);
 
         return nuevaFechaDate.toLocaleDateString('es-AR');
-    }
-
-    const compararFechas = (fechaTurno: Date) => { //la fecha del turno debe ser un dia mas (por lo menos) a la fecha de hoy
-        let fechaHoy = new Date();
-        fechaHoy.setDate(fechaHoy.getDate() + 1)
-        let fechaHoyTiempo = fechaHoy.getTime();
-        
-
-        const nuevaFechaTurnoString = fechaTurno.toString();
-        const nuevaFecha = Date.parse(nuevaFechaTurnoString);
-        let nuevaFechaDate = new Date(nuevaFecha);
-        let fechaTurnoTiempo = nuevaFechaDate.getTime();
-
-        return fechaTurnoTiempo >= fechaHoyTiempo 
     }
 
     onMount(async () => { 
@@ -52,27 +33,6 @@
     });
 
 
-    //----------------------------Rechazar turno----------------------------------------//
-
-    const handleRechazar = (turno:Turno) =>  {
-            let modalComponent = {
-                ref: ConfirmarRechazo,
-                props: { idTurnoSelec:turno.id, 
-                        turnoFecha:turno.fecha,
-                        },
-            };
-            
-            let modalConfirm: ModalSettings = { 
-                type: 'component',
-                // Pass the component directly:
-                component: modalComponent,
-                response: (confirmo: any) => {
-                },
-            };
-            modalStore.clear();
-            modalStore.trigger(modalConfirm);
-    }
-
     const handleArchivar = (turno:Turno) => {
         let modalComponent = {
             ref: ConfirmarArchivar,
@@ -89,29 +49,31 @@
         modalStore.clear();
         modalStore.trigger(modalConfirm);
     }
-
 </script>
 
 <Modal />
 
-
-
 <a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 <div class="ml-2 flex flex-wrap">
     {#if (turnos.filter((turno)=> {
-        return (turno.aceptado === true)&&(turno.rechazado === false)}).length === 0)
+        return (turno.finalizado === true)}).length === 0)
     }
         <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos aceptados</h6>
     {/if} 
     {#each turnos as turno}
-        {#if (turno.rechazado === false)&&(turno.aceptado === true)&&(turno.urgencia === false)}
+        {#if (turno.finalizado === true)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
                 <div class="flex flex-col justify-start p-6">
+                    {#if turno.urgencia === true}
+                            <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
+                            Urgencia
+                            </h6>
+                    {/if}   
                     {#if turno.urgencia === false}
                             <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
-                            Turno Aceptado
+                            Turno finalizado
                             </h6>
                     {/if}   
                     <h5
@@ -138,13 +100,16 @@
                             {turno.motivo} 
                         
                         </p>
+                        <p>
+                            <span class="font-medium">Descripción: </span>
+                            {turno.descripcion} 
+                        
+                        </p>
                     </div>
                     <footer class="flex">
-                        {#if (compararFechas(turno.fecha))}
-                            <button on:click={(event) => handleRechazar(turno)}  class="btn btn-sm variant-ghost-surface"
-                                >Rechazar</button
-                            >
-                        {/if}
+                        <button on:click={(event) => handleArchivar(turno)}  class="btn btn-sm variant-ghost-surface"
+                            >Archivar</button
+                        >
                     </footer>          
                 </div>
             </div>

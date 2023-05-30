@@ -10,5 +10,6 @@ export interface Turno {
     rechazado:boolean
     descripcion: string
     urgencia:boolean
+    finalizado:boolean
 }
 
