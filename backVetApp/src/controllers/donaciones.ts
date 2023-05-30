@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Campaign } from "../interfaces/Donaciones.interface";
-import { getCampaign, getCampaigns, insertCampaign } from "../services/donaciones.service";
+import { finalizarCampaign, getCampaign, getCampaigns, insertCampaign } from "../services/donaciones.service";
 
 export const crearCampaignController = async (req: Request, res: Response) => {
     const campaign: Campaign = req.body;
@@ -37,4 +37,18 @@ export const listarCampaignsController = async (req: Request, res: Response) => 
         return
     }
     res.status(200).send({ data: result, statusCode: 200 })
+}
+
+export const finalizarCampaignController = async (req: Request, res: Response) => {
+    const nombre: String = req.body.nombre;
+
+    const dbResult = await finalizarCampaign(nombre);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se finalizó correctamente la campaña.f');
 }

@@ -148,7 +148,7 @@
                 bind:value={montoARecaudar}
                 class="input focus:invalid:border-red-500"
                 type="number"
-                placeholder="Ej: $1.000.000"
+                placeholder="Ej: $1000000"
                 name="montoARecaudar"
                 step="0.01"
                 required

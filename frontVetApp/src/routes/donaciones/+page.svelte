@@ -10,6 +10,7 @@
     } from "@skeletonlabs/skeleton";
     import { goto, preloadCode } from "$app/navigation";
     import type { Campaign } from "$lib/interfaces/Donaciones.interface";
+    import ModalConfirmarFinalizarCampaign from "./ModalConfirmarFinalizarCampaign.svelte";
 
     let campaigns: Campaign[] = [];
 
@@ -72,44 +73,26 @@
         }
     });
 
-    const cambiarDisponibilidad = async (
-        email: string,
-        disponible: boolean
-    ) => {
-        let error: boolean = false;
+    const finalizarCampaign = async (campaign: Campaign) => {
+        let modalComponent = {
+            ref: ModalConfirmarFinalizarCampaign,
+            props: { campaign: campaign },
+        };
 
-        await fetch("http://localhost:3000/cambiar-disponible", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
+        let modalConfirm: ModalSettings = {
+            //esto sí lo uso
+            type: "component",
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+                if (confirmo) {
+                    campaign.finalizada = true; //marco como finalizada la campaña en el front tmb
+                    mostrar = mostrar
+                }
             },
-            credentials: "include",
-            body: JSON.stringify({
-                email: email,
-                disponible: disponible,
-            }),
-        })
-            .then((res) => {
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    goto("/auth/login");
-                    return;
-                }
-                if (res.status === 500) {
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
-            })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log(
-                    "Error desconocido en carga del paseador/cuidador : ",
-                    error
-                );
-            });
+        };
+        modalStore.clear();
+        modalStore.trigger(modalConfirm);
     };
 
     let inputNombre: string;
@@ -168,6 +151,7 @@
     </div>
     <div class="ml-2 flex flex-wrap">
         {#each mostrar as campaign}
+        {#if ($user?.rol === "veterinario") || !campaign.finalizada}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
@@ -200,33 +184,26 @@
                         </p>
                     </div>
                     <footer class="flex mt-4">
+                        {#if !(campaign.finalizada)}
                         <button class="btn btn-sm variant-ghost-surface mr-2"
                             >Donar
                         </button>
-                        <!-- 
-                            
-                            ···PARA HACER LO DE FINALIZAR···
-                            
-                            {#if $user?.rol === "veterinario"}
+                        {#if ($user?.rol === "veterinario")}
                             <button
                                 on:click={() => {
-                                    pc.disponible = !pc.disponible;
-                                    cambiarDisponibilidad(
-                                        pc.email,
-                                        pc.disponible
+                                    finalizarCampaign(
+                                        campaign
                                     );
                                 }}
                                 class="btn btn-sm variant-ghost-surface mr-2"
-                                >Marcar como {#if pc.disponible}
-                                    "No disponible"
-                                {:else}
-                                    "Disponible"
-                                {/if}
+                                >Finalizar campaña
                             </button>
-                        {/if} -->
+                        {/if}
+                        {/if}
                     </footer>
                 </div>
             </div>
+        {/if}
         {/each}
     </div>
 {:else}

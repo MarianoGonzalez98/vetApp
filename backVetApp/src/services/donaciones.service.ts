@@ -2,7 +2,7 @@ import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { Campaign } from "../interfaces/Donaciones.interface";
 
-export const getCampaign = async (nombre: string) => {
+export const getCampaign = async (nombre: String) => {
     const query = `
     SELECT *
     FROM public.campaigns
@@ -54,6 +54,25 @@ export const getCampaigns = async () => {
     }
     catch (err) {
         console.error("----Error en acceso a BD:getPaseadoresCuidadores------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const finalizarCampaign = async (nombre: String) => {
+    const query = `
+    UPDATE public.campaigns
+    SET finalizada = true
+    WHERE nombre = $1;
+    `
+    const values = [nombre]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:finalizarCampaign------");
         console.log(err);
         return "error";
     }
