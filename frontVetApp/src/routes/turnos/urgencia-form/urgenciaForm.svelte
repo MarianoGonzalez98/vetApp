@@ -21,15 +21,10 @@
     let clientes: Cliente[] = [];
 
 
-    let perro: PerroTurno = {
-        nombre: "",
-        id: -1
-    }
-    let inputPerro: PerroTurno = {
-        nombre: "",
-        id: -1
-    }
-    let perros: PerroTurno[] = [];
+    let perro: Perro;
+    let inputPerro: Perro;
+
+    let perros: Perro[] = [];
 
     const actualizarFormPerro = () => {
         inputPerro.nombre=perro.nombre;
@@ -90,6 +85,7 @@
     const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
         if(motivoVacA) {
             motivoVacAs = "Vacunación a, "
+            
         }
         if(!motivoVacA) {
             motivoVacAs = '' ;
@@ -240,8 +236,15 @@ const handleUrgencia = async () =>{
                 <label class="flex items-center space-x-2">
                     <input type=checkbox bind:checked={motivoAntiPar} on:change={actualizarFormMotivo}>
                     <p>Anti-parasitación</p>
-                </label>                
+                </label>      
             </div>
+
+            {#if motivoAntiPar===true}
+                <label class="label">
+                    <span>Ingrese dosis de anti-parasitario</span>
+                    <input class="input" title="Input (text)" type="text" required/>
+                </label>
+            {/if}
             
             <label class="label" for="fecha">Fecha del turno</label>
             <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
