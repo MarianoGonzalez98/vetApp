@@ -28,18 +28,37 @@ export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
 
 export const getDonaciones = async (email:string) => {
     const query = `
-    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign",
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign"
     FROM public.donaciones
-    WHERE email = $1
+    WHERE "emailDonante" = $1
     `
     const values = [email]
     try {
-        const response: QueryResult = await pool.query(query, [])
-        const result: Donacion[] = await response.rows
+        const response: QueryResult = await pool.query(query, values)
+        const result: Donacion[] = await response.rows;
+        //result.forEach( donacion => donacion.monto=Number(donacion.monto));
         return result
     }
     catch (err) {
         console.error("----Error en acceso a BD:getDonaciones------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const sumarAMontoRecaudadoDeCampaign = async (nombre:string,monto:number) => {
+    const query = `
+    UPDATE public.campaigns
+	SET "montoRecaudado"= "montoRecaudado" + $1
+	WHERE nombre = $2
+    `
+    const values= [monto,nombre];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:sumarAMontoRecaudadoDeCampaign------");
         console.log(err);
         return "error";
     }

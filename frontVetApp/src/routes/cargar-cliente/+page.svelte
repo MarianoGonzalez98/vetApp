@@ -3,6 +3,7 @@
     import { navigating } from "$app/stores";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
+    import { emailPatternFactory, letrasEspaciosPatternFactory, numbersPatternFactory } from "$lib/utils/constantFactory";
     import {
         popup,
         type ModalSettings,
@@ -45,12 +46,6 @@
         }
     });
     let submittedClass = "";
-    const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-    const letrasEspaciosPattern: string =
-        "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
-
-    const numbersPattern: string = "^[0-9]*$";
     let emailErrorMsj = "";
     let dniErrorMsj = "";
 
@@ -202,7 +197,7 @@
             type="text"
             placeholder="Ingrese nombre del cliente"
             name="nombre"
-            pattern={letrasEspaciosPattern}
+            pattern={letrasEspaciosPatternFactory}
             required
         />
 
@@ -213,13 +208,13 @@
             type="text"
             placeholder="Ingrese apellido del cliente"
             name="apellido"
-            pattern={letrasEspaciosPattern}
+            pattern={letrasEspaciosPatternFactory}
             required
         />
 
         <label class="label" for="email">Email:</label>
         <input
-            pattern={emailPattern}
+            pattern={emailPatternFactory}
             title="Ingrese un mail valido"
             bind:value={email}
             class="input focus:invalid:border-red-500"
@@ -238,7 +233,7 @@
             placeholder="Ingrese teléfono del cliente. Ej: 2214687634"
             use:popup={popupFocusBlur}
             name="telefono"
-            pattern={numbersPattern}
+            pattern={numbersPatternFactory}
             required
         />
 
@@ -256,7 +251,7 @@
             placeholder="Ingrese dni del cliente"
             name="dni"
             autocomplete="off"
-            pattern={numbersPattern}
+            pattern={numbersPatternFactory}
             required
         />
         <p class="text-red-500">{dniErrorMsj}</p>

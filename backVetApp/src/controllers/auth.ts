@@ -129,14 +129,14 @@ const registrarController = async (req: Request, res: Response) => {
     }
 
     const donacionesHechas = await getDonaciones(cliente.email);
-    if (donacionesHechas === 'error') {
+    if (donacionesHechas === 'error') { //fijar en frontend como responder a esto
         //HTTP 500 Internal server error
         res.status(201).send('Se registro el cliente sin registrar sus donaciones')
         return
     }
 
     if (donacionesHechas){
-        let sumaMontos = donaciones.reduce( (acum, donacion)=> {
+        let sumaMontos = donacionesHechas.reduce( (acum, donacion)=> {
             return acum + donacion.monto
         },0);
         let descuentoAcumulado = sumaMontos * 0.2;
@@ -150,9 +150,9 @@ const registrarController = async (req: Request, res: Response) => {
     let texto="Su contraseña es: "+ randomPassword;
     try {
         await sendMailTest(cliente.email,asunto,texto);
-      } catch (error) {
+    } catch (error) {
         console.log(error);
-      }
+    }
     await insertPassword(cliente.email, randomPassword);
 
     //FIN SOLO DEVELOP-------------

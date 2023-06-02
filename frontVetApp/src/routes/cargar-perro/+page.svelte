@@ -117,8 +117,8 @@
             })
                 .then((res) => {
                     if (res.status < 299) {
-                        modalStore.clear();
-                        modalStore.trigger(perroClienteCargado);
+                        //modalStore.clear();
+                        //modalStore.trigger(perroClienteCargado);
                         return res;
                     }
                     if (res.status === 400) {
@@ -140,8 +140,7 @@
                     }
                 })
                 .catch((error) => {
-                    modalStore.clear();
-                    modalStore.trigger(fallaDesconocida);
+                    error = true;
                     console.log(
                         "Error en carga del cliente desconocido: ",
                         error
@@ -175,8 +174,14 @@
         })
             .then((res) => {
                 if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(perroCargado);
+                    if ($user?.rol === "veterinario"){
+                        modalStore.clear();
+                        modalStore.trigger(perroClienteCargado);
+                    }else{
+                        modalStore.clear();
+                        modalStore.trigger(perroCargado);
+                    }
+
                     return res;
                 }
                 if (res.status === 400) {

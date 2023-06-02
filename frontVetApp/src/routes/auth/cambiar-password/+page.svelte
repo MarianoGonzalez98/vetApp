@@ -7,7 +7,7 @@
     let errorMsj='';
     let errorMsj2='';
     let errorClass = '';
-    const passRegex = "(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`\´#$\"¿%^&*_=+\-]).{6,32}"
+    const passRegex = "(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~\?!'¡@\`\´#$\"¿%^&*_=+\\-]).{6,32}"
 
     let isVisible = false;
     $: type = isVisible ? "text" : "password";

@@ -3,10 +3,10 @@ import * as mercadopago from "mercadopago";
 import { Campaign } from "../interfaces/Donaciones.interface";
 import { sendMailWithAttachment } from "../utils/mailer.handle";
 import { generatePDF } from "../utils/pdf.handle";
-import { insertDonacion } from "../services/donaciones.service";
+import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 
-const ngrokURL= 'https://2b55-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://0f1e-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
@@ -117,8 +117,13 @@ export const notificacionDonacionController = async (req: Request, res: Response
                     }
                 }
                 
+                const resultSumaRecaudadoCampaign = await sumarAMontoRecaudadoDeCampaign(String(campaignNombre),montoNetoDonado);
+                if (resultSumaRecaudadoCampaign === 'error'){
+                    console.log("Error en suma de la donacion a lo recaudado por la campaña");
+                }
+
                 //envio email con pdf
-/*                 let contenidoPDF= `
+                let contenidoPDF= `
                     COMPROBANTE DE DONACION
 
                     EMAIL DEL DONANTE: ${emailDonante}
@@ -137,7 +142,7 @@ export const notificacionDonacionController = async (req: Request, res: Response
                     console.log("Falla de envio de mail en notificacionDonacionController")
                     console.log(error);
                 }
- */
+
                 console.log("DONACION REGISTRADA");
             }
 /*             console.log(topic,"obteniendo merchand order");
