@@ -264,3 +264,24 @@ export const archivarTurno = async (id: number) => {
         return "error";
     }
 }
+
+export const actualizarDescripcion = async (id:number, descripcion:string) => { //POR FINALIZADO
+    const query = `
+    UPDATE public.turnos 
+    SET descripcion = $1, finalizado = $3
+    WHERE id = $2
+    `;
+
+    const values = [descripcion,id,true]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarDescripcionTurno------");
+        console.log(err);
+        return "error";
+    }
+
+}

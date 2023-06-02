@@ -334,13 +334,13 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
 }
 
 export const registrarUrgenciaController = async (req:Request, res:Response) => {
-    const result = await getClientes();
+     const result = await getClientes();
     if (result === "error") {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
-    res.send(result);
+    res.send(result); 
 
 
     let turno:Turno = req.body;
