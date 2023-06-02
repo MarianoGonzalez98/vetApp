@@ -26,6 +26,25 @@ export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
     }
 }
 
+export const getDonaciones = async (email:string) => {
+    const query = `
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign",
+    FROM public.donaciones
+    WHERE email = $1
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, [])
+        const result: Donacion[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getDonaciones------");
+        console.log(err);
+        return "error";
+    }
+}
+
 export const getCampaign = async (nombre: string) => {
     const query = `
     SELECT *
