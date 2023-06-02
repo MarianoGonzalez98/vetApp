@@ -128,10 +128,11 @@ export const notificacionDonacionController = async (req: Request, res: Response
                 let pdf = await generatePDF(contenidoPDF);
                 try {
                     await sendMailWithAttachment(emailDonante,
-                        "Comprobante de donacion",
-                        "Su comprobante se encuentra en el pdf adjunto",
+                        `Comprobante de donacion a la campaña ${campaignNombre}`,
+                        `Su comprobante de la donacion a la campaña ${campaignNombre} se encuentra en el pdf adjunto. Monto neto donado: ${montoNetoDonado}`,
                         pdf,
-                        "comprobante.pdf");
+                        `comprobanteDonacion${campaignNombre}.pdf`
+                    );
                 } catch (error) {
                     console.log("Falla de envio de mail en notificacionDonacionController")
                     console.log(error);
