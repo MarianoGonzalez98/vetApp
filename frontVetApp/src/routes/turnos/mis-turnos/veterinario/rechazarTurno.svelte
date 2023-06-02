@@ -1,6 +1,5 @@
 <script lang="ts">
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-    import type { Turno } from '$lib/interfaces/Turno.interface';
 
 	// Props
 	/** Exposes parent props to this component. */

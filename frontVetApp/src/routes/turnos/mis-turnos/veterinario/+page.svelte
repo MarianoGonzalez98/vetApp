@@ -6,7 +6,11 @@
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import ConfirmarRechazo from "../veterinarioPendientes/confirmarRechazo.svelte";
-    import ConfirmarArchivar from "../veterinarioFinalizados/confirmarArchivar.svelte";
+    import FinalizarAtencionVacunacion from "./finalizarAtencionVacunacion.svelte";
+    import FinalizarAtencionCastracion from "./finalizarAtencionCastracion.svelte";
+    import FinalizarAtencionAntiparasitacion from "./finalizarAtencionAntiparasitacion.svelte";
+    import FinalizarAtencionConsultaGeneral from "./finalizarAtencionConsultaGeneral.svelte";
+    
   
 
     
@@ -73,21 +77,71 @@
             modalStore.trigger(modalConfirm);
     }
 
-    const handleArchivar = (turno:Turno) => {
-        let modalComponent = {
-            ref: ConfirmarArchivar,
-            props: { turnoInfo:turno},
-        };
-        
-        let modalConfirm: ModalSettings = { 
-            type: 'component',
-            // Pass the component directly:
-            component: modalComponent,
-            response: (confirmo: any) => {
-            },
-        };
-        modalStore.clear();
-        modalStore.trigger(modalConfirm);
+    const handleFinalizar = (turno:Turno) => {
+        if((turno.motivo === "Vacunación a")||(turno.motivo === "Vacunación b")) {
+            let modalComponent = {
+                ref: FinalizarAtencionVacunacion, //Ver como modularizar (es lo único)
+                props: { turnoInfo:turno},
+            };
+            
+            let modalConfirm: ModalSettings = { 
+                type: 'component',
+                // Pass the component directly:
+                component: modalComponent,
+                response: (confirmo: any) => {
+                },
+            };
+            modalStore.clear();
+            modalStore.trigger(modalConfirm);
+        }
+        if(turno.motivo === "Castración") {
+            let modalComponent = {
+                ref: FinalizarAtencionCastracion,
+                props: { turnoInfo:turno},
+            };
+            
+            let modalConfirm: ModalSettings = { 
+                type: 'component',
+                // Pass the component directly:
+                component: modalComponent,
+                response: (confirmo: any) => {
+                },
+            };
+            modalStore.clear();
+            modalStore.trigger(modalConfirm);
+        }
+        if(turno.motivo === "Anti-Parasitación") {
+            let modalComponent = {
+                ref: FinalizarAtencionAntiparasitacion,
+                props: { turnoInfo:turno},
+            };
+            
+            let modalConfirm: ModalSettings = { 
+                type: 'component',
+                // Pass the component directly:
+                component: modalComponent,
+                response: (confirmo: any) => {
+                },
+            };
+            modalStore.clear();
+            modalStore.trigger(modalConfirm);
+        }
+        if(turno.motivo === "Consulta general") {
+            let modalComponent = {
+                ref: FinalizarAtencionConsultaGeneral,
+                props: { turnoInfo:turno},
+            };
+            
+            let modalConfirm: ModalSettings = { 
+                type: 'component',
+                // Pass the component directly:
+                component: modalComponent,
+                response: (confirmo: any) => {
+                },
+            };
+            modalStore.clear();
+            modalStore.trigger(modalConfirm);
+        }
     }
 
 </script>
@@ -99,12 +153,12 @@
 <a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 <div class="ml-2 flex flex-wrap">
     {#if (turnos.filter((turno)=> {
-        return (turno.aceptado === true)&&(turno.rechazado === false)}).length === 0)
+        return (turno.aceptado === true)&&(turno.rechazado === false)&&(turno.finalizado === false)}).length === 0)
     }
         <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos aceptados</h6>
     {/if} 
     {#each turnos as turno}
-        {#if (turno.rechazado === false)&&(turno.aceptado === true)&&(turno.urgencia === false)}
+        {#if (turno.rechazado === false)&&(turno.aceptado === true)&&(turno.finalizado === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
             >
@@ -146,7 +200,7 @@
                             >
                         {/if}
                         {#if !(compararFechas(turno.fecha))}
-                        <button on:click={(event) => handleRechazar(turno)}  class="btn btn-sm variant-ghost-surface"
+                        <button on:click={(event) => handleFinalizar(turno)}  class="btn btn-sm variant-ghost-surface"
                             >Finalizar</button
                         >
                         {/if}

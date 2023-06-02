@@ -139,7 +139,7 @@
         }
         if(!motivoCas) {
             motivoCass = '' ;
-            castrado = false;
+            castrado = perro.castrado;
         }
         if(motivoAntiPar) {
             motivoAntiPars = "Anti-Parasitación, "
@@ -284,7 +284,7 @@ const handleUrgencia = async () =>{
             <div class="flex items-center space-x-2">
                 <label class="flex items-center space-x-2">
                     <input type=checkbox bind:checked={motivoVacA}  on:change={actualizarFormMotivo}>
-                    <p>Vacunación a</p>
+                    <p>Vacunación A</p>
                 </label>
                 <label class="flex items-center space-x-2">
                     <input type=checkbox bind:checked={motivoVacB} on:change={actualizarFormMotivo}>
@@ -307,8 +307,8 @@ const handleUrgencia = async () =>{
             {/if}
             {#if motivoAntiPar===true}
                 <label class="label">
-                    <span>Ingrese dosis de anti-parasitario</span>
-                    <input class="input" bind:value={antipAplicado.cantidadAplicada}  title="Input (number)" type="number" min="0" required/>
+                    <span>Ingrese dosis de anti-parasitario (cantidad de gotas/Kg de peso)</span>
+                    <input class="input" bind:value={antipAplicado.cantidadAplicada}  title="Input (number)" type="number" min="1" required/>
                 </label>
             {/if}
 
