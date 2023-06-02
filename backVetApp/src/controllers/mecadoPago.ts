@@ -3,8 +3,10 @@ import * as mercadopago from "mercadopago";
 import { Campaign } from "../interfaces/Donaciones.interface";
 import { sendMailWithAttachment } from "../utils/mailer.handle";
 import { generatePDF } from "../utils/pdf.handle";
+import { insertDonacion } from "../services/donaciones.service";
+import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 
-const ngrokURL= 'https://b3de-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://2b55-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
@@ -54,39 +56,71 @@ export const createPrefrerenceDonacionController = async (req: Request, res: Res
 
 
 export const notificacionDonacionController = async (req: Request, res: Response) => {
+    res.send();
 
-    console.log("QUERY de notificacion::")
-    console.log(req.query);
+/*     console.log("QUERY de notificacion::")
+    console.log(req.query); */
     const emailDonante= req.query.emailDonante as string;
     const campaignNombre = req.query.campaignNombre;
-    console.log("Configurando")
+    //console.log("Configurando")
     mercadopago.configure({
         access_token: process.env.MP_ACCESS_TOKEN || "",
     });
     
-    console.log("NOTIFICACION MP:::::::::::::::::::::");
+    //console.log("NOTIFICACION MP:::::::::::::::::::::");
     const {body, query} = req;
-    console.log({body,query});
+    //console.log({body,query});
     const topic = query.topic || query.type;
-    console.log("TOPIC:");
-    console.log({topic});
+    //console.log("TOPIC:");
+    //console.log({topic});
 
     switch (topic){
         case "payment":
             const paymentId = query.id || query['data.id'];
             //console.log(topic,"obteniendo payment : ",paymentId);
             const payment = await mercadopago.payment.findById(Number(paymentId));
-            console.log("PAYMENT-----------")
+            const montoNetoDonado:number = Number(payment.body.transaction_details.net_received_amount);
+/*             console.log("PAYMENT-----------")
             console.log("STATUS:::");
             console.log(payment.body.status)
             console.log("TRANSACTIONS DETAIL:::")
             console.log(payment.body.transaction_details);
-            console.log(payment.body.transaction_details.net_received_amount);
-            console.log("FIN PAYMENT-----------")
+            console.log(montoNetoDonado);
+            console.log("FIN PAYMENT-----------") */
             
-            if (payment.body.status==="approved"){
+            if (payment.body.status==="approved"){ 
+                ///----SE EJECUTA SI SE REALIZO EL PAGO DE LA DONACION-----------
                 //registro en base de datos la donacion
+                const resultInsertDonacion = await insertDonacion({
+                    emailDonante:emailDonante,
+                    monto:montoNetoDonado,
+                    fechaHora: new Date().toISOString(),
+                    nombreCampaign:campaignNombre as string,
+                    paymentId:Number(paymentId),
+                })
+                if (resultInsertDonacion==="error"){
+                    console.log("Error al guardar la donacion");
+                    return
+                }
 
+                if (resultInsertDonacion === "repetido"){ //porque mercado pago me manda varias veces la notificacion y no quiero registrarla mas de una vez
+                    return
+                }
+                const clienteConEmail = await getCliente(emailDonante);
+                if (clienteConEmail ==='error'){
+                    console.log("Error al ver si hay cliente en donacion");
+                    return
+                }
+
+                if (clienteConEmail){ //significa que el que hizo la donacion es cliente
+                    //le sumo al montoAcumuladoDescuendo del cliente un 20% de la donacion
+                    const montoDescuento = montoNetoDonado * 0.20; 
+                    const sumaResult = await sumarAMontoAcumuladoDescuentoCliente(clienteConEmail.email,montoDescuento)
+                    if (sumaResult === 'error'){
+                        console.log("Error en suma de la donacion al cliente");
+                    }
+                }
+                
                 //envio email con pdf
                 let contenidoPDF= `
                     COMPROBANTE DE DONACION
@@ -107,11 +141,8 @@ export const notificacionDonacionController = async (req: Request, res: Response
                     console.log(error);
                 }
             }
-
 /*             console.log(topic,"obteniendo merchand order");
             const merchantOrder = await mercadopago.merchant_orders.findById(payment.body.order.id); */
             break
     }
-
-    res.send(); //devuelvo ok status a MP
 }
