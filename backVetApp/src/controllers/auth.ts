@@ -7,7 +7,8 @@ import { generateRandomPassword, generateRandomString } from "../utils/random.ha
 import { User } from "../interfaces/User.interface";
 import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
 import { sendMailTest } from "../utils/mailer.handle";
-
+import { getDonaciones} from "../services/donaciones.service";
+import { sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 export const getExisteUsuarioConDni = async (req: Request, res: Response) => {
     const dni: string = req.body.dni;
     const existeUsuario = await getUserConDni(dni);
@@ -127,13 +128,31 @@ const registrarController = async (req: Request, res: Response) => {
         return
     }
 
+    const donacionesHechas = await getDonaciones(cliente.email);
+    if (donacionesHechas === 'error') { //fijar en frontend como responder a esto
+        //HTTP 500 Internal server error
+        res.status(201).send('Se registro el cliente sin registrar sus donaciones')
+        return
+    }
+
+    if (donacionesHechas){
+        let sumaMontos = donacionesHechas.reduce( (acum, donacion)=> {
+            return acum + donacion.monto
+        },0);
+        let descuentoAcumulado = sumaMontos * 0.2;
+        const sumaAClienteResult = await sumarAMontoAcumuladoDescuentoCliente(cliente.email,descuentoAcumulado);
+        if (sumaAClienteResult === 'error'){
+            console.log("Error en suma de la donacion al nuevo cliente");
+        }
+    }
+
     let asunto="Contraseña del sitio web Oh my dog!"
     let texto="Su contraseña es: "+ randomPassword;
     try {
         await sendMailTest(cliente.email,asunto,texto);
-      } catch (error) {
+    } catch (error) {
         console.log(error);
-      }
+    }
     await insertPassword(cliente.email, randomPassword);
 
     //FIN SOLO DEVELOP-------------

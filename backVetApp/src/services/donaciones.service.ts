@@ -1,6 +1,68 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
-import { Campaign } from "../interfaces/Donaciones.interface";
+import { Campaign, Donacion, PaymentID } from "../interfaces/Donaciones.interface";
+
+export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
+    await new Promise(r => setTimeout(r, 2000));
+    const query = `
+    INSERT INTO public.donaciones( "fechaHora", monto, "emailDonante", "nombreCampaign", "paymentId")
+        VALUES ($1, $2, $3, $4, $5)
+        on conflict ("paymentId") do nothing 
+        returning "paymentId"
+    `
+    const values = [donacion.fechaHora,donacion.monto,donacion.emailDonante,donacion.nombreCampaign,donacion.paymentId];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result = await response.rows[0]; // si trae un resultado es porque hubo CONFLICTO(donacion repetida)
+        if (result){
+            return 'repetido';
+        }
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:insertDonacion------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getDonaciones = async (email:string) => {
+    const query = `
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign"
+    FROM public.donaciones
+    WHERE "emailDonante" = $1
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: Donacion[] = await response.rows;
+        //result.forEach( donacion => donacion.monto=Number(donacion.monto));
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getDonaciones------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const sumarAMontoRecaudadoDeCampaign = async (nombre:string,monto:number) => {
+    const query = `
+    UPDATE public.campaigns
+	SET "montoRecaudado"= "montoRecaudado" + $1
+	WHERE nombre = $2
+    `
+    const values= [monto,nombre];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:sumarAMontoRecaudadoDeCampaign------");
+        console.log(err);
+        return "error";
+    }
+}
 
 export const getCampaign = async (nombre: string) => {
     const query = `
@@ -16,7 +78,7 @@ export const getCampaign = async (nombre: string) => {
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getPerro------");
+        console.error("----Error en acceso a BD:getCampaign------");
         console.log(err);
         return "error";
     }
@@ -53,7 +115,7 @@ export const getCampaigns = async () => {
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getPaseadoresCuidadores------");
+        console.error("----Error en acceso a BD:getCampaigns------");
         console.log(err);
         return "error";
     }
