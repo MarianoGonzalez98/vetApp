@@ -18,15 +18,11 @@ export const createPrefrerenceDonacionController = async (req: Request, res: Res
     const campaign:Campaign = req.body.campaign;
     const emailDonante:string = req.body.emailDonante;
 
-    console.log("Cuerpo recibido por la createPreferenceDonacionController: ");
-    console.log(req.body);
-
     //preparo la url de la notificacion junto con los datos que necesitaré para identificarla
     var donacionNotificationUrl = new URL(ngrokURL+"/notificacion_mp_donacion");
     donacionNotificationUrl.searchParams.append("campaignNombre",campaign.nombre);
     donacionNotificationUrl.searchParams.append('emailDonante',emailDonante)
 
-    console.log(donacionNotificationUrl);
     let preference = {
         items: [
             {
@@ -122,7 +118,7 @@ export const notificacionDonacionController = async (req: Request, res: Response
                 }
                 
                 //envio email con pdf
-                let contenidoPDF= `
+/*                 let contenidoPDF= `
                     COMPROBANTE DE DONACION
 
                     EMAIL DEL DONANTE: ${emailDonante}
@@ -140,6 +136,8 @@ export const notificacionDonacionController = async (req: Request, res: Response
                     console.log("Falla de envio de mail en notificacionDonacionController")
                     console.log(error);
                 }
+ */
+                console.log("DONACION REGISTRADA");
             }
 /*             console.log(topic,"obteniendo merchand order");
             const merchantOrder = await mercadopago.merchant_orders.findById(payment.body.order.id); */
