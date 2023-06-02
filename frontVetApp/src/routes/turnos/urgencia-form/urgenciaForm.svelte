@@ -5,7 +5,7 @@
     import {  modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
-    import type { Id, Perro, PerroTurno } from "$lib/interfaces/Perro.interface";
+    import type { Antiparasitario, Id, Perro, PerroTurno, Vacuna } from "$lib/interfaces/Perro.interface";
 
 
     let cliente:Cliente = {
@@ -17,24 +17,50 @@
         nombre:"",
         apellido:"",
         email:""
-    }
+    };
     let clientes: Cliente[] = [];
 
 
-    let perro: Perro;
-    let inputPerro: Perro;
+    let perro: Perro ={
+        id: 0,
+        nombre: "",
+        raza: "",
+        sexo: "Hembra",
+        fechaNacimiento: "",
+        observaciones: "",
+        vacunas: "",
+        antiparasitarios: "",
+        peso: 0,
+        foto: null,
+        owner: "",
+        fallecido: false,
+        castrado: false
+    };
 
     let perros: Perro[] = [];
 
+    let vacunasAplicadas: Vacuna[] = [];
+    let castrado:Boolean;
+    let peso:number;
+
+    let antiparasitarios: Antiparasitario[] = [];
+    let antipAplicado: Antiparasitario = {
+        nombre:"",
+        fechaDeAplicacion:"",
+        cantidadAplicada:0,
+    };
+
     const actualizarFormPerro = () => {
-        inputPerro.nombre=perro.nombre;
-        inputPerro.id = perro.id;
+        vacunasAplicadas = JSON.parse(perro.vacunas);
+        antiparasitarios = (JSON.parse(perro.antiparasitarios));
+        peso = perro.peso;
     }
 
     const actualizarForm = () => {
         inputCliente.nombre=cliente.nombre;
         inputCliente.apellido = cliente.apellido;
         inputCliente.email = cliente.email;
+        console.log(cliente.nombre);
         fetch(
             `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
             {
@@ -85,28 +111,48 @@
     const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
         if(motivoVacA) {
             motivoVacAs = "Vacunación a, "
-            
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna A",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
         }
         if(!motivoVacA) {
             motivoVacAs = '' ;
+            vacunasAplicadas = vacunasAplicadas.filter(vacuna => (vacuna.nombre !== 'Vacuna A')&&(vacuna.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
         }
         if(motivoVacB) {
             motivoVacBs = "Vacunación b, " 
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna B",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
         }
         if(!motivoVacB) {
             motivoVacBs = '' ;
+            vacunasAplicadas = vacunasAplicadas.filter(vacuna => (vacuna.nombre !== 'Vacuna B')&&(vacuna.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
         }
         if(motivoCas) {
-            motivoAntiPars = "Castración, " 
+            motivoCass = "Castración, " 
+            castrado = true;
         }
         if(!motivoCas) {
-            motivoAntiPars = '' ;
+            motivoCass = '' ;
+            castrado = false;
         }
         if(motivoAntiPar) {
-            motivoCass = "Anti-Parasitación, "
+            motivoAntiPars = "Anti-Parasitación, "
+            antipAplicado = {
+                nombre: antipAplicado.nombre,
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+                cantidadAplicada: antipAplicado.cantidadAplicada
+            } 
+            antiparasitarios.push(antipAplicado);
         }
         if(!motivoAntiPar) {
-            motivoCass = '' ;
+            motivoAntiPars = '' ;
+            antiparasitarios = antiparasitarios.filter(antip => (antip.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
         }
     }
 
@@ -160,7 +206,12 @@ const handleUrgencia = async () =>{
                 fecha:fecha.toJSON().slice(0,10), 
                 rangoHorario, 
                 emailOwner:cliente.email, 
-                descripcion
+                descripcion,
+
+                vacunas: JSON.stringify(vacunasAplicadas),
+                antiparasitarios: JSON.stringify(antiparasitarios),
+                castrado,
+                peso
             })
         })
         .then((res) => {
@@ -201,7 +252,7 @@ const handleUrgencia = async () =>{
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
             <div>
                 <label for="seleccionCliente">Seleccione el cliente</label>
-                <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm} required>
+                <select id="seleccionCliente" class="select" bind:value={cliente} on:change={actualizarForm} required>
                     {#each clientes as cliente}
                         <option value={cliente}>
                             <span>{cliente.nombre} {cliente.apellido} (email: {cliente.email})</span>
@@ -210,12 +261,22 @@ const handleUrgencia = async () =>{
                 </select>
     
                 <label for="seleccionPerro">Seleccione el perro</label>
-                <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro} required>
+                <select id="seleccionPerro" class="select" bind:value={perro} on:change={actualizarFormPerro} required>
                     {#each perros as perro}
                         <option value={perro}>
                             <span>{perro.nombre} </span>
                         </option>
                     {/each}
+                </select>
+
+                <label class="label" for="fecha">Fecha del turno</label>
+                <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
+
+                <label class="label" for="rangoHorario">Rango Horario</label>
+                <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
+                    <option value="Manana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
                 </select>
             </div>
 
@@ -238,23 +299,23 @@ const handleUrgencia = async () =>{
                     <p>Anti-parasitación</p>
                 </label>      
             </div>
-
+            {#if motivoAntiPar===true}
+                <label class="label">
+                    <span>Ingrese nombre del anti-parasitario</span>
+                    <input class="input" bind:value={antipAplicado.nombre} title="Input (text)" type="text" required/>
+                </label>
+            {/if}
             {#if motivoAntiPar===true}
                 <label class="label">
                     <span>Ingrese dosis de anti-parasitario</span>
-                    <input class="input" title="Input (text)" type="text" required/>
+                    <input class="input" bind:value={antipAplicado.cantidadAplicada}  title="Input (number)" type="number" min="0" required/>
                 </label>
             {/if}
-            
-            <label class="label" for="fecha">Fecha del turno</label>
-            <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
 
-            <label class="label" for="rangoHorario">Rango Horario</label>
-            <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
-                <option value="Manana">Mañana</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noche">Noche</option>
-            </select>
+            <label class="label">
+                <span>Ingrese el peso del perro</span>
+                    <input class="input" bind:value={peso}  title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" required/>
+            </label>
 
             <label class="label"> 
                 <span>Descripción</span>

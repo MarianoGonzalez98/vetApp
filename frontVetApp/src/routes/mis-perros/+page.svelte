@@ -146,8 +146,8 @@
                             </span>
                             {#if perro.antiparasitarios !== "[]"}
                                 {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                    {espacio}{antiparasitario.nombre}, aplicada
-                                    el {antiparasitario.cantidadAplicada}.
+                                    {espacio}{antiparasitario.nombre}, fecha de aplicación:
+                                         {antiparasitario.fechaDeAplicacion}, cantidad aplicada: {antiparasitario.cantidadAplicada}.
                                 {/each}
                             {:else}
                                 No se le aplicaron antiparasitarios.

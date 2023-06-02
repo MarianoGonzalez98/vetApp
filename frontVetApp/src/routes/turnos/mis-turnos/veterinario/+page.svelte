@@ -145,6 +145,11 @@
                                 >Rechazar</button
                             >
                         {/if}
+                        {#if !(compararFechas(turno.fecha))}
+                        <button on:click={(event) => handleRechazar(turno)}  class="btn btn-sm variant-ghost-surface"
+                            >Finalizar</button
+                        >
+                        {/if}
                     </footer>          
                 </div>
             </div>
