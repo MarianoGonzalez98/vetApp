@@ -3,6 +3,7 @@ import { aceptarTurno, archivarTurno, cancelarTurno, getCantDeTurnosRangoHorario
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 import { sendMailTest } from "../utils/mailer.handle"
+import { actualizarLibreta } from "../services/perros.service"
 
 /* importar servicios */
 /* importar interfaces */
@@ -348,10 +349,20 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
     turno.finalizado = true;
     req.body = turno;
 
+    let vacunas = req.body.vacunas;
+    let antiparasitarios = req.body.antiparasitarios;
+    let castrado = req.body.castrado;
+    let peso = req.body.peso;
     
     const dbResult = await insertTurno(turno);
-    
     if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    const dbResultLibreta = await actualizarLibreta(turno.perroId,vacunas,antiparasitarios,castrado,peso);
+    if (dbResultLibreta === 'error') {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return

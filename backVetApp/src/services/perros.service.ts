@@ -98,3 +98,24 @@ export const actualizarPerro = async (perro: Perro, nombreAnterior: string) => {
         return "error";
     }
 }
+
+
+export const actualizarLibreta = async (id:number, vacunas:string, antiparasitarios:string,castrado:boolean, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET vacunas=$2, antiparasitarios=$3, castrado=$4, peso=$5
+    WHERE (id = $1);
+    `
+
+    const values = [id,vacunas,antiparasitarios,castrado,peso]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
