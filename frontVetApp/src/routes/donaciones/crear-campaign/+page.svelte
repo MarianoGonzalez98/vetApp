@@ -10,13 +10,9 @@
     } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
 
-    let submittedClass = "";
-    const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-    const letrasEspaciosPattern: string =
-        "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
-    const numbersPattern: string = "^[0-9]*$";
+    let submittedClass = "";
+
     let emailErrorMsj = "";
 
     const popupFocusBlur: PopupSettings = {
@@ -139,7 +135,6 @@
                 type="text"
                 placeholder="Ej: Tu Mascota Héroe"
                 name="nombre"
-                pattern={letrasEspaciosPattern}
                 required
             />
 
