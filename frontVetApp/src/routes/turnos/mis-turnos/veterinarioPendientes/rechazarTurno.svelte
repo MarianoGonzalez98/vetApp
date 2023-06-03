@@ -1,6 +1,7 @@
 <script lang="ts">
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import type { Turno } from '$lib/interfaces/Turno.interface';
+    import { backendURL } from '$lib/utils/constantFactory';
 
 	// Props
 	/** Exposes parent props to this component. */
@@ -33,7 +34,7 @@
     
 
     async function onFormSubmit() {
-        await fetch("http://localhost:3000/turnos/rechazar-turno",{
+        await fetch(`${backendURL}/turnos/rechazar-turno`,{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",

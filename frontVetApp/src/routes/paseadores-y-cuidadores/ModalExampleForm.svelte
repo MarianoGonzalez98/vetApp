@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
+    import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
 
     // Props
     /** Exposes parent props to this component. */
@@ -48,7 +48,7 @@
 
     // We've created a custom submit function to pass the response and close the modal.
     async function onFormSubmit() {
-        await fetch("http://localhost:3000/enviar-mail-pc", {
+        await fetch(`${backendURL}/enviar-mail-pc`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

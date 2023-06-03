@@ -3,6 +3,7 @@
         Cliente,
         ExtrasCliente,
     } from "$lib/interfaces/Cliente.interface";
+    import { backendURL } from "$lib/utils/constantFactory";
     import { onMount } from "svelte";
 
     let clientes: (Cliente & ExtrasCliente)[] = [];
@@ -11,7 +12,7 @@
     let inputDni: string;
 
     onMount(async () => {
-        const res = await fetch("http://localhost:3000/listar-clientes", {
+        const res = await fetch(`${backendURL}/listar-clientes`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

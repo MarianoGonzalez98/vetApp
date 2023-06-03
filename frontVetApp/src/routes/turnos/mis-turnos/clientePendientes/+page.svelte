@@ -8,6 +8,7 @@
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { goto } from "$app/navigation";
     import CancelarTurnoConfirmacion from "./cancelarTurnoConfirmacion.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
@@ -23,7 +24,7 @@
 
     onMount(async () => { 
         const res = await fetch(
-            `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
+            `${backendURL}/turnos/listar-turnos/cliente?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {

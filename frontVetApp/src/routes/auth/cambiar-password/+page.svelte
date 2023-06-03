@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import type { ModalSettings, PopupSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore,popup} from '@skeletonlabs/skeleton';
 
@@ -46,7 +47,7 @@
             errorMsj2 = "Revise que coincida la contraseña"
             return
         }
-        fetch('http://localhost:3000/changePass',{
+        fetch(`${backendURL}/changePass`,{
             method:'PUT',
             headers:{
                 'Content-Type':'application/json',

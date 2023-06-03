@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Perro } from "$lib/interfaces/Perro.interface";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     // Props
     /** Exposes parent props to this component. */
@@ -10,7 +11,7 @@
     import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
     async function onConfirm() {
-        await fetch("http://localhost:3000/marcar-como-fallecido", {
+        await fetch(`${backendURL}/marcar-como-fallecido`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

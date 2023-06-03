@@ -10,6 +10,7 @@
     import { afterNavigate, goto } from "$app/navigation";
     import type { AfterNavigate } from "@sveltejs/kit";
     import ModalConfirmarMarcarFallecido from "./ModalConfirmarMarcarFallecido.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente: string =
         new URLSearchParams(window.location.search).get("cliente") ??
@@ -30,7 +31,7 @@
 
     onMount(async () => {
         const res = await fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente}`,
+            `${backendURL}/listar-perros?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {

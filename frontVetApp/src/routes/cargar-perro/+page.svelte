@@ -3,6 +3,7 @@
     import type { Vacuna } from "$lib/interfaces/Perro.interface";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import {
         CodeBlock,
         ListBox,
@@ -104,7 +105,7 @@
         }
 
         if ($user?.rol === "veterinario" && !error) {
-            await fetch("http://localhost:3000/registrar-cliente", {
+            await fetch(`${backendURL}/registrar-cliente`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -153,7 +154,7 @@
             modalStore.trigger(fallaDesconocidaCliente);
             return;
         }
-        await fetch("http://localhost:3000/cargar-perro", {
+        await fetch(`${backendURL}/cargar-perro`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
