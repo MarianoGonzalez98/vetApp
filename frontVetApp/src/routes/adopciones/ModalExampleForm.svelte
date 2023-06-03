@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
-    import { emailPatternFactory, letrasEspaciosComaPatternFactory, numbersPatternFactory } from '$lib/utils/constantFactory';
+    import { backendURL, emailPatternFactory, letrasEspaciosComaPatternFactory, numbersPatternFactory } from '$lib/utils/constantFactory';
     import type{  PopupSettings, } from "@skeletonlabs/skeleton";
 	import {popup} from "@skeletonlabs/skeleton";
 
@@ -21,7 +21,7 @@
 	};
 	
 	async function onFormSubmit() {
-		await fetch('http://localhost:3000/send-mail',{
+		await fetch(`${backendURL}/send-mail`,{
 			method:'POST',
 			headers:{
 				'Content-Type':'application/json',

@@ -10,6 +10,7 @@
     import type { Campaign } from '$lib/interfaces/Donaciones.interface';
     import type { Id } from '$lib/interfaces/Id.interface';
     import { user } from '$lib/stores/user';
+    import { backendURL } from '$lib/utils/constantFactory';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	// Props
 	/** Exposes parent props to this component. */
@@ -20,7 +21,7 @@
     let montoInputDisabled = false;
 
 	async function getPreferenceId(){
-		const res = await fetch(`http://localhost:3000/create_preference_donacion`, {
+		const res = await fetch(`${backendURL}/create_preference_donacion`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

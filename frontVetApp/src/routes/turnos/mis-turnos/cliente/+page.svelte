@@ -11,6 +11,7 @@
 
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import CancelarTurnoConfirmacion from "./cancelarTurnoConfirmacion.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
@@ -42,7 +43,7 @@
 
     onMount(async () => { 
         await fetch(
-            `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
+            `${backendURL}/turnos/listar-turnos/cliente?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {
@@ -55,7 +56,7 @@
             .then((apiResponse) => (turnos = apiResponse.data));
 
         await  fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente}`, 
+            `${backendURL}/listar-perros?cliente=${cliente}`, 
             {
                 method: "GET",
                 headers: {

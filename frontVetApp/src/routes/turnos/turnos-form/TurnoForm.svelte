@@ -3,6 +3,7 @@
     import type { Cliente } from "$lib/interfaces/Cliente.interface";
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import { modalStore, type ModalSettings, Modal } from '@skeletonlabs/skeleton';
     import { DateInput } from 'date-picker-svelte'
     import { onMount } from "svelte";
@@ -36,7 +37,7 @@
     onMount ( async () => {
 
         await  fetch(
-            `http://localhost:3000/listar-perros?cliente=${emailOwner}`, 
+            `${backendURL}/listar-perros?cliente=${emailOwner}`, 
             {
                 method: "GET",
                 headers: {
@@ -82,7 +83,7 @@
     };
 
     const handleSolicitud = async () =>{ 
-        fetch("http://localhost:3000/turnos/turnos-form",{
+        fetch(`${backendURL}/turnos/turnos-form`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",

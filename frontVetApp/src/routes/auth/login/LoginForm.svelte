@@ -3,6 +3,7 @@
     import type { LoginData, ApiResponse } from "$lib/interfaces/ApiResponse.interface";
     import type { UserData } from "$lib/interfaces/User.interface";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
     let email = '';
@@ -27,7 +28,7 @@
     const handleLogin = async () =>{        
         let cookies = document.cookie;
         console.log(cookies);
-        fetch('http://localhost:3000/login',{
+        fetch(`${backendURL}/login`,{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',

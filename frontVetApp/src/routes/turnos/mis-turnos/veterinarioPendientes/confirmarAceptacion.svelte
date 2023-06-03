@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import type { Turno } from '$lib/interfaces/Turno.interface';
     import { user } from "$lib/stores/user";
+    import { backendURL } from '$lib/utils/constantFactory';
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import { onMount } from 'svelte';
 
@@ -30,7 +31,7 @@
     };
 
 	async function onConfirm() {
-        await fetch("http://localhost:3000/turnos/aceptar-turno",{
+        await fetch(`${backendURL}/turnos/aceptar-turno`,{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as mercadopago from "mercadopago";
-import { Campaign } from "../interfaces/Donaciones.interface";
+import { Campaign, Donacion, PaymentID } from "../interfaces/Donaciones.interface";
 import { sendMailWithAttachment } from "../utils/mailer.handle";
-import { generatePDF } from "../utils/pdf.handle";
+import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
 import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 
@@ -87,13 +87,16 @@ export const notificacionDonacionController = async (req: Request, res: Response
             if (payment.body.status==="approved"){ 
                 ///----SE EJECUTA SI SE REALIZO EL PAGO DE LA DONACION-----------
                 //registro en base de datos la donacion
-                const resultInsertDonacion = await insertDonacion({
+
+                const donacion:(Donacion&PaymentID) = {
                     emailDonante:emailDonante,
                     monto:montoNetoDonado,
                     fechaHora: new Date().toISOString(),
-                    nombreCampaign:campaignNombre as string,
+                    nombreCampaign:String(campaignNombre),
                     paymentId:Number(paymentId),
-                })
+                }
+
+                const resultInsertDonacion = await insertDonacion(donacion)
                 if (resultInsertDonacion==="error"){
                     console.log("Error al guardar la donacion");
                     return
@@ -123,14 +126,7 @@ export const notificacionDonacionController = async (req: Request, res: Response
                 }
 
                 //envio email con pdf
-                let contenidoPDF= `
-                    COMPROBANTE DE DONACION
-
-                    EMAIL DEL DONANTE: ${emailDonante}
-                    CAMPAÑA: ${campaignNombre}
-                    MONTO DONADO: ${payment.body.transaction_details.net_received_amount}
-                `
-                let pdf = await generatePDF(contenidoPDF);
+                let pdf = await generateComprobanteDonacion(donacion);
                 try {
                     await sendMailWithAttachment(emailDonante,
                         `Comprobante de donacion a la campaña ${campaignNombre}`,
