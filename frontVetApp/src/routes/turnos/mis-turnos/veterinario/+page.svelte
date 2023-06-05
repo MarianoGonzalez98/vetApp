@@ -10,6 +10,8 @@
     import FinalizarAtencionCastracion from "./finalizarAtencionCastracion.svelte";
     import FinalizarAtencionAntiparasitacion from "./finalizarAtencionAntiparasitacion.svelte";
     import FinalizarAtencionConsultaGeneral from "./finalizarAtencionConsultaGeneral.svelte";
+
+    import { backendURL } from "$lib/utils/constantFactory";
     
   
 
@@ -42,7 +44,7 @@
 
     onMount(async () => { 
         const res = await fetch(
-            `http://localhost:3000/turnos/listar-turnos/veterinario`,
+            `${backendURL}/turnos/listar-turnos/veterinario`,
             {
                 method: "GET",
                 headers: {

@@ -9,6 +9,7 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
 
     let submittedClass = "";
@@ -65,7 +66,7 @@
     const handleRegistro = async () => {
         let error: boolean = false;
 
-        await fetch("http://localhost:3000/donaciones/crear-campaign", {
+        await fetch(`${backendURL}/donaciones/crear-campaign`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

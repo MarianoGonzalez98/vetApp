@@ -1,6 +1,7 @@
 <script lang="ts">
     import { beforeNavigate } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import type { BeforeNavigate } from "@sveltejs/kit";
     import { onMount } from "svelte";
 
@@ -15,7 +16,7 @@
 
 
     onMount( () => {
-        fetch('http://localhost:3000/getPerfil',{
+        fetch(`${backendURL}/getPerfil`,{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',

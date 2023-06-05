@@ -1,3 +1,5 @@
+export const backendURL:string = "http://localhost:3000";
+
 export const emailPatternFactory: string =
 "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+[.][a-zA-Z]{2,}$";
 

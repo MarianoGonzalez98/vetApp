@@ -6,7 +6,7 @@
     import type { AdopcionInput } from "$lib/interfaces/Adopciones.interface";
     import { goto } from "$app/navigation";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
-    import { emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
+    import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
 
     let perrosCliente:(Perro&Id)[] = [];
 
@@ -39,7 +39,7 @@
         //si soy cliente obtengo los datos de mis perros
         if ($user?.rol==='cliente'){
             await fetch(
-            `http://localhost:3000/listar-perros?cliente=${emailCliente}`,
+            `${backendURL}/listar-perros?cliente=${emailCliente}`,
             {
                 method: "GET",
                 headers: {
@@ -53,7 +53,7 @@
             });
         }
         //obtengo mis datos
-        fetch('http://localhost:3000/getPerfil',{
+        fetch(`${backendURL}/getPerfil`,{
         method:'GET',
         headers:{
             'Content-Type':'application/json',
@@ -97,7 +97,7 @@
     };
 
     const handleCarga = () => {
-        fetch("http://localhost:3000/adopciones/crear-publicacion", {
+        fetch(`${backendURL}/adopciones/crear-publicacion`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import type { Turno } from '$lib/interfaces/Turno.interface';
+    import { backendURL } from '$lib/utils/constantFactory';
 
 
 	// Props
@@ -29,7 +30,7 @@
     };
 
 	async function onConfirm() {
-        await fetch("http://localhost:3000/turnos/cancelar-turno",{
+        await fetch(`${backendURL}/turnos/cancelar-turno`,{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",

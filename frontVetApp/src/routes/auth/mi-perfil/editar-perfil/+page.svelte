@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import {
         popup,
         type ModalSettings,
@@ -76,7 +77,7 @@
     };
 
     onMount(() => {
-        fetch("http://localhost:3000/getPerfil", {
+        fetch(`${backendURL}/getPerfil`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -137,7 +138,7 @@
 
     const handleCarga = () => {
         dniErrorMsj = "";
-        fetch("http://localhost:3000/updatePerfil", {
+        fetch(`${backendURL}/updatePerfil`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

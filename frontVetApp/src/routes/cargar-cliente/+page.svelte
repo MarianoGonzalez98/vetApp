@@ -3,7 +3,7 @@
     import { navigating } from "$app/stores";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
-    import { emailPatternFactory, letrasEspaciosPatternFactory, numbersPatternFactory } from "$lib/utils/constantFactory";
+    import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory, numbersPatternFactory } from "$lib/utils/constantFactory";
     import {
         popup,
         type ModalSettings,
@@ -90,7 +90,7 @@
         let error:boolean=false;
         dniErrorMsj = '';
         emailErrorMsj = '';
-        await fetch("http://localhost:3000/existeUsuarioConEmail", {
+        await fetch(`${backendURL}/existeUsuarioConEmail`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -131,7 +131,7 @@
             });
 
 
-            await fetch("http://localhost:3000/existeUsuarioConDni", {
+            await fetch(`${backendURL}/existeUsuarioConDni`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

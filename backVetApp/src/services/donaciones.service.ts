@@ -2,6 +2,26 @@ import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { Campaign, Donacion, PaymentID } from "../interfaces/Donaciones.interface";
 
+
+export const getDonacion = async (paymentId: string) => {
+    const query = `
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign","paymentId"
+    FROM public.donaciones
+    WHERE "paymentId" = $1
+    `
+    const values = [paymentId]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: (Donacion&PaymentID) = await response.rows[0];
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getDonacion------");
+        console.log(err);
+        return "error";
+    }
+}
+
 export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
     await new Promise(r => setTimeout(r, 2000));
     const query = `
@@ -28,15 +48,14 @@ export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
 
 export const getDonaciones = async (email:string) => {
     const query = `
-    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign"
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign","paymentId"
     FROM public.donaciones
     WHERE "emailDonante" = $1
     `
     const values = [email]
     try {
         const response: QueryResult = await pool.query(query, values)
-        const result: Donacion[] = await response.rows;
-        //result.forEach( donacion => donacion.monto=Number(donacion.monto));
+        const result: (Donacion&PaymentID)[] = await response.rows;
         return result
     }
     catch (err) {

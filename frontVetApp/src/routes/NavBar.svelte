@@ -1,6 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
   import { AppBar } from "@skeletonlabs/skeleton";
   import { LightSwitch } from "@skeletonlabs/skeleton";
   import { Avatar } from "@skeletonlabs/skeleton";
@@ -8,7 +9,7 @@
   let imgSrc = "/Logo2.png";
   const logout = () => {
     $user = null;
-    fetch("http://localhost:3000/logout", {
+    fetch(`${backendURL}/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

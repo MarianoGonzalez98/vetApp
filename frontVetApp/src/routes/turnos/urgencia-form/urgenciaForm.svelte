@@ -6,6 +6,7 @@
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
     import type { Antiparasitario, Id, Perro, PerroTurno, Vacuna } from "$lib/interfaces/Perro.interface";
+    import { backendURL } from "$lib/utils/constantFactory";
 
 
     let cliente:ClienteConMonto = {
@@ -72,7 +73,7 @@
         inputCliente.montoAcumuladoDescuento = cliente.montoAcumuladoDescuento;
 
         fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
+            `${backendURL}/listar-perros?cliente=${cliente.email}`, 
             {
                 method: "GET",
                 headers: {
@@ -89,7 +90,7 @@
     
     onMount ( async () => {
 
-        await fetch('http://localhost:3000/listar-clientes',{
+        await fetch(`${backendURL}/listar-clientes`,{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -207,7 +208,7 @@
 
 
 const handleUrgencia = async () =>{ 
-        fetch("http://localhost:3000/turnos/urgencia-form",{
+        fetch(`${backendURL}/turnos/urgencia-form`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
