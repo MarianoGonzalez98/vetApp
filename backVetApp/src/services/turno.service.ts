@@ -265,14 +265,14 @@ export const archivarTurno = async (id: number) => {
     }
 }
 
-export const actualizarDescripcion = async (id:number, descripcion:string) => { //POR FINALIZADO
+export const actualizarDescripcion = async (id:number, descripcion:string, precio:number) => { //POR FINALIZADO
     const query = `
     UPDATE public.turnos 
-    SET descripcion = $1, finalizado = $3
+    SET descripcion = $1, finalizado = $3, precio = $4
     WHERE id = $2
     `;
 
-    const values = [descripcion,id,true]
+    const values = [descripcion,id,true,precio]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -284,4 +284,23 @@ export const actualizarDescripcion = async (id:number, descripcion:string) => { 
         return "error";
     }
 
+}
+
+export const insertUrgencia = async (turno: Turno) => {
+    const queryTurno = `
+    INSERT INTO public.turnos(
+        motivo, "perroId", fecha, "rangoHorario", "emailOwner", aceptado, descripcion,  "perroNombre", urgencia, finalizado, precio) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+    `;
+    const valuesTurno = [turno.motivo, turno.perroId, turno.fecha, turno.rangoHorario, turno.emailOwner, turno.aceptado, turno.descripcion, turno.perroNombre, turno.urgencia, turno.finalizado, turno.precio]
+
+    try {
+        const response: QueryResult = await pool.query(queryTurno, valuesTurno)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:insertUrgencia------");
+        console.log(err);
+        return "error";
+    }
 }

@@ -10,6 +10,18 @@ export const finalizarAtencionVacunacionController = async (req:Request, res:Res
 
     let turnoId:number = req.body.turnoId;
     let observacion:string = req.body.observacion;
+    let precio:number = req.body.precio;
+    let descuentoCliente:number = req.body.descuentoCliente
+    let descuento50: number = precio * 50 / 100;
+    let precioFinal:number = 0;
+
+    if (descuentoCliente <= descuento50) {
+        precioFinal = precio - descuentoCliente;
+    }
+    if (descuentoCliente > descuento50) {
+        precioFinal = precio - descuento50;
+    }
+
 
     const perro = await getPerroJuli(id);
     if (perro === "error") {
@@ -29,7 +41,7 @@ export const finalizarAtencionVacunacionController = async (req:Request, res:Res
         return
     }
 
-    const result2 = await actualizarDescripcion(turnoId,observacion);
+    const result2 = await actualizarDescripcion(turnoId,observacion,precioFinal);
     if (result2 === "error") {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
@@ -47,6 +59,17 @@ export const finalizarAtencionCastracionController = async (req:Request, res:Res
 
     let turnoId:number = req.body.turnoId;
     let observacion:string = req.body.observacion;
+    let precio:number = req.body.precio;
+    let descuentoCliente:number = req.body.descuentoCliente
+    let descuento50: number = precio * 50 / 100;
+    let precioFinal:number = 0;
+
+    if (descuentoCliente <= descuento50) {
+        precioFinal = precio - descuentoCliente;
+    }
+    if (descuentoCliente > descuento50) {
+        precioFinal = precio - descuento50;
+    }
 
     const perro = await getPerroJuli(id);
     if (perro === "error") {
@@ -63,7 +86,7 @@ export const finalizarAtencionCastracionController = async (req:Request, res:Res
         return
     }
 
-    const result2 = await actualizarDescripcion(turnoId,observacion);
+    const result2 = await actualizarDescripcion(turnoId,observacion,precioFinal);
     if (result2 === "error") {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
@@ -80,6 +103,17 @@ export const finalizarAtencionAntiparasitacionController = async (req:Request, r
 
     let turnoId:number = req.body.turnoId;
     let observacion:string = req.body.observacion;
+    let precio:number = req.body.precio;
+    let descuentoCliente:number = req.body.descuentoCliente
+    let descuento50: number = precio * 50 / 100;
+    let precioFinal:number = 0;
+
+    if (descuentoCliente <= descuento50) {
+        precioFinal = precio - descuentoCliente;
+    }
+    if (descuentoCliente > descuento50) {
+        precioFinal = precio - descuento50;
+    }
 
     const perro = await getPerroJuli(id);
     if (perro === "error") {
@@ -98,7 +132,7 @@ export const finalizarAtencionAntiparasitacionController = async (req:Request, r
         return
     }
 
-    const result2 = await actualizarDescripcion(turnoId,observacion);
+    const result2 = await actualizarDescripcion(turnoId,observacion,precioFinal);
     if (result2 === "error") {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
@@ -114,6 +148,17 @@ export const finalizarAtencionConsultaGeneralController = async (req:Request, re
 
     let turnoId:number = req.body.turnoId;
     let observacion:string = req.body.observacion;
+    let precio:number = req.body.precio;
+    let descuentoCliente:number = req.body.descuentoCliente
+    let descuento50: number = precio * 50 / 100;
+    let precioFinal:number = 0;
+
+    if (descuentoCliente <= descuento50) {
+        precioFinal = precio - descuentoCliente;
+    }
+    if (descuentoCliente > descuento50) {
+        precioFinal = precio - descuento50;
+    }
 
     const perro = await getPerroJuli(id);
     if (perro === "error") {
@@ -130,7 +175,7 @@ export const finalizarAtencionConsultaGeneralController = async (req:Request, re
         return
     }
 
-    const result2 = await actualizarDescripcion(turnoId,observacion);
+    const result2 = await actualizarDescripcion(turnoId,observacion,precioFinal);
     if (result2 === "error") {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })

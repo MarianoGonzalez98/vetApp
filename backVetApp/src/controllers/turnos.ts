@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { aceptarTurno, archivarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getCantDeTurnosRangoHorarioFechab, getTurno, getTurnos, getTurnosComoVeterinario, insertTurno, modificarTurno, rechazarTurno } from "../services/turno.service"
+import { aceptarTurno, archivarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getCantDeTurnosRangoHorarioFechab, getTurno, getTurnos, getTurnosComoVeterinario, insertTurno, insertUrgencia, modificarTurno, rechazarTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
 import { getClientes } from "../services/clientes.service"
 import { sendMailTest } from "../utils/mailer.handle"
@@ -333,6 +333,8 @@ export const rechazarTurnoController = async(req:Request, res:Response) => {
     res.status(201).send('Se rechazó correctamente el turno');
 }
 
+
+
 export const registrarUrgenciaController = async (req:Request, res:Response) => {
      const result = await getClientes();
     if (result === "error") {
@@ -353,8 +355,19 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
     let antiparasitarios = req.body.antiparasitarios;
     let castrado = req.body.castrado;
     let peso = req.body.peso;
+    let precio = req.body.precioIngresado;
+    let descuentoCliente = req.body.descuentoCliente
+    let descuento50 = precio * 50 / 100;
+
+    if (descuentoCliente <= descuento50) {
+        turno.precio = precio - descuentoCliente;
+    }
+    if (descuentoCliente > descuento50) {
+        turno.precio = precio - descuento50;
+    }
+
     
-    const dbResult = await insertTurno(turno);
+    const dbResult = await insertUrgencia(turno);
     if (dbResult === 'error') {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
@@ -367,6 +380,7 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
     }
+
 }
 
 export const archivarTurnoController = async (req:Request, res:Response) => {
