@@ -12,5 +12,6 @@ export interface Turno {
     urgencia:boolean
     finalizado:boolean
     archivado:boolean
+    precio:number
 }
 

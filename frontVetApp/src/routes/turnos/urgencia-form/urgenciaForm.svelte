@@ -1,24 +1,26 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type { Cliente } from "$lib/interfaces/Cliente.interface"
+    import type { Cliente, ClienteConMonto } from "$lib/interfaces/Cliente.interface"
     import {  modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
     import type { Antiparasitario, Id, Perro, PerroTurno, Vacuna } from "$lib/interfaces/Perro.interface";
 
 
-    let cliente:Cliente = {
+    let cliente:ClienteConMonto = {
         nombre: "",
         apellido: "",
-        email: ""
+        email: "",
+        montoAcumuladoDescuento:0
     };
-    let inputCliente:Cliente={
+    let inputCliente:ClienteConMonto={
         nombre:"",
         apellido:"",
-        email:""
+        email:"",
+        montoAcumuladoDescuento:0
     };
-    let clientes: Cliente[] = [];
+    let clientes: ClienteConMonto[] = [];
 
 
     let perro: Perro ={
@@ -50,6 +52,13 @@
         cantidadAplicada:0,
     };
 
+    let precioIngresado:number = 0;
+    let hayPrecio:boolean = false;
+
+
+    let descuento50: number;
+
+
     const actualizarFormPerro = () => {
         vacunasAplicadas = JSON.parse(perro.vacunas);
         antiparasitarios = (JSON.parse(perro.antiparasitarios));
@@ -60,7 +69,8 @@
         inputCliente.nombre=cliente.nombre;
         inputCliente.apellido = cliente.apellido;
         inputCliente.email = cliente.email;
-        console.log(cliente.nombre);
+        inputCliente.montoAcumuladoDescuento = cliente.montoAcumuladoDescuento;
+
         fetch(
             `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
             {
@@ -79,7 +89,7 @@
     
     onMount ( async () => {
 
-        await fetch('http://localhost:3000/clientes',{
+        await fetch('http://localhost:3000/listar-clientes',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -97,6 +107,10 @@
 
     })
 
+    const actualizar50Desc = () => {
+        descuento50 = 50 * precioIngresado / 100;
+        hayPrecio = true;
+    }
     
     let motivoVacA = false ;
     let motivoVacB = false ;
@@ -211,7 +225,10 @@ const handleUrgencia = async () =>{
                 vacunas: JSON.stringify(vacunasAplicadas),
                 antiparasitarios: JSON.stringify(antiparasitarios),
                 castrado,
-                peso
+                peso,
+
+                precioIngresado,
+                descuentoCliente: cliente.montoAcumuladoDescuento
             })
         })
         .then((res) => {
@@ -307,7 +324,7 @@ const handleUrgencia = async () =>{
             {/if}
             {#if motivoAntiPar===true}
                 <label class="label">
-                    <span>Ingrese dosis de anti-parasitario (cantidad de gotas/Kg de peso)</span>
+                    <span>Ingrese dosis de anti-parasitario (mg/kg)</span>
                     <input class="input" bind:value={antipAplicado.cantidadAplicada}  title="Input (number)" type="number" min="1" required/>
                 </label>
             {/if}
@@ -321,6 +338,26 @@ const handleUrgencia = async () =>{
                 <span>Descripción</span>
                 <textarea class="textarea" rows="2" placeholder="Ingrese una descripción" bind:value={descripcion} />
             </label>
+
+            <label class="label">
+                <span>Ingrese el precio del turno</span>
+                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
+            </label>
+            <div class="card p-4">
+                {#if hayPrecio}
+                    {#if cliente.montoAcumuladoDescuento <= descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header>Precio final del turno: {precioIngresado - cliente.montoAcumuladoDescuento}</header>
+                    {/if}
+                    {#if cliente.montoAcumuladoDescuento > descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header>Precio final: {precioIngresado - descuento50}</header>
+                    {/if}   
+                {/if}
+            </div>
+
 
             <br>
             <br>

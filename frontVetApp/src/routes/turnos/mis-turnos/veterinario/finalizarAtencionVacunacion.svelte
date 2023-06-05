@@ -26,6 +26,7 @@
     }
 
     let precio:number = 0;
+    let hayPrecio:boolean = false;
 
     let cliente:ClienteConMonto = {
         nombre:"",
@@ -65,6 +66,7 @@
 
     const actualizar50Desc = () => {
         descuento50 = 50 * precio / 100;
+        hayPrecio = true;
     }
 
 
@@ -101,7 +103,9 @@
                     vacunaAplicada,
                     peso,
                     turnoId:turnoInfo.id,
-                    observacion
+                    observacion,
+                    precio,
+                    descuentoCliente: cliente.montoAcumuladoDescuento
                 })
             })
             .then((res) => {
@@ -154,25 +158,25 @@
             </label>
 
             <label class="label">
-                <span>Ingrese el precio del perro</span>
+                <span>Ingrese el precio del turno</span>
                     <input class="input" bind:value={precio} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
             </label>
+            <div class="card p-4">
+                {#if hayPrecio}
+                    {#if cliente.montoAcumuladoDescuento <= descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final del turno: {precio - cliente.montoAcumuladoDescuento}</header>
+                    {/if}
+                    {#if cliente.montoAcumuladoDescuento > descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final: {precio - descuento50}</header>
+                    {/if}   
+                {/if}
+            </div>
             <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
             <button class="btn {parent.buttonPositive}" type="submit">Aceptar</button>
         </form>
-        <div class="card p-4">
-            {#if precio >= 0}
-                {#if cliente.montoAcumuladoDescuento <= descuento50}
-                    <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
-                    <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                    <header class={cHeader}>Precio final del turno: {precio - cliente.montoAcumuladoDescuento}</header>
-                {/if}
-                {#if cliente.montoAcumuladoDescuento > descuento50}
-                    <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
-                    <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                    <header class={cHeader}>Precio final: {precio - descuento50}</header>
-                {/if}   
-            {/if}
-        </div>
 	</div>
 {/if}

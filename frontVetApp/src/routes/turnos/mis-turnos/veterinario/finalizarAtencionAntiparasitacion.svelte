@@ -4,6 +4,7 @@
     import type { Turno } from '$lib/interfaces/Turno.interface';
     import { onMount } from 'svelte';
     import type { Antiparasitario } from '$lib/interfaces/Perro.interface';
+    import type { ClienteConMonto } from '$lib/interfaces/Cliente.interface';
 
     export let parent: any;
     export let turnoInfo:Turno;
@@ -13,6 +14,18 @@
     let antiparasitarioAplicado: Antiparasitario;
     let nombreAntip: string = "";
     let cantAplicada:number = 1;
+
+    let precio:number = 0;
+    let hayPrecio:boolean = false;
+
+    let cliente:ClienteConMonto = {
+        nombre:"",
+        apellido:"",
+        email: turnoInfo.emailOwner,
+        montoAcumuladoDescuento: 0
+    };
+
+    let descuento50: number;
 
     const actualizarAnti = () => {
         antiparasitarioAplicado = {
@@ -36,8 +49,24 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (peso = apiResponse.data.peso));
+
+            fetch(`http://localhost:3000/clienteJuli?email=${turnoInfo.emailOwner}`,  //Traerme al cliente para saber el descuento acumulado
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (cliente = apiResponse.data));
     });
 
+    const actualizar50Desc = () => {
+        descuento50 = 50 * precio / 100;
+        hayPrecio = true;
+    }
 
     const TurnoFinalizado: ModalSettings = {
         type: 'alert',
@@ -72,7 +101,9 @@
                     antiparasitarioAplicado,
                     peso,
                     turnoId:turnoInfo.id,
-                    observacion
+                    observacion,
+                    precio,
+                    descuentoCliente: cliente.montoAcumuladoDescuento
                 })
             })
             .then((res) => {
@@ -121,14 +152,33 @@
             </label>
 
             <label class="label">
-                <span>Ingrese dosis de anti-parasitario (cantidad de gotas/Kg de peso)</span>
-                <input class="input" bind:value={cantAplicada}  title="Input (number)" type="number" on:change={actualizarAnti} min="1" required/>
+                <span>Ingrese dosis de anti-parasitario (mg/kg)</span>
+                <input class="input" bind:value={cantAplicada}  title="Input (number)" type="number" on:change={actualizarAnti} min="0" required/>
             </label>
 
             <label class="label"> 
                 <span>Ingrese una observación</span>
                 <textarea class="textarea" rows="2"  bind:value={observacion} />
             </label>
+
+            <label class="label">
+                <span>Ingrese el precio del turno</span>
+                    <input class="input" bind:value={precio} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
+            </label>
+            <div class="card p-4">
+                {#if hayPrecio}
+                    {#if cliente.montoAcumuladoDescuento <= descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final del turno: {precio - cliente.montoAcumuladoDescuento}</header>
+                    {/if}
+                    {#if cliente.montoAcumuladoDescuento > descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final: {precio - descuento50}</header>
+                    {/if}   
+                {/if}
+            </div>
 
             <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
             <button class="btn {parent.buttonPositive}" type="submit">Aceptar</button>

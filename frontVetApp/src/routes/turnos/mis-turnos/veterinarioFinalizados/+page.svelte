@@ -105,6 +105,11 @@
                             {turno.descripcion} 
                         
                         </p>
+                        <p>
+                            <span class="font-medium">Precio: </span>
+                            {turno.precio} 
+                        
+                        </p>
                     </div>
                     <footer class="flex">
                         <button on:click={(event) => handleArchivar(turno)}  class="btn btn-sm variant-ghost-surface"
