@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
     import type { Id } from '$lib/interfaces/Id.interface';
+    import { backendURL } from '$lib/utils/constantFactory';
 
 
 
@@ -15,7 +16,7 @@
 
 	
 	async function onConfirm() {
-		await fetch('http://localhost:3000/adopciones/marcar-adoptado',{
+		await fetch(`${backendURL}/adopciones/marcar-adoptado`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',

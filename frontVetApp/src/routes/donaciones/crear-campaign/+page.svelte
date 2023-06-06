@@ -9,14 +9,11 @@
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
+
 
     let submittedClass = "";
-    const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-    const letrasEspaciosPattern: string =
-        "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
-    const numbersPattern: string = "^[0-9]*$";
     let emailErrorMsj = "";
 
     const popupFocusBlur: PopupSettings = {
@@ -69,7 +66,7 @@
     const handleRegistro = async () => {
         let error: boolean = false;
 
-        await fetch("http://localhost:3000/donaciones/crear-campaign", {
+        await fetch(`${backendURL}/donaciones/crear-campaign`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -139,7 +136,6 @@
                 type="text"
                 placeholder="Ej: Tu Mascota Héroe"
                 name="nombre"
-                pattern={letrasEspaciosPattern}
                 required
             />
 

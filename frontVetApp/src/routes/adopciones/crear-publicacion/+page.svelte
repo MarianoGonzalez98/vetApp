@@ -6,6 +6,7 @@
     import type { AdopcionInput } from "$lib/interfaces/Adopciones.interface";
     import { goto } from "$app/navigation";
     import { Modal, modalStore } from "@skeletonlabs/skeleton";
+    import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
 
     let perrosCliente:(Perro&Id)[] = [];
 
@@ -38,7 +39,7 @@
         //si soy cliente obtengo los datos de mis perros
         if ($user?.rol==='cliente'){
             await fetch(
-            `http://localhost:3000/listar-perros?cliente=${emailCliente}`,
+            `${backendURL}/listar-perros?cliente=${emailCliente}`,
             {
                 method: "GET",
                 headers: {
@@ -52,7 +53,7 @@
             });
         }
         //obtengo mis datos
-        fetch('http://localhost:3000/getPerfil',{
+        fetch(`${backendURL}/getPerfil`,{
         method:'GET',
         headers:{
             'Content-Type':'application/json',
@@ -96,7 +97,7 @@
     };
 
     const handleCarga = () => {
-        fetch("http://localhost:3000/adopciones/crear-publicacion", {
+        fetch(`${backendURL}/adopciones/crear-publicacion`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -141,11 +142,6 @@
             });
     }
 
-    const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-    const letrasEspaciosPattern: string =
-        "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
-
     const numbersPattern: string = "^[0-9]*$";
 </script>
 
@@ -172,10 +168,10 @@
         <h3 class="h3 mt-3">Datos del perro:</h3>
         <form class="space-y-2 mt-5 mb-5 max-w-md" on:submit|preventDefault={handleCarga} action="">
             <label class="label" for="nombre">Nombre del perro:</label>
-            <input bind:value={inputPerro.nombre} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del perro" pattern={letrasEspaciosPattern} name="nombre" required/>
+            <input bind:value={inputPerro.nombre} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del perro" pattern={letrasEspaciosPatternFactory} name="nombre" required/>
 
             <label class="label" for="raza">Raza:</label>
-            <input bind:value={inputPerro.raza} class="input focus:invalid:border-red-500" type="text" placeholder="Raza del perro" pattern={letrasEspaciosPattern} name="raza" required />
+            <input bind:value={inputPerro.raza} class="input focus:invalid:border-red-500" type="text" placeholder="Raza del perro" pattern={letrasEspaciosPatternFactory} name="raza" required />
 
             <label class="label" for="sexo">Sexo:</label>
             <select bind:value={inputPerro.sexo} class="input" placeholder="Sexo" name="sexo" required>
@@ -196,16 +192,16 @@
             <h3 class="h3 mt-3">Datos de contacto:</h3>
 
             <label class="label" for="nombreContacto">Nombre:</label>
-            <input bind:value={nombreContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del contacto" pattern={letrasEspaciosPattern} name="nombreContacto" required/>
+            <input bind:value={nombreContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del contacto" pattern={letrasEspaciosPatternFactory} name="nombreContacto" required/>
 
             <label class="label" for="apellidoContacto">Apellido:</label>
-            <input bind:value={apellidoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Apellido del contacto" pattern={letrasEspaciosPattern} name="apellidoContacto" required/>
+            <input bind:value={apellidoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Apellido del contacto" pattern={letrasEspaciosPatternFactory} name="apellidoContacto" required/>
 
             <label class="label" for="telefonoContacto">Telefono:</label>
             <input bind:value={telefonoContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Telefono del contacto" pattern={numbersPattern} name="telefonoContacto" required/>
 
             <label class="label" for="nombreContacto">Email:</label>
-            <input bind:value={emailContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Email del contacto" pattern={emailPattern} name="nombreContacto" required/>
+            <input bind:value={emailContacto} class="input focus:invalid:border-red-500"type="text" placeholder="Email del contacto" pattern={emailPatternFactory} name="nombreContacto" required/>
         
             {/if}
             <hr class="!border-t-2" />

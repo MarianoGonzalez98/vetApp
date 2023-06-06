@@ -7,6 +7,7 @@
     import ModalExampleForm from "./ModalExampleForm.svelte";
     import type { Id } from "$lib/interfaces/Id.interface";
     import ModalConfirmarMarcarAdoptado from "./ModalConfirmarMarcarAdoptado.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let misDatos = {
         nombreApellido: "",
@@ -39,7 +40,7 @@
     onMount(async () => {
         let dia = new Date("1999-01-23").toLocaleDateString("es-AR");
         //fetch de lista de adopciones publicados
-        await fetch(`http://localhost:3000/adopciones/get-lista-adopciones`, {
+        await fetch(`${backendURL}/adopciones/get-lista-adopciones`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -50,7 +51,7 @@
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
 
         if ($user) {
-            await fetch("http://localhost:3000/getPerfil", {
+            await fetch(`${backendURL}/getPerfil`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

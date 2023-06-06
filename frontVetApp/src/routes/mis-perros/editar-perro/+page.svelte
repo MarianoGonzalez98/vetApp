@@ -1,6 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import {
         Modal,
         modalStore,
@@ -91,7 +92,7 @@
 
     onMount(() => {
         fetch(
-            `http://localhost:3000/get-perro?owner=${owner}&nombre=${nombre}`,
+            `${backendURL}/get-perro?owner=${owner}&nombre=${nombre}`,
             {
                 method: "GET",
                 headers: {
@@ -152,7 +153,7 @@
     };
 
     const handleCarga = () => {
-        fetch("http://localhost:3000/actualizar-perro", {
+        fetch(`${backendURL}/actualizar-perro`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

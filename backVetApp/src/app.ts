@@ -16,7 +16,12 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
-var cron = require('node-cron');
+const cron = require('node-cron');
+
+const types = require('pg').types //para que el tipo numeric se tome como numero y no como string
+types.setTypeParser(1700, function(val:any) {
+    return Number(val);
+});
 
 cron.schedule('* * * * *', async () => {
   const result = await getTurnosPendientesPasados();
@@ -70,6 +75,7 @@ import { MailerRouter } from "./routes/mailer.routes";
 import { cancelarTurno, getTurnosPendientesPasados } from "./services/turno.service";
 import { sendMailTest } from "./utils/mailer.handle";
 import { DonacionesRouter } from "./routes/donaciones.routes";
+import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
@@ -80,6 +86,7 @@ app.use(ClientesRouter)
 app.use(PaseadoresCuidadoresRouter);
 app.use(MailerRouter)
 app.use(DonacionesRouter)
+app.use(MercadoPagoRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

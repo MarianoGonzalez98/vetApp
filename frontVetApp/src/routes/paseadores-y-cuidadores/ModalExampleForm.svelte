@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
+
     // Props
     /** Exposes parent props to this component. */
     export let parent: any;
@@ -15,11 +17,6 @@
         type ModalSettings,
         type PopupSettings,
     } from "@skeletonlabs/skeleton";
-
-    const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-    const letrasEspaciosPattern: string =
-        "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 
     const numbersPattern: string = "^[0-9]*$";
 
@@ -51,7 +48,7 @@
 
     // We've created a custom submit function to pass the response and close the modal.
     async function onFormSubmit() {
-        await fetch("http://localhost:3000/enviar-mail-pc", {
+        await fetch(`${backendURL}/enviar-mail-pc`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -103,7 +100,7 @@
                     type="text"
                     bind:value={nombre}
                     placeholder="Ej: Juan"
-                    pattern={letrasEspaciosPattern}
+                    pattern={letrasEspaciosPatternFactory}
                     required
                 />
             </label>
@@ -114,7 +111,7 @@
                     type="text"
                     bind:value={apellido}
                     placeholder="Ej: Carlos"
-                    pattern={letrasEspaciosPattern}
+                    pattern={letrasEspaciosPatternFactory}
                     required
                 />
             </label>
@@ -137,7 +134,7 @@
                     type="email"
                     bind:value={emailRemitente}
                     placeholder="Ej: juan.carlos@gmail.com"
-                    pattern={emailPattern}
+                    pattern={emailPatternFactory}
                     required
                 />
             </label>

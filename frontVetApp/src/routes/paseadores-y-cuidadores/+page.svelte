@@ -10,6 +10,7 @@
     } from "@skeletonlabs/skeleton";
     import { goto, preloadCode } from "$app/navigation";
     import ModalExampleForm from "./ModalExampleForm.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
     let paseadorescuidadores: PaseadorCuidador[] = [];
 
     const fallaServidor: ModalSettings = {
@@ -33,7 +34,7 @@
 
     onMount(async () => {
         const res = await fetch(
-            "http://localhost:3000/listar-paseadorescuidadores",
+            `${backendURL}/listar-paseadorescuidadores`,
             {
                 method: "GET",
                 headers: {
@@ -46,7 +47,7 @@
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
 
         if ($user) {
-            fetch("http://localhost:3000/getPerfil", {
+            fetch(`${backendURL}/getPerfil`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,7 +78,7 @@
     ) => {
         let error: boolean = false;
 
-        await fetch("http://localhost:3000/cambiar-disponible", {
+        await fetch(`${backendURL}/cambiar-disponible`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

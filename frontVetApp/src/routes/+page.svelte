@@ -46,9 +46,9 @@
 				href="/adopciones">Adopciones</a
 			>
 			<a
-				class="btn variant-ghost-surface"
-				rel="noreferrer"
-				href="/donaciones">Donaciones</a
+			class="btn variant-ghost-surface"
+			rel="noreferrer"
+			href="/donaciones">Donaciones</a
 			>
 		</div>
 	</div>
