@@ -1,6 +1,5 @@
 <script lang="ts">
     import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-    import type { Turno } from '$lib/interfaces/Turno.interface';
     import { backendURL } from '$lib/utils/constantFactory';
 
 	// Props
