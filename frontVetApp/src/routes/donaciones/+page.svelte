@@ -80,24 +80,6 @@
             ref: ModalConfirmarFinalizarCampaign,
             props: { campaign: campaign },
         };
-
-        await fetch(`${backendURL}/cambiar-disponible`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                email: email,
-                disponible: disponible,
-            }),
-        })
-            .then((res) => {
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    goto("/auth/login");
-                    return;
         let modalConfirm: ModalSettings = {
             //esto sí lo uso
             type: "component",
@@ -115,13 +97,15 @@
     };
 
     let inputNombre: string;
-    let emailSeleccionado: string;
+    let inputEstado: string;
 
     $: mostrar = campaigns.filter((pc) => {
         const nombreMatch = inputNombre
             ? pc.nombre.toLowerCase().match(`.*${inputNombre.toLowerCase()}.*`)
             : true;
-        return nombreMatch;
+        console.log(inputEstado)
+        const estadoMatch = (!(inputEstado) || ((inputEstado == "Finalizadas") && (pc.finalizada)) || ((inputEstado == "Activas") && !(pc.finalizada)));
+        return nombreMatch && estadoMatch;
     }) as Campaign[];
 
     const handleDonar = (campaign: Campaign) => {
@@ -145,11 +129,12 @@
 <Modal />
 
 <div class="flex flex-wrap mb-4">
-    <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/donaciones">Atras</a>
+    <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/">Atras</a>
     {#if $user}
-        <a class="btn variant-filled m-4  mb-0" rel="noreferrer" href="/donaciones/ver-mis-donaciones">Ver mis donaciones realizadas</a>
+        <a class="btn variant-filled m-4 ml-0 mb-0" rel="noreferrer" href="/donaciones/ver-mis-donaciones">Ver mis donaciones realizadas</a>
     {/if}
 </div>
+<h1 class="h1 font-medium ml-3 mb-3">Campañas de donación</h1>
 {#if campaigns.length > 0}
     <div class="ml-2 flex">
         {#if $user?.rol === "veterinario"}
@@ -159,6 +144,23 @@
                     rel="noreferrer"
                     href="/donaciones/crear-campaign">Crear campaña</a
                 >
+            </div>
+            <div class="ml-2">
+                <label for="filtroEstado" class="text-left whitespace-nowrap"
+                    >Filtrar por estado:
+                </label>
+                <select
+                    bind:value={inputEstado}
+                    class="input"
+                    placeholder="Todas"
+                    name="estado"
+                    required
+                >
+                    <option value="" selected>Todas</option>
+                    {#each ["Finalizadas", "Activas"] as value}
+                        <option {value}>{value}</option>
+                    {/each}
+                </select>
             </div>
         {/if}
         <div class="ml-2">
@@ -189,10 +191,12 @@
                     <div
                         class="text-base text-neutral-600 dark:text-neutral-200"
                     >
+                        {#if campaign.montoARecaudar}
                         <p>
                             <span class="font-medium">Monto a recaudar: </span>
                             ${campaign.montoARecaudar}
                         </p>
+                        {/if}
                         <p>
                             <span class="font-medium">Monto recaudado: </span>
                             ${campaign.montoRecaudado}
@@ -210,7 +214,8 @@
                     </div>
                     <footer class="flex mt-4">
                         {#if !(campaign.finalizada)}
-                        <button class="btn btn-sm variant-ghost-surface mr-2"
+                        <button on:click={(event) =>
+                            handleDonar(campaign)} class="btn btn-sm variant-ghost-surface mr-2"
                             >Donar
                         </button>
                         {#if ($user?.rol === "veterinario")}
@@ -253,117 +258,3 @@
         {/if}
     </div>
 {/if}
-
-<div>
-    <h1 class="h1 font-medium ml-3 mb-3">Campañas de donación</h1>
-    {#if campaigns.length > 0}
-        <div class="ml-2 flex">
-            {#if $user?.rol === "veterinario"}
-                <div class="mt-6">
-                    <a
-                        class="btn variant-ghost-secondary hover:variant-filled-secondary"
-                        rel="noreferrer"
-                        href="/donaciones/crear-campaign">Crear campaña</a
-                    >
-                </div>
-            {/if}
-            <div class="ml-2">
-                <label for="filtroNombre" class="text-left whitespace-nowrap"
-                    >Filtrar por nombre:
-                </label>
-                <input
-                    type="text"
-                    bind:value={inputNombre}
-                    class="input rounded-lg"
-                    name="filtroNombre"
-                    id=""
-                />
-            </div>
-        </div>
-        <div class="ml-2 flex flex-wrap">
-            {#each mostrar as campaign}
-                <div
-                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
-                >
-                    <div class="flex flex-col justify-start p-6">
-                        <h5
-                            class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                        >
-                            {campaign.nombre}
-                        </h5>
-                        <div
-                            class="text-base text-neutral-600 dark:text-neutral-200"
-                        >
-                            <p>
-                                <span class="font-medium">Monto a recaudar: </span>
-                                ${campaign.montoARecaudar}
-                            </p>
-                            <p>
-                                <span class="font-medium">Monto recaudado: </span>
-                                ${campaign.montoRecaudado}
-                            </p>
-                            <p>
-                                <span class="font-medium">Fecha límite: </span>
-                                {new Date(campaign.fechaLimite).toLocaleDateString(
-                                    "es-AR"
-                                )}
-                            </p>
-                            <p>
-                                <span class="font-medium">Descripción: </span>
-                                {campaign.descripcion}
-                            </p>
-                        </div>
-                        <footer class="flex mt-4">
-                            <button on:click={(event) =>
-                                handleDonar(campaign)} class="btn btn-sm variant-ghost-surface mr-2"
-                                >Donar
-                            </button>
-                            <!-- 
-                                
-                                ···PARA HACER LO DE FINALIZAR···
-                                
-                                {#if $user?.rol === "veterinario"}
-                                <button
-                                    on:click={() => {
-                                        pc.disponible = !pc.disponible;
-                                        cambiarDisponibilidad(
-                                            pc.email,
-                                            pc.disponible
-                                        );
-                                    }}
-                                    class="btn btn-sm variant-ghost-surface mr-2"
-                                    >Marcar como {#if pc.disponible}
-                                        "No disponible"
-                                    {:else}
-                                        "Disponible"
-                                    {/if}
-                                </button>
-                            {/if} -->
-                        </footer>
-                    </div>
-                </div>
-            {/each}
-        </div>
-    {:else}
-        <div class="flex justify-center items-center h-full">
-            {#if $user?.rol === "veterinario"}
-                <div class="flex-none">
-                    <h1 class="text-4xl font-bold mb-6">
-                        No hay campañas de donación creadas.
-                    </h1>
-                    <div class="flex justify-center">
-                        <a
-                            class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
-                            rel="noreferrer"
-                            href="/donaciones/crear-campaign">Crear campaña</a
-                        >
-                    </div>
-                </div>
-            {:else}
-                <h1 class="text-4xl font-bold">
-                    Ups! Parece que no hay campañas de donación creadas.
-                </h1>
-            {/if}
-        </div>
-    {/if}
-</div>

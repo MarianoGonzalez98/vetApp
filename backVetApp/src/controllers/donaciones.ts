@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Campaign } from "../interfaces/Donaciones.interface";
-import { getCampaign, getCampaigns, getDonacion, getDonaciones, insertCampaign } from "../services/donaciones.service";
+import { finalizarCampaign, getCampaign, getCampaigns, getDonacion, getDonaciones, insertCampaign } from "../services/donaciones.service";
 import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
 
 export const listarMisDonacionesController = async (req:Request, res:Response) => {
