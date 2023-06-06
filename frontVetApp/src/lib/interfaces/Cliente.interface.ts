@@ -11,3 +11,10 @@ export interface ExtrasCliente {
     telefono: string
     foto: any
 }
+
+export interface ClienteConMonto {
+    nombre: string
+    apellido: string
+    email: string
+    montoAcumuladoDescuento:number
+}

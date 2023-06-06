@@ -43,3 +43,10 @@ export interface NombreApellidoMailPersona{
     apellido:string, 
     email:string
 }
+
+export interface ClienteConMonto {
+    nombre: string
+    apellido: string
+    email: string
+    montoAcumuladoDescuento:number
+}
