@@ -158,3 +158,22 @@ export const finalizarCampaign = async (nombre: String) => {
         return "error";
     }
 }
+
+export const getCampaignsActivasPasadas = async () => {
+    const query = `
+    SELECT *
+    FROM public.campaigns
+    WHERE ("fechaLimite" < CURRENT_DATE) AND (finalizada = false)
+    `
+
+    try {
+        const response: QueryResult = await pool.query(query, [])
+        const result: Campaign[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getCampaignsActivasPasadas------");
+        console.log(err);
+        return "error";
+    }
+}
