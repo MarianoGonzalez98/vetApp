@@ -177,3 +177,22 @@ export const getCampaignsActivasPasadas = async () => {
         return "error";
     }
 }
+
+export const getDonacionesACampaign = async (campaign: string) => {
+    const query = `
+    SELECT "fechaHora", monto, "emailDonante", "nombreCampaign","paymentId"
+    FROM public.donaciones
+    WHERE "nombreCampaign" = $1
+    `
+    const values = [campaign]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: (Donacion & PaymentID)[] = await response.rows;
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getDonacionesACampaign------");
+        console.log(err);
+        return "error";
+    }
+}
