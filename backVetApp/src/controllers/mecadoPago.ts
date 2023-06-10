@@ -6,7 +6,7 @@ import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
 import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 
-const ngrokURL= 'https://0f1e-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://ohmydog.azurewebsites.net'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
@@ -32,9 +32,9 @@ export const createPrefrerenceDonacionController = async (req: Request, res: Res
             }
         ],
         back_urls: {
-            "success": "http://localhost:5173/donaciones",
-            "failure": "http://localhost:5173/donaciones",
-            "pending": "http://localhost:5173/donaciones"
+            "success": "https://ohmydogunlp.netlify.app/donaciones",
+            "failure": "https://ohmydogunlp.netlify.app/donaciones",
+            "pending": "https://ohmydogunlp.netlify.app/donaciones"
         },
         notification_url: donacionNotificationUrl.toString(), //cambiar url de ngrok
     };

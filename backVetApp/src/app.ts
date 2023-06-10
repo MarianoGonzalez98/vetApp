@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 3000
 
 const corsOptions = {
-  origin: true, //'http://localhost:5173'
+  origin: ['http://localhost:5173','https://ohmydog.azurewebsites.net','https://ohmydogunlp.netlify.app'],
   credentials: true,
   //preflightContinue: true,
 };

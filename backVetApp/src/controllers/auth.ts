@@ -184,7 +184,7 @@ const loginController = async (req: Request, res: Response) => {
     console.log("LOGIN CRONTROLLER:")
     console.log(userData);
     const token = await generateToken(userData); //genero jwt token
-    res.cookie('jwt', token, { httpOnly: true, maxAge:11704085200 }); //mando el jwt en una cookie httpOnly
+    res.cookie('jwt', token, { httpOnly: true,sameSite:'none',secure:true , maxAge:11704085200 }); //mando el jwt en una cookie httpOnly
     let userDataConFoto:UserData&Foto = { email: result.email, rol: result.rol, seCambioPassword: result.seCambioPassword, foto:decodeToHTML_JPEG(result.foto)}
     console.log(userDataConFoto);
     res.send({ data: { userData:userDataConFoto, token: token } })
@@ -192,7 +192,7 @@ const loginController = async (req: Request, res: Response) => {
 
 const logoutController = async (req: Request, res: Response) => {
     res.status(202)
-        .clearCookie('jwt', { httpOnly: true, domain: "localhost" })
+        .clearCookie('jwt', { httpOnly: true, sameSite:'none',secure:true })
         .send('cookie cleared');
 };
 
