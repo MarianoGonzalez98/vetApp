@@ -98,3 +98,124 @@ export const actualizarPerro = async (perro: Perro, nombreAnterior: string) => {
         return "error";
     }
 }
+
+export const actualizarLibreta = async (id:number, vacunas:string, antiparasitarios:string, castrado:boolean, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET vacunas=$2, peso=$3, antiparasitarios=$4, castrado=$5
+    WHERE (id = $1);
+    `
+
+    const values = [id,vacunas,peso,antiparasitarios,castrado]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const actualizarVacunacion = async (id:number, vacunas:string, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET vacunas=$2, peso=$3
+    WHERE (id = $1);
+    `
+
+    const values = [id,vacunas,peso]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const actualizarCastracion = async (id:number,castrado:boolean, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET castrado=$2, peso=$3
+    WHERE (id = $1);
+    `
+
+    const values = [id,castrado,peso]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const actualizarAntiparasitario = async (id:number, antiparasitarios:string, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET antiparasitarios=$2, peso=$3
+    WHERE (id = $1);
+    `
+
+    const values = [id,antiparasitarios,peso]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const actualizarConsultaGeneral = async (id:number, peso:number) => {
+    const query = `
+    UPDATE public.perros
+    SET peso=$2
+    WHERE (id = $1);
+    `
+
+    const values = [id,peso]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:actualizarLibreta------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+export const getPerroJuli = async (id:number) => {
+    const query = `
+    SELECT *
+    FROM public.perros
+    WHERE (id = $1) 
+    `
+
+    const values = [id]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: Perro = await response.rows[0];
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getPerroJuli------");
+        console.log(err);
+        return "error";
+    }
+}

@@ -15,8 +15,11 @@
 	{/if}
 
 	{#if $user?.rol === "veterinario"}
+		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinarioFinalizados">Visualizar Turnos Finalizados</a> <!--VETERINARIO!-->
 		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinario">Visualizar Turnos Aceptados</a> <!--VETERINARIO!-->
 		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinarioPendientes">Visualizar Turnos Pendientes</a> <!--VETERINARIO!-->
-		<!-- <a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/urgencia-form">Registrar Urgencia</a> -->
+		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/mis-turnos/veterinarioArchivados">Visualizar Turnos Archivados</a> <!--VETERINARIO!-->
+
+		<a class="btn rounded-lg variant-filled" rel="noreferrer" href="/turnos/urgencia-form">Registrar Urgencia</a>
 	{/if}
 </div>

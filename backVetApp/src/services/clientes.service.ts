@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
-import { NombreApellidoMailPersona, User } from "../interfaces/User.interface";
+import { ClienteConMonto, NombreApellidoMailPersona, User } from "../interfaces/User.interface";
 
 export const getClientes = async () => {
     const query = `
@@ -76,3 +76,23 @@ export const sumarAMontoAcumuladoDescuentoCliente = async (email:string,monto:nu
         return "error";
     }
 }
+
+
+export const getClienteJuli = async (email: string) => {
+    const query = `
+    SELECT *
+    FROM public.usuarios 
+    WHERE email = $1 and rol = 'cliente'
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: ClienteConMonto = await response.rows[0];
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getClienteJuli------");
+        console.log(err);
+        return "error";
+    }
+};

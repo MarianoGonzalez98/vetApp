@@ -7,6 +7,7 @@ export interface Vacuna {
 
 export interface Antiparasitario {
     nombre: string;
+    fechaDeAplicacion: string;
     cantidadAplicada: number;
 }
 
