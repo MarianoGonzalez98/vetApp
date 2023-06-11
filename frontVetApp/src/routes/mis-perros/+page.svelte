@@ -130,12 +130,13 @@
                             >
                         </p>
                         <p>
-                            <span class="font-medium">Vacunas aplicadas: </span>
+                            <span class="font-medium">Vacunas aplicadas: </span> <br>
                             {#if perro.vacunas !== "[]"}
                                 {#each JSON.parse(perro.vacunas) as vacuna}
-                                    {espacio}{vacuna.nombre}, aplicada el {new Date(
+                                     -{espacio}{vacuna.nombre}, aplicada el {new Date(
                                         vacuna.fechaDeAplicacion
                                     ).toLocaleDateString("es-AR")}.
+                                    <br>
                                 {/each}
                             {:else}
                                 No se le aplicaron vacunas.
@@ -144,11 +145,13 @@
                         <p>
                             <span class="font-medium"
                                 >Antiparasitarios aplicados:
-                            </span>
+                            </span> <br>
                             {#if perro.antiparasitarios !== "[]"}
                                 {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                    {espacio}{antiparasitario.nombre}, fecha de aplicación:
-                                         {antiparasitario.fechaDeAplicacion}, cantidad aplicada: {antiparasitario.cantidadAplicada}.
+                                     -{espacio}{antiparasitario.nombre}, aplicado el {new Date(
+                                        antiparasitario.fechaDeAplicacion).toLocaleDateString("es-AR")}, 
+                                        cantidad aplicada: {antiparasitario.cantidadAplicada} mg/kg.
+                                      <br>   
                                 {/each}
                             {:else}
                                 No se le aplicaron antiparasitarios.

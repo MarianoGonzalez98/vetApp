@@ -103,7 +103,8 @@
                     turnoId:turnoInfo.id,
                     observacion,
                     precio,
-                    descuentoCliente: cliente.montoAcumuladoDescuento
+                    descuentoCliente: cliente.montoAcumuladoDescuento,
+                    emailOwner: turnoInfo.emailOwner
                 })
             })
             .then((res) => {

@@ -21,7 +21,7 @@
     if (turnoInfo.motivo === "Vacunación b") {
         vacunaAplicada = {
             nombre: "Vacuna B",
-            fechaDeAplicacion: turnoInfo.fecha.toString(),
+            fechaDeAplicacion: turnoInfo.fecha.toString().slice(0,10),
         };
     }
 
@@ -105,7 +105,8 @@
                     turnoId:turnoInfo.id,
                     observacion,
                     precio,
-                    descuentoCliente: cliente.montoAcumuladoDescuento
+                    descuentoCliente: cliente.montoAcumuladoDescuento,
+                    emailOwner: turnoInfo.emailOwner
                 })
             })
             .then((res) => {
