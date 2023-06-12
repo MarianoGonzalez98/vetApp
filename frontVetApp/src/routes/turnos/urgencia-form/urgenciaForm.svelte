@@ -162,9 +162,13 @@
 
     })
 
+    let precioAux = 0;
     const actualizar50Desc = () => {
-        descuento50 = 50 * precioIngresado / 100;
-        hayPrecio = true;
+        if(precioIngresado >= 0) {
+            descuento50 = 50 * precioIngresado / 100;
+            hayPrecio = true;
+            precioAux = precioIngresado;
+        }
     }
     
     let motivoVacA = false ;
@@ -285,6 +289,7 @@ const handleUrgencia = async () =>{
             });
     }
 
+    const cHeader = "text-2xl font-bold";
 </script>
 
 <Modal />
@@ -376,23 +381,27 @@ const handleUrgencia = async () =>{
 
             <label class="label">
                 <span>Ingrese el precio del turno</span>
-                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
+                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:input={() => hayPrecio = false} required/>
+                    <button class="btn rounded-lg variant-filled"  type="button"  on:click={actualizar50Desc}>Aceptar</button>
             </label>
+        
             <div class="card p-4">
                 {#if hayPrecio}
                     {#if cliente.montoAcumuladoDescuento <= descuento50}
                         <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
                         <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header>Precio final del turno: {precioIngresado - cliente.montoAcumuladoDescuento}</header>
+                        <header class={cHeader}>Precio final del turno: {precioAux - cliente.montoAcumuladoDescuento}</header>
                     {/if}
                     {#if cliente.montoAcumuladoDescuento > descuento50}
                         <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
                         <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header>Precio final: {precioIngresado - descuento50}</header>
+                        <header class={cHeader}>Precio final: {precioAux - descuento50}</header>
                     {/if}   
                 {/if}
+                {#if precioIngresado < 0}
+                <span class="text-red-500">El precio debe ser mayor que 0</span>
+                {/if}
             </div>
-
 
             <br>
             <br>
