@@ -9,6 +9,16 @@
     import { backendURL } from "$lib/utils/constantFactory";
 
 
+    let fecha = new Date();
+    let fechaMax = new Date();
+    let format = 'dd-MM-yyyy'
+    let placeholder= 'Elija una fecha'
+
+    let rangoHorario = '';
+
+    let descripcion = '';
+
+
     let cliente:ClienteConMonto = {
         nombre: "",
         apellido: "",
@@ -56,14 +66,58 @@
     let precioIngresado:number = 0;
     let hayPrecio:boolean = false;
 
+    let vacunacion:boolean = false;
+    let vacunasA: Vacuna[];
+    let ultimaVacA:Vacuna;
+
+    let vacunacionB:boolean = false;
+    let vacunasB: Vacuna[];
+    let ultimaVacB:Vacuna;
+    
+    let vacunasAux:Vacuna[];
+
+    //Me quedo con el año anterior al actual para comparar que haya pasado por lo menos un año desde la última vacuna
+    let fechaMin: Date = new Date();
+    fechaMin.setFullYear(fechaMin.getFullYear()-1);
+    let fechaMinStrng: String = fechaMin.toJSON().slice(0,4);
+    let fechaMinNum: Number = Number (fechaMinStrng);
+    
+
 
     let descuento50: number;
 
 
     const actualizarFormPerro = () => {
         vacunasAplicadas = JSON.parse(perro.vacunas);
+        vacunasAux = vacunasAplicadas;
+
+        console.log(vacunasAux)
+
+        vacunasA =  vacunasAux.filter(v => v.nombre === "Vacuna A"); // me quedo con las vacunas tipo A
+        ultimaVacA = vacunasA[vacunasA.length - 1]; // me quedo con la última aplicada
+        if (ultimaVacA !== undefined) {
+            let fechaVac:Number = Number (ultimaVacA.fechaDeAplicacion.slice(0,4)); // me quedo con el año
+            if (fechaVac <= fechaMinNum) {
+                vacunacion = true;
+            }
+            else {vacunacion = false}
+        }
+        else {vacunacion = true}
+
+        vacunasB =  vacunasAux.filter(v => v.nombre === "Vacuna B"); // me quedo con las vacunas tipo A
+        ultimaVacB = vacunasB[vacunasB.length - 1]; // me quedo con la última aplicada
+        if (ultimaVacB !== undefined) {
+            let fechaVacB:Number = Number (ultimaVacB.fechaDeAplicacion.slice(0,4)); // me quedo con el año
+            if (fechaVacB <= fechaMinNum) {
+                vacunacionB = true;
+            }
+            else {vacunacionB = false}
+        }
+        else {vacunacionB = true}
+
         antiparasitarios = (JSON.parse(perro.antiparasitarios));
         peso = perro.peso;
+        castrado = perro.castrado
     }
 
     const actualizarForm = () => {
@@ -108,9 +162,13 @@
 
     })
 
+    let precioAux = 0;
     const actualizar50Desc = () => {
-        descuento50 = 50 * precioIngresado / 100;
-        hayPrecio = true;
+        if(precioIngresado >= 0) {
+            descuento50 = 50 * precioIngresado / 100;
+            hayPrecio = true;
+            precioAux = precioIngresado;
+        }
     }
     
     let motivoVacA = false ;
@@ -123,65 +181,7 @@
     let motivoAntiPars = '' ;
     let motivoCass = '' ;
 
-    const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
-        if(motivoVacA) {
-            motivoVacAs = "Vacunación a, "
-            let vacunaAplicada: Vacuna = {
-                nombre: "Vacuna A",
-                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
-            };
-            vacunasAplicadas.push(vacunaAplicada);
-        }
-        if(!motivoVacA) {
-            motivoVacAs = '' ;
-            vacunasAplicadas = vacunasAplicadas.filter(vacuna => (vacuna.nombre !== 'Vacuna A')&&(vacuna.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
-        }
-        if(motivoVacB) {
-            motivoVacBs = "Vacunación b, " 
-            let vacunaAplicada: Vacuna = {
-                nombre: "Vacuna B",
-                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
-            };
-            vacunasAplicadas.push(vacunaAplicada);
-        }
-        if(!motivoVacB) {
-            motivoVacBs = '' ;
-            vacunasAplicadas = vacunasAplicadas.filter(vacuna => (vacuna.nombre !== 'Vacuna B')&&(vacuna.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
-        }
-        if(motivoCas) {
-            motivoCass = "Castración, " 
-            castrado = true;
-        }
-        if(!motivoCas) {
-            motivoCass = '' ;
-            castrado = perro.castrado;
-        }
-        if(motivoAntiPar) {
-            motivoAntiPars = "Anti-Parasitación, "
-            antipAplicado = {
-                nombre: antipAplicado.nombre,
-                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
-                cantidadAplicada: antipAplicado.cantidadAplicada
-            } 
-            antiparasitarios.push(antipAplicado);
-        }
-        if(!motivoAntiPar) {
-            motivoAntiPars = '' ;
-            antiparasitarios = antiparasitarios.filter(antip => (antip.fechaDeAplicacion !== fecha.toJSON().slice(0, 10)));
-        }
-    }
-
-
-
-    let fecha = new Date();
-    let fechaMax = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-
-    let rangoHorario = '';
-
-    let descripcion = '';
-
+    
 
 
     const UrgenciaRegistrada: ModalSettings = {
@@ -208,6 +208,38 @@
 
 
 const handleUrgencia = async () =>{ 
+        if(motivoVacA) {
+            motivoVacAs = "Vacunación a, "
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna A",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
+
+            console.log(vacunasAplicadas)
+        }
+        if(motivoVacB) {
+            motivoVacBs = "Vacunación b, " 
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna B",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
+        }
+        if(motivoCas) {
+            motivoCass = "Castración, " 
+            castrado = true;
+        }
+        if(motivoAntiPar) {
+            motivoAntiPars = "Anti-Parasitación, "
+            antipAplicado = {
+                nombre: antipAplicado.nombre,
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+                cantidadAplicada: antipAplicado.cantidadAplicada
+            } 
+            antiparasitarios.push(antipAplicado);
+        }
+
         fetch(`${backendURL}/turnos/urgencia-form`,{
             method:"POST",
             headers:{
@@ -257,6 +289,7 @@ const handleUrgencia = async () =>{
             });
     }
 
+    const cHeader = "text-2xl font-bold";
 </script>
 
 <Modal />
@@ -298,22 +331,28 @@ const handleUrgencia = async () =>{
                 </select>
             </div>
 
-            <label class="label" for="motivo">Motivo/s</label> 
+            <label class="label" for="motivo">Atenciones extra</label> 
             <div class="flex items-center space-x-2">
+                {#if vacunacion === true}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoVacA}  on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoVacA} >
                     <p>Vacunación A</p>
                 </label>
+                {/if}
+                {#if vacunacionB === true}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoVacB} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoVacB}>
                     <p>Vacunación B</p>
                 </label>
+                {/if}
+                {#if perro.castrado === false}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoCas} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoCas} >
                     <p>Castración</p>
                 </label>
+                {/if}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoAntiPar} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoAntiPar}>
                     <p>Anti-parasitación</p>
                 </label>      
             </div>
@@ -342,23 +381,27 @@ const handleUrgencia = async () =>{
 
             <label class="label">
                 <span>Ingrese el precio del turno</span>
-                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
+                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:input={() => hayPrecio = false} required/>
+                    <button class="btn rounded-lg variant-filled"  type="button"  on:click={actualizar50Desc}>Aceptar</button>
             </label>
+        
             <div class="card p-4">
                 {#if hayPrecio}
                     {#if cliente.montoAcumuladoDescuento <= descuento50}
                         <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
                         <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header>Precio final del turno: {precioIngresado - cliente.montoAcumuladoDescuento}</header>
+                        <header class={cHeader}>Precio final del turno: {precioAux - cliente.montoAcumuladoDescuento}</header>
                     {/if}
                     {#if cliente.montoAcumuladoDescuento > descuento50}
                         <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
                         <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header>Precio final: {precioIngresado - descuento50}</header>
+                        <header class={cHeader}>Precio final: {precioAux - descuento50}</header>
                     {/if}   
                 {/if}
+                {#if precioIngresado < 0}
+                <span class="text-red-500">El precio debe ser mayor que 0</span>
+                {/if}
             </div>
-
 
             <br>
             <br>
