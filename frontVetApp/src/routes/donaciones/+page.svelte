@@ -140,7 +140,7 @@
     {/if}
 </div>
 <h1 class="h1 font-medium ml-3 mb-3">Campañas de donación</h1>
-{#if ((campaigns.length > 0) && ($user?.rol === "veterinario")) || (campaigns.filter(campaign => !campaign.finalizada).length < 0)}
+{#if ((campaigns.length > 0) && ($user?.rol === "veterinario")) || (campaigns.filter(campaign => !campaign.finalizada).length > 0)}
     <div class="ml-2 flex">
         {#if $user?.rol === "veterinario"}
             <div class="mt-6">
