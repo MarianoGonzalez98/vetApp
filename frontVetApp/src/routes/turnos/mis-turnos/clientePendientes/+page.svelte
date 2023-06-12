@@ -8,6 +8,7 @@
     import type { Turno } from "$lib/interfaces/Turno.interface";
     import { goto } from "$app/navigation";
     import CancelarTurnoConfirmacion from "./cancelarTurnoConfirmacion.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
@@ -23,7 +24,7 @@
 
     onMount(async () => { 
         const res = await fetch(
-            `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
+            `${backendURL}/turnos/listar-turnos/cliente?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {
@@ -79,10 +80,12 @@
 
 <a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 <div class="ml-2 flex flex-wrap">
+    {#if (turnos.filter((turno)=> {
+        return (turno.aceptado === false)&&(turno.rechazado === false)}).length === 0)
+    }
+        <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos pendientes</h6>
+    {/if} 
     {#each turnos as turno}
-        {#if turnos.length === 0}
-            No hay turnos para visualizar
-        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row">

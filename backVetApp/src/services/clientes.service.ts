@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
-import { NombreApellidoMailPersona } from "../interfaces/User.interface";
+import { ClienteConMonto, NombreApellidoMailPersona, User } from "../interfaces/User.interface";
 
 export const getClientes = async () => {
     const query = `
@@ -38,4 +38,81 @@ export const getClientesCompletos = async () => {
         return "error";
     }
 
+}
+
+export const getCliente = async (email: string) => {
+    const query = `
+    SELECT id, password, email, rol, "seCambioPassword"
+    FROM public.usuarios 
+    WHERE email = $1 and rol = 'cliente'
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: User = await response.rows[0];
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getUser------");
+        console.log(err);
+        return "error";
+    }
+};
+
+export const sumarAMontoAcumuladoDescuentoCliente = async (email:string,monto:number) => {
+    const query = `
+    UPDATE public.usuarios
+	SET "montoAcumuladoDescuento"= "montoAcumuladoDescuento" + $1
+	WHERE email = $2 and rol = 'cliente'
+    `
+    const values= [monto,email];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:sumarAMontoAcumuladoDescuento------");
+        console.log(err);
+        return "error";
+    }
+}
+
+
+export const getClienteJuli = async (email: string) => {
+    const query = `
+    SELECT *
+    FROM public.usuarios 
+    WHERE email = $1 and rol = 'cliente'
+    `
+    const values = [email]
+    try {
+        const response: QueryResult = await pool.query(query, values) //hace la query
+        const result: ClienteConMonto = await response.rows[0];
+        return result;
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getClienteJuli------");
+        console.log(err);
+        return "error";
+    }
+};
+
+
+
+export const resetearMontoAcumulado = async (email:string) => {
+    const query = `
+    UPDATE public.usuarios
+	SET "montoAcumuladoDescuento"= 0
+	WHERE email = $1 and rol = 'cliente'
+    `
+    const values= [email];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:resetearMontoAcumulado------");
+        console.log(err);
+        return "error";
+    }
 }

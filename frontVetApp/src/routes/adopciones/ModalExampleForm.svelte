@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PublicacionAdopcion } from '$lib/interfaces/Adopciones.interface';
+    import { backendURL, emailPatternFactory, letrasEspaciosComaPatternFactory, numbersPatternFactory } from '$lib/utils/constantFactory';
     import type{  PopupSettings, } from "@skeletonlabs/skeleton";
 	import {popup} from "@skeletonlabs/skeleton";
 
@@ -20,7 +21,7 @@
 	};
 	
 	async function onFormSubmit() {
-		await fetch('http://localhost:3000/send-mail',{
+		await fetch(`${backendURL}/send-mail`,{
 			method:'POST',
 			headers:{
 				'Content-Type':'application/json',
@@ -100,11 +101,6 @@
 	const cHeader = 'text-2xl font-bold';
 	const cForm = 'border border-surface-500 p-4 space-y-4 rounded-container-token';
 
-	const emailPattern: string =
-        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
-	const numbersPattern: string = "^[0-9]*$";
-	const letrasEspaciosComaPattern: string =
-        "^[a-zA-Zàáâäãåąčćęèéêëėį,ìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ]+$";
 </script>
 
 <!-- @component This example creates a simple form modal. -->
@@ -118,17 +114,17 @@
 		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
 			<label class="label">
 				<span>Apellido y nombre</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre y apellido válido" bind:value={formData.nombreApellido} pattern={letrasEspaciosComaPattern} required placeholder="Ingrese su apellido y nombre" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre y apellido válido" bind:value={formData.nombreApellido} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido y nombre" />
 			</label>
 
 			<label use:popup={popupFocusBlur}  class="label">
 				<span>Teléfono</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un teléfono válido con unicamente números" bind:value={formData.telefono} pattern={numbersPattern}  required placeholder="Ingrese su teléfono. Ej. 2219876543" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un teléfono válido con unicamente números" bind:value={formData.telefono} pattern={numbersPatternFactory}  required placeholder="Ingrese su teléfono. Ej. 2219876543" />
 			</label>
 
 			<label class="label">
 				<span>Email</span>
-				<input class="input focus:invalid:border-red-500" title="Ingrese un mail valido" type="text" bind:value={formData.email} pattern={emailPattern} required placeholder="Ingrese su email" />
+				<input class="input focus:invalid:border-red-500" title="Ingrese un mail valido" type="text" bind:value={formData.email} pattern={emailPatternFactory} required placeholder="Ingrese su email" />
 			</label>
 			<div class="card p-2 variant-filled" data-popup="popupFocusBlur">
 				<p>Sólo números</p>

@@ -1,47 +1,133 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { user } from "$lib/stores/user";
-    import type { Cliente } from "$lib/interfaces/Cliente.interface"
+    import type { Cliente, ClienteConMonto } from "$lib/interfaces/Cliente.interface"
     import {  modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
     import DateInput from "date-picker-svelte/DateInput.svelte";
     import { onMount } from "svelte";
-    import type { Id, Perro, PerroTurno } from "$lib/interfaces/Perro.interface";
+    import type { Antiparasitario, Id, Perro, PerroTurno, Vacuna } from "$lib/interfaces/Perro.interface";
+    import { backendURL } from "$lib/utils/constantFactory";
 
 
-    let cliente:Cliente = {
+    let fecha = new Date();
+    let fechaMax = new Date();
+    let format = 'dd-MM-yyyy'
+    let placeholder= 'Elija una fecha'
+
+    let rangoHorario = '';
+
+    let descripcion = '';
+
+
+    let cliente:ClienteConMonto = {
         nombre: "",
         apellido: "",
-        email: ""
+        email: "",
+        montoAcumuladoDescuento:0
     };
-    let inputCliente:Cliente={
+    let inputCliente:ClienteConMonto={
         nombre:"",
         apellido:"",
-        email:""
-    }
-    let clientes: Cliente[] = [];
+        email:"",
+        montoAcumuladoDescuento:0
+    };
+    let clientes: ClienteConMonto[] = [];
 
 
-    let perro: PerroTurno = {
+    let perro: Perro ={
+        id: 0,
         nombre: "",
-        id: -1
-    }
-    let inputPerro: PerroTurno = {
-        nombre: "",
-        id: -1
-    }
-    let perros: PerroTurno[] = [];
+        raza: "",
+        sexo: "Hembra",
+        fechaNacimiento: "",
+        observaciones: "",
+        vacunas: "",
+        antiparasitarios: "",
+        peso: 0,
+        foto: null,
+        owner: "",
+        fallecido: false,
+        castrado: false
+    };
+
+    let perros: Perro[] = [];
+
+    let vacunasAplicadas: Vacuna[] = [];
+    let castrado:Boolean;
+    let peso:number;
+
+    let antiparasitarios: Antiparasitario[] = [];
+    let antipAplicado: Antiparasitario = {
+        nombre:"",
+        fechaDeAplicacion:"",
+        cantidadAplicada:0,
+    };
+
+    let precioIngresado:number = 0;
+    let hayPrecio:boolean = false;
+
+    let vacunacion:boolean = false;
+    let vacunasA: Vacuna[];
+    let ultimaVacA:Vacuna;
+
+    let vacunacionB:boolean = false;
+    let vacunasB: Vacuna[];
+    let ultimaVacB:Vacuna;
+    
+    let vacunasAux:Vacuna[];
+
+    //Me quedo con el año anterior al actual para comparar que haya pasado por lo menos un año desde la última vacuna
+    let fechaMin: Date = new Date();
+    fechaMin.setFullYear(fechaMin.getFullYear()-1);
+    let fechaMinStrng: String = fechaMin.toJSON().slice(0,4);
+    let fechaMinNum: Number = Number (fechaMinStrng);
+    
+
+
+    let descuento50: number;
+
 
     const actualizarFormPerro = () => {
-        inputPerro.nombre=perro.nombre;
-        inputPerro.id = perro.id;
+        vacunasAplicadas = JSON.parse(perro.vacunas);
+        vacunasAux = vacunasAplicadas;
+
+        console.log(vacunasAux)
+
+        vacunasA =  vacunasAux.filter(v => v.nombre === "Vacuna A"); // me quedo con las vacunas tipo A
+        ultimaVacA = vacunasA[vacunasA.length - 1]; // me quedo con la última aplicada
+        if (ultimaVacA !== undefined) {
+            let fechaVac:Number = Number (ultimaVacA.fechaDeAplicacion.slice(0,4)); // me quedo con el año
+            if (fechaVac <= fechaMinNum) {
+                vacunacion = true;
+            }
+            else {vacunacion = false}
+        }
+        else {vacunacion = true}
+
+        vacunasB =  vacunasAux.filter(v => v.nombre === "Vacuna B"); // me quedo con las vacunas tipo A
+        ultimaVacB = vacunasB[vacunasB.length - 1]; // me quedo con la última aplicada
+        if (ultimaVacB !== undefined) {
+            let fechaVacB:Number = Number (ultimaVacB.fechaDeAplicacion.slice(0,4)); // me quedo con el año
+            if (fechaVacB <= fechaMinNum) {
+                vacunacionB = true;
+            }
+            else {vacunacionB = false}
+        }
+        else {vacunacionB = true}
+
+        antiparasitarios = (JSON.parse(perro.antiparasitarios));
+        peso = perro.peso;
+        castrado = perro.castrado
     }
 
     const actualizarForm = () => {
         inputCliente.nombre=cliente.nombre;
         inputCliente.apellido = cliente.apellido;
         inputCliente.email = cliente.email;
+        inputCliente.montoAcumuladoDescuento = cliente.montoAcumuladoDescuento;
+
         fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente.email}`, 
+            `${backendURL}/listar-perros?cliente=${cliente.email}`, 
             {
                 method: "GET",
                 headers: {
@@ -58,7 +144,7 @@
     
     onMount ( async () => {
 
-        await fetch('http://localhost:3000/clientes',{
+        await fetch(`${backendURL}/listar-clientes`,{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -76,6 +162,14 @@
 
     })
 
+    let precioAux = 0;
+    const actualizar50Desc = () => {
+        if(precioIngresado >= 0) {
+            descuento50 = 50 * precioIngresado / 100;
+            hayPrecio = true;
+            precioAux = precioIngresado;
+        }
+    }
     
     let motivoVacA = false ;
     let motivoVacB = false ;
@@ -87,44 +181,7 @@
     let motivoAntiPars = '' ;
     let motivoCass = '' ;
 
-    const actualizarFormMotivo = () => { // Disculpen lo hardcodeado
-        if(motivoVacA) {
-            motivoVacAs = "Vacunación a, "
-        }
-        if(!motivoVacA) {
-            motivoVacAs = '' ;
-        }
-        if(motivoVacB) {
-            motivoVacBs = "Vacunación b, " 
-        }
-        if(!motivoVacB) {
-            motivoVacBs = '' ;
-        }
-        if(motivoCas) {
-            motivoAntiPars = "Castración, " 
-        }
-        if(!motivoCas) {
-            motivoAntiPars = '' ;
-        }
-        if(motivoAntiPar) {
-            motivoCass = "Anti-Parasitación, "
-        }
-        if(!motivoAntiPar) {
-            motivoCass = '' ;
-        }
-    }
-
-
-
-    let fecha = new Date();
-    let fechaMax = new Date();
-    let format = 'dd-MM-yyyy'
-    let placeholder= 'Elija una fecha'
-
-    let rangoHorario = '';
-
-    let descripcion = '';
-
+    
 
 
     const UrgenciaRegistrada: ModalSettings = {
@@ -151,7 +208,39 @@
 
 
 const handleUrgencia = async () =>{ 
-        fetch("http://localhost:3000/turnos/urgencia-form",{
+        if(motivoVacA) {
+            motivoVacAs = "Vacunación a, "
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna A",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
+
+            console.log(vacunasAplicadas)
+        }
+        if(motivoVacB) {
+            motivoVacBs = "Vacunación b, " 
+            let vacunaAplicada: Vacuna = {
+                nombre: "Vacuna B",
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+            };
+            vacunasAplicadas.push(vacunaAplicada);
+        }
+        if(motivoCas) {
+            motivoCass = "Castración, " 
+            castrado = true;
+        }
+        if(motivoAntiPar) {
+            motivoAntiPars = "Anti-Parasitación, "
+            antipAplicado = {
+                nombre: antipAplicado.nombre,
+                fechaDeAplicacion: fecha.toJSON().slice(0, 10),
+                cantidadAplicada: antipAplicado.cantidadAplicada
+            } 
+            antiparasitarios.push(antipAplicado);
+        }
+
+        fetch(`${backendURL}/turnos/urgencia-form`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
@@ -164,7 +253,15 @@ const handleUrgencia = async () =>{
                 fecha:fecha.toJSON().slice(0,10), 
                 rangoHorario, 
                 emailOwner:cliente.email, 
-                descripcion
+                descripcion,
+
+                vacunas: JSON.stringify(vacunasAplicadas),
+                antiparasitarios: JSON.stringify(antiparasitarios),
+                castrado,
+                peso,
+
+                precioIngresado,
+                descuentoCliente: cliente.montoAcumuladoDescuento
             })
         })
         .then((res) => {
@@ -192,6 +289,7 @@ const handleUrgencia = async () =>{
             });
     }
 
+    const cHeader = "text-2xl font-bold";
 </script>
 
 <Modal />
@@ -205,7 +303,7 @@ const handleUrgencia = async () =>{
         <form on:submit|preventDefault={handleUrgencia}  class="space-y-2">
             <div>
                 <label for="seleccionCliente">Seleccione el cliente</label>
-                <select id="seleccionCliente" style="color: black;" bind:value={cliente} on:change={actualizarForm} required>
+                <select id="seleccionCliente" class="select" bind:value={cliente} on:change={actualizarForm} required>
                     {#each clientes as cliente}
                         <option value={cliente}>
                             <span>{cliente.nombre} {cliente.apellido} (email: {cliente.email})</span>
@@ -214,49 +312,96 @@ const handleUrgencia = async () =>{
                 </select>
     
                 <label for="seleccionPerro">Seleccione el perro</label>
-                <select id="seleccionPerro" style="color: black;" bind:value={perro} on:change={actualizarFormPerro} required>
+                <select id="seleccionPerro" class="select" bind:value={perro} on:change={actualizarFormPerro} required>
                     {#each perros as perro}
                         <option value={perro}>
                             <span>{perro.nombre} </span>
                         </option>
                     {/each}
                 </select>
+
+                <label class="label" for="fecha">Fecha del turno</label>
+                <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
+
+                <label class="label" for="rangoHorario">Rango Horario</label>
+                <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
+                    <option value="Manana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
+                </select>
             </div>
 
-            <label class="label" for="motivo">Motivo/s</label> 
+            <label class="label" for="motivo">Atenciones extra</label> 
             <div class="flex items-center space-x-2">
+                {#if vacunacion === true}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoVacA}  on:change={actualizarFormMotivo}>
-                    <p>Vacunación a</p>
+                    <input type=checkbox bind:checked={motivoVacA} >
+                    <p>Vacunación A</p>
                 </label>
+                {/if}
+                {#if vacunacionB === true}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoVacB} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoVacB}>
                     <p>Vacunación B</p>
                 </label>
+                {/if}
+                {#if perro.castrado === false}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoCas} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoCas} >
                     <p>Castración</p>
                 </label>
+                {/if}
                 <label class="flex items-center space-x-2">
-                    <input type=checkbox bind:checked={motivoAntiPar} on:change={actualizarFormMotivo}>
+                    <input type=checkbox bind:checked={motivoAntiPar}>
                     <p>Anti-parasitación</p>
-                </label>                
+                </label>      
             </div>
-            
-            <label class="label" for="fecha">Fecha del turno</label>
-            <DateInput bind:value={fecha} bind:format={format} bind:max={fechaMax} bind:placeholder={placeholder}/> 
+            {#if motivoAntiPar===true}
+                <label class="label">
+                    <span>Ingrese nombre del anti-parasitario</span>
+                    <input class="input" bind:value={antipAplicado.nombre} title="Input (text)" type="text" required/>
+                </label>
+            {/if}
+            {#if motivoAntiPar===true}
+                <label class="label">
+                    <span>Ingrese dosis de anti-parasitario (mg/kg)</span>
+                    <input class="input" bind:value={antipAplicado.cantidadAplicada}  title="Input (number)" type="number" min="1" required/>
+                </label>
+            {/if}
 
-            <label class="label" for="rangoHorario">Rango Horario</label>
-            <select bind:value={rangoHorario} class="select"  name="rangoHorario" required>
-                <option value="Manana">Mañana</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noche">Noche</option>
-            </select>
+            <label class="label">
+                <span>Ingrese el peso del perro</span>
+                    <input class="input" bind:value={peso}  title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" required/>
+            </label>
 
             <label class="label"> 
                 <span>Descripción</span>
                 <textarea class="textarea" rows="2" placeholder="Ingrese una descripción" bind:value={descripcion} />
             </label>
+
+            <label class="label">
+                <span>Ingrese el precio del turno</span>
+                    <input class="input" bind:value={precioIngresado} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:input={() => hayPrecio = false} required/>
+                    <button class="btn rounded-lg variant-filled"  type="button"  on:click={actualizar50Desc}>Aceptar</button>
+            </label>
+        
+            <div class="card p-4">
+                {#if hayPrecio}
+                    {#if cliente.montoAcumuladoDescuento <= descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final del turno: {precioAux - cliente.montoAcumuladoDescuento}</header>
+                    {/if}
+                    {#if cliente.montoAcumuladoDescuento > descuento50}
+                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                        <header class={cHeader}>Precio final: {precioAux - descuento50}</header>
+                    {/if}   
+                {/if}
+                {#if precioIngresado < 0}
+                <span class="text-red-500">El precio debe ser mayor que 0</span>
+                {/if}
+            </div>
 
             <br>
             <br>

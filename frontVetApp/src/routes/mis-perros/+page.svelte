@@ -10,6 +10,7 @@
     import { afterNavigate, goto } from "$app/navigation";
     import type { AfterNavigate } from "@sveltejs/kit";
     import ModalConfirmarMarcarFallecido from "./ModalConfirmarMarcarFallecido.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente: string =
         new URLSearchParams(window.location.search).get("cliente") ??
@@ -30,7 +31,7 @@
 
     onMount(async () => {
         const res = await fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente}`,
+            `${backendURL}/listar-perros?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {
@@ -129,12 +130,10 @@
                             >
                         </p>
                         <p>
-                            <span class="font-medium">Vacunas aplicadas: </span>
+                            <span class="font-medium">Vacunas aplicadas: </span> <br>
                             {#if perro.vacunas !== "[]"}
                                 {#each JSON.parse(perro.vacunas) as vacuna}
-                                    {espacio}{vacuna.nombre}, aplicada el {new Date(
-                                        vacuna.fechaDeAplicacion
-                                    ).toLocaleDateString("es-AR")}.
+                                    {espacio}{vacuna.nombre}.
                                 {/each}
                             {:else}
                                 No se le aplicaron vacunas.
@@ -143,11 +142,13 @@
                         <p>
                             <span class="font-medium"
                                 >Antiparasitarios aplicados:
-                            </span>
+                            </span> <br>
                             {#if perro.antiparasitarios !== "[]"}
                                 {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                    {espacio}{antiparasitario.nombre}, aplicada
-                                    el {antiparasitario.cantidadAplicada}.
+                                     -{espacio}{antiparasitario.nombre}, aplicado el {new Date(
+                                        antiparasitario.fechaDeAplicacion).toLocaleDateString("es-AR")}, 
+                                        cantidad aplicada: {antiparasitario.cantidadAplicada} mg/kg.
+                                      <br>   
                                 {/each}
                             {:else}
                                 No se le aplicaron antiparasitarios.
@@ -165,22 +166,22 @@
                             {/if}
                         </p>
                     </div>
-                    {#if $user?.rol === "veterinario"}
-                        <footer class="flex">
-                            <a
-                                class="btn variant-ghost-surface mr-2"
-                                rel="noreferrer"
-                                href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
-                                >Editar</a
+                    <footer class="flex">
+                        <a
+                            class="btn variant-ghost-surface mr-2"
+                            rel="noreferrer"
+                            href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
+                            >Editar</a
                             >
+                        {#if $user?.rol === "veterinario"}
                             <button
                                 on:click={(event) =>
                                     handleMarcarFallecido(perro)}
                                 class="btn btn-sm bg-red-500"
                                 >Ocultar perro</button
                             >
-                        </footer>
-                    {/if}
+                        {/if}
+                    </footer>
                 </div>
             </div>
         {/each}

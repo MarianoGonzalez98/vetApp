@@ -41,7 +41,7 @@
 				href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
 			>
 			<a
-				class="btn variant-ghost-surface"
+				class="btn variant-ghost-surface mr-1"
 				rel="noreferrer"
 				href="/adopciones">Adopciones</a
 			>

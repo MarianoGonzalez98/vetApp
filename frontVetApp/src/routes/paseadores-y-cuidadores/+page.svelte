@@ -10,6 +10,7 @@
     } from "@skeletonlabs/skeleton";
     import { goto, preloadCode } from "$app/navigation";
     import ModalExampleForm from "./ModalExampleForm.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
     let paseadorescuidadores: PaseadorCuidador[] = [];
 
     const fallaServidor: ModalSettings = {
@@ -33,7 +34,7 @@
 
     onMount(async () => {
         const res = await fetch(
-            "http://localhost:3000/listar-paseadorescuidadores",
+            `${backendURL}/listar-paseadorescuidadores`,
             {
                 method: "GET",
                 headers: {
@@ -46,7 +47,7 @@
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
 
         if ($user) {
-            fetch("http://localhost:3000/getPerfil", {
+            fetch(`${backendURL}/getPerfil`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -77,7 +78,7 @@
     ) => {
         let error: boolean = false;
 
-        await fetch("http://localhost:3000/cambiar-disponible", {
+        await fetch(`${backendURL}/cambiar-disponible`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -232,69 +233,71 @@
     </div>
     <div class="ml-2 flex flex-wrap">
         {#each mostrar as pc}
-            <div
-                class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
-            >
-                <div class="flex flex-col justify-start p-6">
-                    <h5
-                        class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                    >
-                        {pc.nombre}
-                        {pc.apellido}
-                    </h5>
-                    <div
-                        class="text-base text-neutral-600 dark:text-neutral-200"
-                    >
-                        <p>
-                            <span class="font-medium">Zona: </span>
-                            {pc.zona}
-                        </p>
-                        <p>
-                            <span class="font-medium">Oficio: </span>
-                            {pc.oficio}
-                        </p>
-                        <p>
-                            <span class="font-medium">Email: </span>
-                            {pc.email}
-                        </p>
-                        <p>
-                            <span class="font-medium">Teléfono: </span>
-                            {pc.telefono}
-                        </p>
-                        <p>
-                            <span class="font-medium">Horarios: </span>
-                            {pc.horarios}
-                        </p>
+            {#if ($user?.rol === "veterinario") || pc.disponible}
+                <div
+                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
+                >
+                    <div class="flex flex-col justify-start p-6">
+                        <h5
+                            class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
+                        >
+                            {pc.nombre}
+                            {pc.apellido}
+                        </h5>
+                        <div
+                            class="text-base text-neutral-600 dark:text-neutral-200"
+                        >
+                            <p>
+                                <span class="font-medium">Zona: </span>
+                                {pc.zona}
+                            </p>
+                            <p>
+                                <span class="font-medium">Oficio: </span>
+                                {pc.oficio}
+                            </p>
+                            <p>
+                                <span class="font-medium">Email: </span>
+                                {pc.email}
+                            </p>
+                            <p>
+                                <span class="font-medium">Teléfono: </span>
+                                {pc.telefono}
+                            </p>
+                            <p>
+                                <span class="font-medium">Horarios: </span>
+                                {pc.horarios}
+                            </p>
+                        </div>
+                        {#if $user?.rol === "veterinario"}
+                            <footer class="flex mt-4">
+                                <button
+                                    on:click={() => {
+                                        pc.disponible = !pc.disponible;
+                                        cambiarDisponibilidad(
+                                            pc.email,
+                                            pc.disponible
+                                        );
+                                    }}
+                                    class="btn btn-sm variant-ghost-surface mr-2"
+                                    >Marcar como {#if pc.disponible}
+                                        "No disponible"
+                                    {:else}
+                                        "Disponible"
+                                    {/if}
+                                </button>
+                            </footer>
+                        {:else}
+                            <footer class="flex mt-4">
+                                <button
+                                    on:click={(event) => handleContactar(pc)}
+                                    class="btn btn-sm variant-ghost-surface mr-2"
+                                    >Contactar
+                                </button>
+                            </footer>
+                        {/if}
                     </div>
-                    {#if $user?.rol === "veterinario"}
-                        <footer class="flex mt-4">
-                            <button
-                                on:click={() => {
-                                    pc.disponible = !pc.disponible;
-                                    cambiarDisponibilidad(
-                                        pc.email,
-                                        pc.disponible
-                                    );
-                                }}
-                                class="btn btn-sm variant-ghost-surface mr-2"
-                                >Marcar como {#if pc.disponible}
-                                    "No disponible"
-                                {:else}
-                                    "Disponible"
-                                {/if}
-                            </button>
-                        </footer>
-                    {:else if pc.disponible}
-                        <footer class="flex mt-4">
-                            <button
-                                on:click={(event) => handleContactar(pc)}
-                                class="btn btn-sm variant-ghost-surface mr-2"
-                                >Contactar
-                            </button>
-                        </footer>
-                    {/if}
                 </div>
-            </div>
+            {/if}
         {/each}
     </div>
 {:else}

@@ -5,9 +5,9 @@ import { error } from '@sveltejs/kit';
 import { browser } from '$app/environment';
 
 export const load = (async () => {
-    if ((browser)&& (get(user)?.rol !== 'veterinario')){
-        throw error(401,'Acceso no permitido');
+    if (browser) {
+        if (!get(user)) {
+            throw error(401, 'Acceso no permitido');
+        }
     }
-
-    return {};
 }) satisfies PageLoad;

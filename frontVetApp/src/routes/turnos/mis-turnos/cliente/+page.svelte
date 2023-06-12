@@ -11,6 +11,7 @@
 
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
     import CancelarTurnoConfirmacion from "./cancelarTurnoConfirmacion.svelte";
+    import { backendURL } from "$lib/utils/constantFactory";
 
     let cliente = $user?.email;
     let turnos: Turno[] = [];
@@ -42,7 +43,7 @@
 
     onMount(async () => { 
         await fetch(
-            `http://localhost:3000/turnos/listar-turnos/cliente?cliente=${cliente}`,
+            `${backendURL}/turnos/listar-turnos/cliente?cliente=${cliente}`,
             {
                 method: "GET",
                 headers: {
@@ -55,7 +56,7 @@
             .then((apiResponse) => (turnos = apiResponse.data));
 
         await  fetch(
-            `http://localhost:3000/listar-perros?cliente=${cliente}`, 
+            `${backendURL}/listar-perros?cliente=${cliente}`, 
             {
                 method: "GET",
                 headers: {
@@ -131,10 +132,12 @@
 
 <a class="btn rounded-lg variant-filled m-4" rel="noreferrer" href="/turnos">Volver a turnos</a>
 <div class="ml-2 flex flex-wrap">
+    {#if (turnos.filter((turno)=> {
+        return (turno.aceptado === true)&&(turno.rechazado === false)}).length === 0)
+    }
+        <h6 class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"> No hay turnos aceptados</h6>
+    {/if} 
     {#each turnos as turno}
-        {#if turnos.length === 0}
-            No hay turnos para visualizar
-        {/if}
         {#if (turno.rechazado === false)&&(turno.aceptado === true)&&(turno.urgencia === false)}
             <div
                 class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"

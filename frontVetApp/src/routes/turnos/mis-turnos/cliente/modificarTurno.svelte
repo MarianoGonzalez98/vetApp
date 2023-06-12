@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PerroTurno } from "$lib/interfaces/Perro.interface";
+    import { backendURL } from "$lib/utils/constantFactory";
     import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
 
     
@@ -72,7 +73,7 @@
 
     // We've created a custom submit function to pass the response and close the modal.
     async function onFormSubmit() {
-        await fetch("http://localhost:3000/turnos/modificar-turno", {
+        await fetch(`${backendURL}/turnos/modificar-turno`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -125,7 +126,7 @@
 {#if $modalStore[0]}
     <div class="modal-example-form {cBase}">
         <header class={cHeader}>Modificar turno</header>
-        <header class={cHeader}>Fecha: {formData.fecha.toLocaleDateString('es-AR')}</header>
+        <header class={cHeader}>Fecha: {formData.fecha}</header>
 
         <form class="modal-form {cForm}">     
                 <label class="label">

@@ -3,6 +3,7 @@
     import type { Vacuna } from "$lib/interfaces/Perro.interface";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
+    import { backendURL } from "$lib/utils/constantFactory";
     import {
         CodeBlock,
         ListBox,
@@ -104,7 +105,7 @@
         }
 
         if ($user?.rol === "veterinario" && !error) {
-            await fetch("http://localhost:3000/registrar-cliente", {
+            await fetch(`${backendURL}/registrar-cliente`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,8 +118,8 @@
             })
                 .then((res) => {
                     if (res.status < 299) {
-                        modalStore.clear();
-                        modalStore.trigger(perroClienteCargado);
+                        //modalStore.clear();
+                        //modalStore.trigger(perroClienteCargado);
                         return res;
                     }
                     if (res.status === 400) {
@@ -140,8 +141,7 @@
                     }
                 })
                 .catch((error) => {
-                    modalStore.clear();
-                    modalStore.trigger(fallaDesconocida);
+                    error = true;
                     console.log(
                         "Error en carga del cliente desconocido: ",
                         error
@@ -154,7 +154,7 @@
             modalStore.trigger(fallaDesconocidaCliente);
             return;
         }
-        await fetch("http://localhost:3000/cargar-perro", {
+        await fetch(`${backendURL}/cargar-perro`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -175,8 +175,14 @@
         })
             .then((res) => {
                 if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(perroCargado);
+                    if ($user?.rol === "veterinario"){
+                        modalStore.clear();
+                        modalStore.trigger(perroClienteCargado);
+                    }else{
+                        modalStore.clear();
+                        modalStore.trigger(perroCargado);
+                    }
+
                     return res;
                 }
                 if (res.status === 400) {
