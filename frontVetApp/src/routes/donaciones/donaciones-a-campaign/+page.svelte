@@ -46,9 +46,6 @@
         const fechaHastaMatch = inputFechaHasta
             ? fechaDonacionHasta <= new Date(inputFechaHasta + "T00:00:00-03:00")
             : true;
-        console.log(fechaDonacionDesde.toLocaleDateString());
-        console.log(new Date(inputFechaDesde + "T00:00:00-03:00").toLocaleDateString());
-        console.log(fechaDesdeMatch);
         return nombreMatch && fechaDesdeMatch && fechaHastaMatch;
     }) as Donacion[];
 </script>
@@ -65,14 +62,14 @@
 {#if donaciones.length > 0}
     <div class="ml-2 flex">
         <div class="ml-2">
-            <label for="filtroNombre" class="text-left whitespace-nowrap"
-                >Filtrar por nombre:
+            <label for="filtroEmail" class="text-left whitespace-nowrap"
+                >Filtrar por email:
             </label>
             <input
                 type="text"
                 bind:value={inputEmail}
                 class="input rounded-lg"
-                name="filtroNombre"
+                name="filtroEmail"
                 id=""
             />
         </div>
