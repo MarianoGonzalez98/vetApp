@@ -36,12 +36,19 @@
                   .toLowerCase()
                   .match(`.*${inputEmail.toLowerCase()}.*`)
             : true;
+        let fechaDonacionDesde = new Date(donacion.fechaHora);
+        fechaDonacionDesde.setHours(0,0,0,0);
         const fechaDesdeMatch = inputFechaDesde
-            ? new Date(donacion.fechaHora).getDate() >= new Date(inputFechaDesde + "T00:00:00-03:00").getDate()
+            ? fechaDonacionDesde >= new Date(inputFechaDesde + "T00:00:00-03:00")
             : true;
+        let fechaDonacionHasta = new Date(donacion.fechaHora);
+        fechaDonacionHasta.setHours(0,0,0,0);
         const fechaHastaMatch = inputFechaHasta
-            ? new Date(donacion.fechaHora).getDate() <= new Date(inputFechaHasta + "T00:00:00-03:00").getDate()
-            : true;  
+            ? fechaDonacionHasta <= new Date(inputFechaHasta + "T00:00:00-03:00")
+            : true;
+        console.log(fechaDonacionDesde.toLocaleDateString());
+        console.log(new Date(inputFechaDesde + "T00:00:00-03:00").toLocaleDateString());
+        console.log(fechaDesdeMatch);
         return nombreMatch && fechaDesdeMatch && fechaHastaMatch;
     }) as Donacion[];
 </script>
