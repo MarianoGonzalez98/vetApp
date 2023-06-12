@@ -101,7 +101,6 @@
         const nombreMatch = inputNombre
             ? pc.nombre.toLowerCase().match(`.*${inputNombre.toLowerCase()}.*`)
             : true;
-        console.log(inputEstado);
         const estadoMatch =
             !inputEstado ||
             (inputEstado == "Finalizadas" && pc.finalizada) ||

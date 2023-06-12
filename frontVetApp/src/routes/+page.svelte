@@ -14,11 +14,6 @@
 				<a class="btn variant-filled" rel="noreferrer" href="/clientes"
 					>Ver clientes</a
 				>
-				<a
-					class="btn variant-filled"
-					rel="noreferrer"
-					href="/donaciones/crear-campaign">Crear campaña</a
-				>
 			{:else}
 				<a
 					class="btn variant-filled"

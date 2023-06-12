@@ -24,9 +24,30 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (donaciones = apiResponse.donaciones));
-
-        console.log(donaciones);
     });
+
+    let inputEmail: String;
+    let inputFechaDesde: Date;
+    let inputFechaHasta: Date;
+
+    $: mostrar = donaciones.filter((donacion) => {
+        const nombreMatch = inputEmail
+            ? donacion.emailDonante
+                  .toLowerCase()
+                  .match(`.*${inputEmail.toLowerCase()}.*`)
+            : true;
+        let fechaDonacionDesde = new Date(donacion.fechaHora);
+        fechaDonacionDesde.setHours(0,0,0,0);
+        const fechaDesdeMatch = inputFechaDesde
+            ? fechaDonacionDesde >= new Date(inputFechaDesde + "T00:00:00-03:00")
+            : true;
+        let fechaDonacionHasta = new Date(donacion.fechaHora);
+        fechaDonacionHasta.setHours(0,0,0,0);
+        const fechaHastaMatch = inputFechaHasta
+            ? fechaDonacionHasta <= new Date(inputFechaHasta + "T00:00:00-03:00")
+            : true;
+        return nombreMatch && fechaDesdeMatch && fechaHastaMatch;
+    }) as Donacion[];
 </script>
 
 <div class="flex flex-wrap mb-4">
@@ -39,8 +60,46 @@
 </div>
 
 {#if donaciones.length > 0}
+    <div class="ml-2 flex">
+        <div class="ml-2">
+            <label for="filtroEmail" class="text-left whitespace-nowrap"
+                >Filtrar por email:
+            </label>
+            <input
+                type="text"
+                bind:value={inputEmail}
+                class="input rounded-lg"
+                name="filtroEmail"
+                id=""
+            />
+        </div>
+        <div class="ml-2">
+            <label for="filtroFechaDesde" class="text-left whitespace-nowrap"
+                >Filtrar por fecha (desde):
+            </label>
+            <input
+                bind:value={inputFechaDesde}
+                class="input"
+                type="date"
+                placeholder="Desde"
+                name="filtroFechaDesde"
+            />
+        </div>
+        <div class="ml-2">
+            <label for="filtroFechaHasta" class="text-left whitespace-nowrap"
+                >Filtrar por fecha (hasta):
+            </label>
+            <input
+                bind:value={inputFechaHasta}
+                class="input"
+                type="date"
+                placeholder="Hasta"
+                name="filtroFechaHasta"
+            />
+        </div>
+    </div>
     <div class="ml-2 flex flex-wrap">
-        {#each donaciones as donacion}
+        {#each mostrar as donacion}
             <div
                 class="card grayscale hover:grayscale-0 duration-300 variant-ghost-secondary p-1 max-w-xs m-2"
             >
@@ -74,8 +133,6 @@
     </div>
 {:else}
     <div class="flex justify-center items-center h-full">
-        <h1 class="text-4xl font-bold">
-            No hay donaciones registradas.
-        </h1>
+        <h1 class="text-4xl font-bold">No hay donaciones registradas.</h1>
     </div>
 {/if}
