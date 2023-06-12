@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { aceptarTurno, archivarTurno, cancelarTurno, getCantDeTurnosRangoHorarioFecha, getCantDeTurnosRangoHorarioFechab, getTurno, getTurnos, getTurnosComoVeterinario, insertTurno, insertUrgencia, modificarTurno, rechazarTurno } from "../services/turno.service"
 import { Turno } from "../interfaces/Turno.interface"
-import { getClientes } from "../services/clientes.service"
+import { getClientes, resetearMontoAcumulado } from "../services/clientes.service"
 import { sendMailTest } from "../utils/mailer.handle"
 import { actualizarLibreta } from "../services/perros.service"
 
@@ -369,6 +369,13 @@ export const registrarUrgenciaController = async (req:Request, res:Response) => 
     
     const dbResult = await insertUrgencia(turno);
     if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    const dbResultResetDesc = await resetearMontoAcumulado(turno.emailOwner);
+    if (dbResultResetDesc === 'error') {
         //HTTP 500 Internal server error
         res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
         return
