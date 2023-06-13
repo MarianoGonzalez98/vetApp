@@ -2,8 +2,15 @@
     import type { Donacion, PaymentID } from "$lib/interfaces/Donaciones.interface";
     import { backendURL } from "$lib/utils/constantFactory";
     import { onMount } from "svelte";
+    import { base } from '$app/paths'
+    import { afterNavigate } from "$app/navigation";
 
     let donaciones: (Donacion&PaymentID)[] = [];
+    let previousPage : string = '/donaciones' ;
+
+    afterNavigate(({from}) => {
+        previousPage = from?.url?.pathname || '/donaciones'
+    }) 
 
     onMount( async () => {
         await fetch(
@@ -47,7 +54,9 @@
         });
     }
 </script>
-
+<div class="flex flex-wrap mb-4">
+    <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="{previousPage}">Atras</a>
+</div>
 <h1 class="h1 font-medium ml-3 mb-3">Mis donaciones realizadas</h1>
 
 <div class="ml-2 flex flex-wrap">

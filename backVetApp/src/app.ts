@@ -24,6 +24,7 @@ types.setTypeParser(1700, function(val:any) {
 });
 
 cron.schedule('* * * * *', async () => {
+  finalizarCampaignsPasadas();
   const result = await getTurnosPendientesPasados();
 
   if (result === "error") {
@@ -76,6 +77,7 @@ import { cancelarTurno, getTurnosPendientesPasados } from "./services/turno.serv
 import { sendMailTest } from "./utils/mailer.handle";
 import { DonacionesRouter } from "./routes/donaciones.routes";
 import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
+import { finalizarCampaignsPasadas } from "./controllers/donaciones";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);

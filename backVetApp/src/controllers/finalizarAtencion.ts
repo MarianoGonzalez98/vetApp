@@ -2,6 +2,7 @@ import { Antiparasitario, Perro, Vacuna } from "../interfaces/Perro.interface";
 import { actualizarAntiparasitario, actualizarCastracion, actualizarConsultaGeneral, actualizarVacunacion, getPerroJuli } from "../services/perros.service"
 import { Request, Response } from "express"
 import { actualizarDescripcion } from "../services/turno.service";
+import { resetearMontoAcumulado } from "../services/clientes.service";
 
 export const finalizarAtencionVacunacionController = async (req:Request, res:Response) => {
     let id:number = req.body.id;
@@ -14,6 +15,7 @@ export const finalizarAtencionVacunacionController = async (req:Request, res:Res
     let descuentoCliente:number = req.body.descuentoCliente
     let descuento50: number = precio * 50 / 100;
     let precioFinal:number = 0;
+    let emailOwner:string = req.body.emailOwner;
 
     if (descuentoCliente <= descuento50) {
         precioFinal = precio - descuentoCliente;
@@ -48,6 +50,13 @@ export const finalizarAtencionVacunacionController = async (req:Request, res:Res
         return
     }
 
+    const dbResultResetDesc = await resetearMontoAcumulado(emailOwner);
+    if (dbResultResetDesc === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
@@ -63,6 +72,7 @@ export const finalizarAtencionCastracionController = async (req:Request, res:Res
     let descuentoCliente:number = req.body.descuentoCliente
     let descuento50: number = precio * 50 / 100;
     let precioFinal:number = 0;
+    let emailOwner:string = req.body.emailOwner;
 
     if (descuentoCliente <= descuento50) {
         precioFinal = precio - descuentoCliente;
@@ -93,6 +103,14 @@ export const finalizarAtencionCastracionController = async (req:Request, res:Res
         return
     }
 
+    const dbResultResetDesc = await resetearMontoAcumulado(emailOwner);
+    if (dbResultResetDesc === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
@@ -107,6 +125,7 @@ export const finalizarAtencionAntiparasitacionController = async (req:Request, r
     let descuentoCliente:number = req.body.descuentoCliente
     let descuento50: number = precio * 50 / 100;
     let precioFinal:number = 0;
+    let emailOwner:string = req.body.emailOwner;
 
     if (descuentoCliente <= descuento50) {
         precioFinal = precio - descuentoCliente;
@@ -139,6 +158,14 @@ export const finalizarAtencionAntiparasitacionController = async (req:Request, r
         return
     }
 
+    const dbResultResetDesc = await resetearMontoAcumulado(emailOwner);
+    if (dbResultResetDesc === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+
     res.status(200).send({ data: result, statusCode: 200 })
 }
 
@@ -152,6 +179,7 @@ export const finalizarAtencionConsultaGeneralController = async (req:Request, re
     let descuentoCliente:number = req.body.descuentoCliente
     let descuento50: number = precio * 50 / 100;
     let precioFinal:number = 0;
+    let emailOwner:string = req.body.emailOwner;
 
     if (descuentoCliente <= descuento50) {
         precioFinal = precio - descuentoCliente;
@@ -181,6 +209,14 @@ export const finalizarAtencionConsultaGeneralController = async (req:Request, re
         res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
         return
     }
+
+    const dbResultResetDesc = await resetearMontoAcumulado(emailOwner);
+    if (dbResultResetDesc === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "Posible error en base de datos", statusCode: 500 })
+        return
+    }
+
 
     res.status(200).send({ data: result, statusCode: 200 })
 }
