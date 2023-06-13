@@ -23,7 +23,7 @@ types.setTypeParser(1700, function(val:any) {
     return Number(val);
 });
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('15,30,45,00 * * * *', async () => {
   finalizarCampaignsPasadas();
   const result = await getTurnosPendientesPasados();
 
