@@ -14,11 +14,6 @@
 				<a class="btn variant-filled" rel="noreferrer" href="/clientes"
 					>Ver clientes</a
 				>
-				<a
-					class="btn variant-filled"
-					rel="noreferrer"
-					href="/donaciones/crear-campaign">Crear campaña</a
-				>
 			{:else}
 				<a
 					class="btn variant-filled"
@@ -41,7 +36,7 @@
 				href="/paseadores-y-cuidadores">Paseadores y Cuidadores</a
 			>
 			<a
-				class="btn variant-ghost-surface"
+				class="btn variant-ghost-surface mr-1"
 				rel="noreferrer"
 				href="/adopciones">Adopciones</a
 			>

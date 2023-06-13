@@ -10,7 +10,7 @@
     import type { Campaign } from '$lib/interfaces/Donaciones.interface';
     import type { Id } from '$lib/interfaces/Id.interface';
     import { user } from '$lib/stores/user';
-    import { backendURL } from '$lib/utils/constantFactory';
+    import { backendURL, emailPatternFactory } from '$lib/utils/constantFactory';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	// Props
 	/** Exposes parent props to this component. */
@@ -58,8 +58,10 @@
 	}
 
     const onConfirm = async () => {
-        montoInputDisabled = true;
-		await createMercadoPagoButton()
+		if (!montoInputDisabled){
+			montoInputDisabled = true;
+			await createMercadoPagoButton()
+		}
     }
 
 
@@ -81,15 +83,19 @@
 	<slot></slot>
 	<div class="modal-example-form {cBase}">
 		<header class={cHeader}>Donar a campaña {campaign.nombre}</header>
-		<article>Ingrese el monto que desea donar en pesos Argentinos</article>
-			<label for="">Monto:</label>
-            <input class="input" bind:value={monto} disabled={montoInputDisabled} type="number" required>
-			{#if (!$user)}
-				<label for="">Su email:</label>
-				<input class="input" bind:value={emailDonante} disabled={montoInputDisabled} type="text" required>
-			{/if}
-			<button type="button" class="btn {buttonNeutral}" on:click={onClose}>Cancelar</button>
-			<button type="button" class="btn {buttonPositive}" on:click={onConfirm}>Confirmar monto</button>
+		<article>Ingrese el monto que desea donar en pesos Argentinos.<br>
+			<br>
+			Tenga en cuenta que su monto neto donado será menor al cobrado, ya que Mercado Pago cobra una tasa de 6.40% + IVA.</article>
+			<form action="" on:submit|preventDefault={onConfirm}>
+				<label for="">Monto:</label>
+				<input class="input mb-2" bind:value={monto} disabled={montoInputDisabled} type="number" required>
+				{#if (!$user)}
+					<label for="">Su email:</label>
+					<input class="input focus:invalid:border-red-500 mb-2" bind:value={emailDonante} disabled={montoInputDisabled} type="text" title="Ingrese un email válido" required pattern={emailPatternFactory} placeholder="Ingrese su email. Ej: miEmail@gmail.com">
+				{/if}
+				<button type="button" class="btn {buttonNeutral}" on:click={onClose}>Cancelar</button>
+				<button type="submit" class="btn {buttonPositive}" >Confirmar monto</button>
+			</form>
 		<footer class="modal-footer {parent.regionFooter}">
 
     </footer>

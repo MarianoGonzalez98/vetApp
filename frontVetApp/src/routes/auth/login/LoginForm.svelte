@@ -3,13 +3,13 @@
     import type { LoginData, ApiResponse } from "$lib/interfaces/ApiResponse.interface";
     import type { UserData } from "$lib/interfaces/User.interface";
     import { user } from "$lib/stores/user";
-    import { backendURL } from "$lib/utils/constantFactory";
+    import { backendURL, emailPatternFactory } from "$lib/utils/constantFactory";
     import type { ModalSettings } from "@skeletonlabs/skeleton";
     import { Modal,modalStore } from '@skeletonlabs/skeleton';
     let email = '';
     let password = '';
     let currentError='';
-    const emailPattern:string = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[\.][a-zA-Z]{2,}$";
+
 
     const fallaAuth: ModalSettings = {
 	type: 'alert',
@@ -71,7 +71,7 @@
 <div class="container h-full mx-auto flex justify-center items-center">
     <form on:submit|preventDefault={handleLogin} class="space-y-2">
         <label class="label" for="email">Email</label>
-        <input bind:value={email} class="input" type="text" title="Ingrese un mail valido" placeholder="Ingrese su email" name="email" pattern={emailPattern} required>
+        <input bind:value={email} class="input" type="text" title="Ingrese un mail valido" placeholder="Ingrese su email" name="email" pattern={emailPatternFactory} required>
 
         <label class="label" for="password">Contraseña</label>
         <input bind:value={password} class="input" type="password" placeholder="Ingrese contraseña" name="password" required>

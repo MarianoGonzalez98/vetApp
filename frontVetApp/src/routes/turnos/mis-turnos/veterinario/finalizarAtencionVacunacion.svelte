@@ -21,7 +21,7 @@
     if (turnoInfo.motivo === "Vacunación b") {
         vacunaAplicada = {
             nombre: "Vacuna B",
-            fechaDeAplicacion: turnoInfo.fecha.toString(),
+            fechaDeAplicacion: turnoInfo.fecha.toString().slice(0,10),
         };
     }
 
@@ -64,9 +64,13 @@
             .then((apiResponse) => (cliente = apiResponse.data));
     });
 
+    let precioAux = 0;
     const actualizar50Desc = () => {
-        descuento50 = 50 * precio / 100;
-        hayPrecio = true;
+        if(precio >= 0) {
+            descuento50 = 50 * precio / 100;
+            hayPrecio = true;
+            precioAux = precio;
+        }
     }
 
 
@@ -105,7 +109,8 @@
                     turnoId:turnoInfo.id,
                     observacion,
                     precio,
-                    descuentoCliente: cliente.montoAcumuladoDescuento
+                    descuentoCliente: cliente.montoAcumuladoDescuento,
+                    emailOwner: turnoInfo.emailOwner
                 })
             })
             .then((res) => {
@@ -157,24 +162,30 @@
                 <textarea class="textarea" rows="2"  bind:value={observacion} />
             </label>
 
-            <label class="label">
-                <span>Ingrese el precio del turno</span>
-                    <input class="input" bind:value={precio} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:change={actualizar50Desc} required/>
-            </label>
-            <div class="card p-4">
-                {#if hayPrecio}
-                    {#if cliente.montoAcumuladoDescuento <= descuento50}
-                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
-                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header class={cHeader}>Precio final del turno: {precio - cliente.montoAcumuladoDescuento}</header>
+            <div class="card p-4">              
+                <label class="label">
+                    <span>Ingrese el precio del turno</span>
+                        <input class="input" bind:value={precio} title="input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" type="number" step="0.01" min="0" on:input={() => hayPrecio = false} required/>
+                        <button class="btn {parent.buttonNeutral}"  type="button"  on:click={actualizar50Desc}>Aceptar</button>
+                </label>
+        
+                    {#if hayPrecio}
+                        {#if cliente.montoAcumuladoDescuento <= descuento50}
+                            <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                            <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                            <header class={cHeader}>Precio final del turno: {precioAux - cliente.montoAcumuladoDescuento}</header>
+                        {/if}
+                        {#if cliente.montoAcumuladoDescuento > descuento50}
+                            <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
+                            <span>Descuento máximo (50% del precio): {descuento50}</span><br>
+                            <header class={cHeader}>Precio final: {precioAux - descuento50}</header>
+                        {/if}   
                     {/if}
-                    {#if cliente.montoAcumuladoDescuento > descuento50}
-                        <span>Descuento acumulado del cliente por donaciones: {cliente.montoAcumuladoDescuento}</span> <br>
-                        <span>Descuento máximo (50% del precio): {descuento50}</span><br>
-                        <header class={cHeader}>Precio final: {precio - descuento50}</header>
-                    {/if}   
-                {/if}
-            </div>
+                    {#if precio < 0}
+                        <span class="text-red-500">El precio debe ser mayor que 0</span>
+                    {/if}
+                </div>
+
             <button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>Cancelar</button>
             <button class="btn {parent.buttonPositive}" type="submit">Aceptar</button>
         </form>

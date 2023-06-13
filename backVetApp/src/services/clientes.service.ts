@@ -96,3 +96,23 @@ export const getClienteJuli = async (email: string) => {
         return "error";
     }
 };
+
+
+
+export const resetearMontoAcumulado = async (email:string) => {
+    const query = `
+    UPDATE public.usuarios
+	SET "montoAcumuladoDescuento"= 0
+	WHERE email = $1 and rol = 'cliente'
+    `
+    const values= [email];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:resetearMontoAcumulado------");
+        console.log(err);
+        return "error";
+    }
+}

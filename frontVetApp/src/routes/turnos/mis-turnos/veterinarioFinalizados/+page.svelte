@@ -107,7 +107,7 @@
                         </p>
                         <p>
                             <span class="font-medium">Precio: </span>
-                            {turno.precio} 
+                            ${turno.precio} 
                         
                         </p>
                     </div>
