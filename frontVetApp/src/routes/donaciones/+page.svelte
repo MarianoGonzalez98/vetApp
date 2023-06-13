@@ -231,7 +231,7 @@
                         {/if}
                         {/if}
                         {#if ($user?.rol === "veterinario")}
-                        <a rel="noreferrer" href="/"
+                        <a rel="noreferrer" href="/donaciones?campaign={campaign.nombre}"
                             class="btn btn-sm variant-ghost-surface mr-2"
                             >Ver donaciones
                         </a>
