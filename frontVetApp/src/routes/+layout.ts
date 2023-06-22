@@ -9,6 +9,9 @@ export const load = (async () => {
     return {};
 }) satisfies LayoutLoad;
 
+if ((browser) && localStorage.getItem('carrito') === null){ //si no existe el carrito, lo inicializo vacío
+    localStorage.setItem('carrito',JSON.stringify([]));
+}
 
 //importante para que el build haga una página estática.
 export const prerender = false;
