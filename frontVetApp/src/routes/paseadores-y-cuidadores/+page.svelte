@@ -11,6 +11,7 @@
     import { goto, preloadCode } from "$app/navigation";
     import ModalExampleForm from "./ModalExampleForm.svelte";
     import { backendURL } from "$lib/utils/constantFactory";
+    import PuntuarForm from "./PuntuarForm.svelte";
     let paseadorescuidadores: PaseadorCuidador[] = [];
 
     const fallaServidor: ModalSettings = {
@@ -163,19 +164,23 @@
         modalStore.trigger(modalTest);
     };
 
-    $: modalComponent = {
-        // Pass a reference to your custom component
-        ref: ModalExampleForm,
-        // Add the component properties as key/value pairs
+    const handlePuntuar = (pc: PaseadorCuidador) => {
+        console.log(pc);
+        let modalComponent = {
+        ref: PuntuarForm,
         props: {
-            miNombre: nombre,
-            miApellido: apellido,
-            miEmail: email,
-            miTelefono: telefono,
-            emailDestinatario: emailSeleccionado,
+            emailPC: pc.email,
         },
-        // Provide a template literal for the default component slot
         slot: "<p>Skeleton</p>",
+    };
+        const modalPuntuar: ModalSettings = {
+            type: "component",
+            component: modalComponent,
+            response: (r: any) => console.log("response:", r),
+        };
+
+        modalStore.clear();
+        modalStore.trigger(modalPuntuar);
     };
 </script>
 
@@ -260,6 +265,10 @@
                                 {pc.email}
                             </p>
                             <p>
+                                <span class="font-medium">Puntuación: </span>
+                                COMPLETAR
+                            </p>
+                            <p>
                                 <span class="font-medium">Teléfono: </span>
                                 {pc.telefono}
                             </p>
@@ -270,6 +279,11 @@
                         </div>
                         {#if $user?.rol === "veterinario"}
                             <footer class="flex mt-4">
+                                <button
+                                    on:click={(event) => handlePuntuar(pc)}
+                                    class="btn btn-sm variant-ghost-surface mr-2"
+                                    >Puntuar
+                                </button>
                                 <button
                                     on:click={() => {
                                         pc.disponible = !pc.disponible;
