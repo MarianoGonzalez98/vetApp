@@ -45,6 +45,11 @@
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
 			>
+			<a
+			class="btn variant-ghost-surface"
+			rel="noreferrer"
+			href="/productos">Productos en venta</a
+			>
 		</div>
 	</div>
 </div>

@@ -8,6 +8,7 @@
 
   let imgSrc = "/Logo2.png";
   const logout = () => {
+    goto("/");
     $user = null;
     fetch(`${backendURL}/logout`, {
       method: "POST",
@@ -16,7 +17,6 @@
       },
       credentials: "include",
     });
-    goto("/");
   };
 </script>
 

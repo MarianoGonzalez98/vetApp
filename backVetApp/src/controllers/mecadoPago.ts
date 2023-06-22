@@ -6,7 +6,7 @@ import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
 import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 
-const ngrokURL= 'https://85d4-181-23-84-159.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://c48a-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
