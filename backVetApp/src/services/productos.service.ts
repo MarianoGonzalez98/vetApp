@@ -21,7 +21,6 @@ export const insertProductoDB = async (producto:Producto ) => {
     }
 }
 
-
 export const getProductosDB = async () => {
     const query = `
     SELECT nombre, stock, precio, descripcion, marca, foto
@@ -33,7 +32,26 @@ export const getProductosDB = async () => {
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getProductos------");
+        console.error("----Error en acceso a BD:getProductosDB------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getProductoPorNombreDB = async (nombre:string) => {
+    const query = `
+    SELECT nombre, stock, precio, descripcion, marca, foto
+	FROM public.productos
+    WHERE nombre=$1
+    `
+    const values = [nombre];
+    try {
+        const response: QueryResult = await pool.query(query,values)
+        const result:Producto = await response.rows[0];
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getProductoPorNombreDB------");
         console.log(err);
         return "error";
     }
