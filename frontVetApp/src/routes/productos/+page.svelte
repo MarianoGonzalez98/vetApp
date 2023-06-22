@@ -21,12 +21,12 @@
 
 </script>
 
-{#if ($user?.rol === 'veterinario')}
 <div class="w-full ">
     <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/">Atras</a>
+    {#if ($user?.rol === 'veterinario')}
     <a href="/productos/cargar-producto"><button class="btn rounded-lg variant-filled-secondary mt-5">Cargar nuevo producto</button></a>
+    {/if}
 </div>
-{/if}
 <div class="container my-8 mx-auto ">
     <h1 class="h1 ml-15">Productos: </h1>
     <div class="flex flex-wrap  ">
