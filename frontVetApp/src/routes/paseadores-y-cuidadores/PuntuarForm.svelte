@@ -1,22 +1,20 @@
 <script lang="ts">
+    import type { PaseadorCuidador } from "$lib/interfaces/PaseadoresYCuidadores.interface";
     import {
         backendURL,
         emailPatternFactory,
         letrasEspaciosPatternFactory,
     } from "$lib/utils/constantFactory";
 
-    // Props
-    /** Exposes parent props to this component. */
+    import { modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+
     export let parent: any;
     export let emailPC: string;
 
-    // Stores
-    import {
-        modalStore,
-        popup,
-        type ModalSettings,
-        type PopupSettings,
-    } from "@skeletonlabs/skeleton";
+    const cBase = "card p-4 w-modal shadow-xl space-y-4";
+    const cHeader = "text-2xl font-bold";
+
+    let selectedStars = 0;
 
     const pcPuntuado: ModalSettings = {
         type: "alert",
@@ -32,23 +30,23 @@
         buttonTextCancel: "Ok",
     };
 
-    async function onConfirm() {
-        
-        
-        
-        // HACER
-
-
-        
+    async function handlePuntuar() {
         await fetch(`${backendURL}/puntuar-pc`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
+            body: JSON.stringify({
+                estrellas: selectedStars,
+                email: emailPC,
+            }),
         })
             .then((res) => {
                 if (res.status < 299) {
+                    if ($modalStore[0].response) {
+                        $modalStore[0].response(selectedStars);
+                    }
                     modalStore.clear();
                     modalStore.trigger(pcPuntuado);
                     return res;
@@ -64,33 +62,26 @@
             });
     }
 
-    // Base Classes
-    const cBase = "card p-4 w-modal shadow-xl space-y-4";
-    const cHeader = "text-2xl font-bold";
-    const cForm =
-        "border border-surface-500 p-4 space-y-4 rounded-container-token";
-
-    import { onMount } from "svelte";
-
-    let rating = 0;
-    let selectedStars = 0;
-
     const selectStar = (starCount: number) => {
         selectedStars = starCount;
     };
 
-    const confirmRating = () => {
-        rating = selectedStars;
-    };
-
-    onMount(() => {
-        // Inicializar el estado de las estrellas
-        selectedStars = rating;
-    });
-
     function onClose(): void {
-        if ($modalStore[0].response) $modalStore[0].response(false);
+        if ($modalStore[0].response) {
+            $modalStore[0].response(undefined);
+        }
         modalStore.close();
+    }
+
+    let advertencia = "";
+
+    async function onConfirm() {
+        if (selectedStars == 0) {
+            advertencia = "Debe seleccionar entre 1 y 5 estrellas";
+        } else {
+            advertencia = "";
+            handlePuntuar();
+        }
     }
 </script>
 
@@ -117,7 +108,6 @@
                             </svg>
                         </button>
                     {:else}
-                        <!-- PONER QUE SE MARQUE OSCURITA LA ESTRELLA CUANDO SE SELECCIONE -->
                         <button
                             class="h-10 w-10 fill-current"
                             on:click={() => selectStar(starCount)}
@@ -137,6 +127,7 @@
                 {/each}
             </div>
         </div>
+        <p class="text-red-500">{advertencia}</p>
 
         <div class="flex justify-between">
             <button
@@ -147,12 +138,8 @@
             <button
                 type="button"
                 class="btn variant-filled"
-                on:click={confirmRating}>Confirmar</button
+                on:click={onConfirm}>Confirmar</button
             >
         </div>
     </div>
 {/if}
-
-<p class="mt-2">
-    Puntuación actual: {rating} estrella{rating !== 1 && "s"}
-</p>

@@ -34,16 +34,13 @@
     let telefono = "";
 
     onMount(async () => {
-        const res = await fetch(
-            `${backendURL}/listar-paseadorescuidadores`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            }
-        )
+        const res = await fetch(`${backendURL}/listar-paseadorescuidadores`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
             .then((res) => res.json())
             .then((apiResponse) => (paseadorescuidadores = apiResponse.data));
 
@@ -140,19 +137,19 @@
         console.log(pc);
         emailSeleccionado = pc.email;
         let modalComponent = {
-        // Pass a reference to your custom component
-        ref: ModalExampleForm,
-        // Add the component properties as key/value pairs
-        props: {
-            miNombre: nombre,
-            miApellido: apellido,
-            miEmail: email,
-            miTelefono: telefono,
-            emailDestinatario: emailSeleccionado,
-        },
-        // Provide a template literal for the default component slot
-        slot: "<p>Skeleton</p>",
-    };
+            // Pass a reference to your custom component
+            ref: ModalExampleForm,
+            // Add the component properties as key/value pairs
+            props: {
+                miNombre: nombre,
+                miApellido: apellido,
+                miEmail: email,
+                miTelefono: telefono,
+                emailDestinatario: emailSeleccionado,
+            },
+            // Provide a template literal for the default component slot
+            slot: "<p>Skeleton</p>",
+        };
         const modalTest: ModalSettings = {
             type: "component",
             // Pass the component directly:
@@ -165,18 +162,24 @@
     };
 
     const handlePuntuar = (pc: PaseadorCuidador) => {
-        console.log(pc);
         let modalComponent = {
-        ref: PuntuarForm,
-        props: {
-            emailPC: pc.email,
-        },
-        slot: "<p>Skeleton</p>",
-    };
+            ref: PuntuarForm,
+            props: {
+                emailPC: pc.email,
+            },
+            slot: "<p>Skeleton</p>",
+        };
         const modalPuntuar: ModalSettings = {
             type: "component",
             component: modalComponent,
-            response: (r: any) => console.log("response:", r),
+            response: (r: number | undefined) => {
+                console.log(r);
+                if (r !== undefined) {
+                    pc.totalEstrellas += r;
+                    pc.cantPuntuaciones++;
+                    mostrar = mostrar;
+                }
+            },
         };
 
         modalStore.clear();
@@ -238,7 +241,7 @@
     </div>
     <div class="ml-2 flex flex-wrap">
         {#each mostrar as pc}
-            {#if ($user?.rol === "veterinario") || pc.disponible}
+            {#if $user?.rol === "veterinario" || pc.disponible}
                 <div
                     class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
                 >
@@ -264,10 +267,18 @@
                                 <span class="font-medium">Email: </span>
                                 {pc.email}
                             </p>
-                            <p>
-                                <span class="font-medium">Puntuación: </span>
-                                COMPLETAR
+                            {#if pc.cantPuntuaciones > 0}
+                                <p>
+                                    <span class="font-medium"
+                                        >Puntuación:
+                                    </span>
+                                    {(pc.totalEstrellas / pc.cantPuntuaciones).toFixed(2)}/5
+                                </p>
+                            {:else}
+                            <p class="font-medium">
+                                Todavía no tiene puntuaciones.
                             </p>
+                            {/if}
                             <p>
                                 <span class="font-medium">Teléfono: </span>
                                 {pc.telefono}

@@ -18,4 +18,6 @@ export interface PaseadorCuidador {
     email: string,
     oficio: Oficio,
     disponible: boolean,
+    totalEstrellas: number,
+    cantPuntuaciones: number,
 }

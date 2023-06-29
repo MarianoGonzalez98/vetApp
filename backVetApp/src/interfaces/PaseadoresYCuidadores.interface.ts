@@ -9,4 +9,6 @@ export interface PaseadorCuidador {
     oficio: Oficio,
     disponible: boolean;
     horarios: string;
+    totalEstrellas: number,
+    cantPuntuaciones: number,
 }
