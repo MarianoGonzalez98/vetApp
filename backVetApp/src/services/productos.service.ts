@@ -2,6 +2,7 @@ import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { Producto } from "../interfaces/Producto.interface";
 import { Id } from "../interfaces/Id.interface";
+import { ItemCarrito } from "../interfaces/Carrito.interface";
 
 export const insertProductoDB = async (producto:Producto ) => {
     const query = `
@@ -55,4 +56,22 @@ export const getProductoPorNombreDB = async (nombre:string) => {
         console.log(err);
         return "error";
     }
+}
+
+export const getPrecioTotalCompraDB = async (productos:ItemCarrito[]) => {
+
+    let suma = 0;
+    for (let i = 0; i < productos.length; i++) {
+        const item = productos[i];
+        const producto = await getProductoPorNombreDB(item.nombre);
+        if (producto==='error'){
+            return 'error';
+        }
+        if (producto.stock<item.cant){
+            return 'menor_stock';
+        }
+        suma += (producto.precio * item.cant);
+    }
+    return suma;
+
 }

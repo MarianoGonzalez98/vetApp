@@ -5,9 +5,67 @@ import { sendMailWithAttachment } from "../utils/mailer.handle";
 import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
 import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
+import { ItemCarrito } from "../interfaces/Carrito.interface";
+import { insertCompraDB } from "../services/compras.service";
+import { getPrecioTotalCompraDB } from "../services/productos.service";
 
 const ngrokURL= 'https://c48a-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
+
+
+export const createPrefrerenceCompraProductosController = async (req: Request, res: Response) => {
+    console.log("Configurando MercadoPagoCompraProductos")
+    mercadopago.configure({
+        access_token: process.env.MP_ACCESS_TOKEN || "",
+    });
+    const productos:ItemCarrito[] = req.body.productosAComprar;
+    const emailComprador:string = req.body.emailComprador;
+
+    const precioTotal = await getPrecioTotalCompraDB(productos);
+    if (precioTotal === 'error'){
+        res.status(500).send("error bd en calculo de precio total");
+        return;
+    }
+    if (precioTotal === "menor_stock"){
+        res.status(200).send({status:'out_of_stock'})
+        return;
+    }
+    const idReserva = await insertCompraDB(productos,emailComprador);
+    if (idReserva==='error'){
+        res.status(500).send("error bd en reserva de compra");
+        return;
+    }
+    //preparo la url de la notificacion junto con los datos que necesitaré para identificarla
+    var donacionNotificationUrl = new URL(ngrokURL+"/notificacion_mp_compraProductos");
+    donacionNotificationUrl.searchParams.append("idReserva",idReserva.toString());
+
+    let preference = {
+        items: [
+            {
+                title: `Compra de productos`,
+                unit_price: precioTotal,
+                quantity: 1,
+            }
+        ],
+        back_urls: {
+            "success": "http://localhost:5173/productos",
+            "failure": "http://localhost:5173/productos",
+            "pending": "http://localhost:5173/productos"
+        },
+        notification_url: donacionNotificationUrl.toString(), //cambiar url de ngrok
+    };
+
+    mercadopago.preferences.create(preference)
+        .then(function (response) {
+            res.json({
+                status:'ok',
+                id: response.body.id
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    //res.send();
+}
 
 export const createPrefrerenceDonacionController = async (req: Request, res: Response) => {
     console.log("Configurando MercadoPAgo")
