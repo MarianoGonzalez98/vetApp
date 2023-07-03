@@ -59,7 +59,6 @@ export const getProductoPorNombreDB = async (nombre:string) => {
 }
 
 export const getPrecioTotalCompraDB = async (productos:ItemCarrito[]) => {
-
     let suma = 0;
     for (let i = 0; i < productos.length; i++) {
         const item = productos[i];
