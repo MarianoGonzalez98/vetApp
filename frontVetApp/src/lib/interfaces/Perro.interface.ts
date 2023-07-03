@@ -38,6 +38,19 @@ export interface InfoPerroAdopcion {
     fechaNacimiento: string,
 }
 
+
+export interface InfoPerroPerdido {
+    nombre: string,
+    raza: string,
+    sexo: string,
+    fechaNacimiento: string,
+    descripcion: string,
+    foto: string | null,
+    fechaPerdido: string,
+    plazaPerdido: string,
+}
+
+
 export interface PerroTurno {
     nombre: string
     id: number

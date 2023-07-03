@@ -41,6 +41,11 @@
 				href="/adopciones">Adopciones</a
 			>
 			<a
+				class="btn variant-ghost-surface mr-1"
+				rel="noreferrer"
+				href="/perdidas">Pérdidas</a
+			>
+			<a
 			class="btn variant-ghost-surface"
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
