@@ -4,18 +4,25 @@
     import { productosCarrito } from "$lib/stores/carrito";
     import { Modal, modalStore, type ModalSettings } from "@skeletonlabs/skeleton";
     import ModalCompraProducto from "./ModalCompraProducto.svelte";
+    import { createEventDispatcher } from "svelte";
 
-    
+    const dispatch = createEventDispatcher();
     const handleEliminarDelCarrito = (prod:ItemCarrito) =>{
         $productosCarrito = $productosCarrito.filter( p => p.nombre!== prod.nombre);
     }
 
-    
+    const dispatchEvent = () => {
+        dispatch('reloadProducts', {
+				text: 'Hello!'
+			});
+    }
+
     const handleGenerarCompra = ()=> {
         let modalComponent = {
             ref: ModalCompraProducto,
             props: {
                 itemsCarrito: $productosCarrito,
+                dispatchEvent:dispatchEvent,
             },
         };
         const modalCompra: ModalSettings = {
@@ -29,7 +36,7 @@
 </script>
 
 
-<Modal />
+<Modal/>
 <h3 class="h3">
     Monto total:
 </h3>
@@ -47,4 +54,6 @@
         </div>
     {/each}
 </div>
-<button on:click={(event) => handleGenerarCompra()} class="btn btn-sm variant-ghost-surface mr-2">Pagar compra</button>
+{#if $productosCarrito.length>0}
+    <button on:click={(event) => handleGenerarCompra()} class="btn btn-sm variant-ghost-surface mr-2">Pagar compra</button>
+{/if}

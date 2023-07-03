@@ -5,13 +5,17 @@
 
 <script lang="ts">
     import type { ItemCarrito } from '$lib/interfaces/Carrito.interface';
+    import { productosCarrito } from '$lib/stores/carrito';
     import { user } from '$lib/stores/user';
     import { backendURL, emailPatternFactory } from '$lib/utils/constantFactory';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+    import { createEventDispatcher } from 'svelte';
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
 	export let itemsCarrito:ItemCarrito[];
+	export let dispatchEvent:any
+
 	let emailComprador= $user?.email || "";
     let emailDisabled = false;
 
@@ -29,6 +33,12 @@
 		const json = await res.json();
 
 		if (res.ok){
+			dispatchEvent();
+			$productosCarrito = [];
+			if (json.status==='out_of_stock'){
+				console.log("NO HAY STOCK")
+				return -1;
+			}
 			return json.id;
 		} else {
 			throw new Error(json);
@@ -36,6 +46,9 @@
 	}
 	const createMercadoPagoButton = async () => {
         let preferenceIdResponse = await getPreferenceId();
+		if (preferenceIdResponse===-1){
+			return;
+		}
         const preferenceId = await preferenceIdResponse;
           // @ts-ignore
         const mp = new MercadoPago('APP_USR-22da8af9-1320-49f0-a159-4ca8370a1414', {

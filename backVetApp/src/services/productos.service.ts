@@ -39,7 +39,7 @@ export const sumarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) 
         `
         const values= [prod.cant, prod.nombre];
         try {
-            const response: QueryResult = await pool.query(query, values)
+            await pool.query(query, values)
         }
         catch (err) {
             console.error("----Error en acceso a BD:restarCantidadCompradaDB------");

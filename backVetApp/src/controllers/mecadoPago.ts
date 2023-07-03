@@ -7,7 +7,7 @@ import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/dona
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 import { insertCompraDB } from "../services/compras.service";
-import { getPrecioTotalCompraDB } from "../services/productos.service";
+import { getPrecioTotalCompraDB, restarCantidadCompradaProductosDB } from "../services/productos.service";
 
 const ngrokURL= 'https://c48a-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
@@ -33,6 +33,12 @@ export const createPrefrerenceCompraProductosController = async (req: Request, r
     const idReserva = await insertCompraDB(productos,emailComprador);
     if (idReserva==='error'){
         res.status(500).send("error bd en reserva de compra");
+        return;
+    }
+
+    const seResto = await restarCantidadCompradaProductosDB(productos);
+    if (seResto==='error'){
+        res.status(500).send("error bd en resta de stock");
         return;
     }
     //preparo la url de la notificacion junto con los datos que necesitaré para identificarla

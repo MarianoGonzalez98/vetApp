@@ -80,6 +80,7 @@ import { DonacionesRouter } from "./routes/donaciones.routes";
 import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 import { finalizarCampaignsPasadas } from "./controllers/donaciones";
 import { ProductosRouter } from "./routes/productos.routes";
+import { cancelarReservasExpiradasDB } from "./services/compras.service";
 
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);

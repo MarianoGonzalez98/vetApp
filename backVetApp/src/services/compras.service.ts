@@ -1,6 +1,7 @@
 import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
+import { sumarCantidadCompradaProductosDB } from "./productos.service";
 
 
 export const insertCompraDB = async (productos:ItemCarrito[],email:string ) => {
@@ -39,7 +40,7 @@ export const cancelarReservasExpiradasDB = async () => {
 
             for (let i = 0; i < vencidos.length; i++) {
                 const compra = vencidos[i];
-                const seCancelo = await marcarCanceladoDB(id)
+                const seCancelo = await marcarCanceladoDB(compra.id)
                 if (seCancelo==='error'){
                     return 'error';
                 }
