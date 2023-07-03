@@ -24,7 +24,8 @@ types.setTypeParser(1700, function(val:any) {
 });
 
 cron.schedule('* * * * *', async () => {
-  finalizarCampaignsPasadas();
+  await cancelarReservasExpiradasDB()
+  await finalizarCampaignsPasadas();
   const result = await getTurnosPendientesPasados();
 
   if (result === "error") {

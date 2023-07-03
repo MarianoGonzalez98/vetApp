@@ -4,6 +4,52 @@ import { Producto } from "../interfaces/Producto.interface";
 import { Id } from "../interfaces/Id.interface";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 
+    //si hay suficiente stock, le resta la cantidad comprada al stock de cada producto y genera el botón de compra
+
+export const restarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) => { //no estoy controlando que stock sea mayor que la cant comprada de cada producto
+
+    for (let i = 0; i < productos.length; i++) {
+        const prod = productos[i];
+        const query = `
+        UPDATE public.productos
+        SET stock = stock - $1
+        WHERE nombre = $2
+        `
+        const values= [prod.cant, prod.nombre];
+        try {
+            const response: QueryResult = await pool.query(query, values)
+        }
+        catch (err) {
+            console.error("----Error en acceso a BD:restarCantidadCompradaDB------");
+            console.log(err);
+            return "error";
+        }
+    }
+    return 'ok';
+}
+    
+export const sumarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) => {
+
+    for (let i = 0; i < productos.length; i++) {
+        const prod = productos[i];
+        const query = `
+        UPDATE public.productos
+        SET stock = stock + $1
+        WHERE nombre = $2
+        `
+        const values= [prod.cant, prod.nombre];
+        try {
+            const response: QueryResult = await pool.query(query, values)
+        }
+        catch (err) {
+            console.error("----Error en acceso a BD:restarCantidadCompradaDB------");
+            console.log(err);
+            return "error";
+        }
+    }
+    return 'ok';
+}
+
 export const insertProductoDB = async (producto:Producto ) => {
     const query = `
     INSERT INTO public.productos(
