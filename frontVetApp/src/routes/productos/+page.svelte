@@ -10,6 +10,11 @@
     let productos:Producto[] = [];
 
     onMount( async ()  => {
+        await loadProductos();
+    });
+
+    const loadProductos = async () => {
+        console.log("loadProductos: se cargaron productos")
         await fetch(`${backendURL}/productos`,{
                 method: "GET",
                 headers: {
@@ -19,10 +24,12 @@
             })
         .then((res) => res.json())
         .then((apiResponse) => (productos = apiResponse.productos));
-
-    });
+    }
 
     const handleIncrementar = (prod:Producto) => {
+        if ((!prod) || (prod.stock==0)){
+            return;
+        }
         let productoDelCarrito = $productosCarrito.find( p => p.nombre===prod.nombre);
         if (!productoDelCarrito){ //si no se encuentra ya cargado
             let prodAgregado:ItemCarrito = {nombre:prod.nombre,cant:1};
@@ -70,28 +77,37 @@
                     <p>Descripción: {prod.descripcion}</p>
                 </section>
                 <footer class="card-footer">
-                    {#if $user?.rol!=='veterinario'}    
-                        <p>Cantidad pedida: </p>
-                        <div class="custom-number-input h-10 w-32">
-                            <div class="flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
-                                <button on:click={(event) => handleDecrementar(prodCarrito)} data-action="decrement" class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
-                                    <span class="m-auto text-2xl font-thin">−</span>
-                                </button>
-
-                                <input type="number" disabled class="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none" name="custom-input-number" value="{$productosCarrito.find( p => p.nombre === prod.nombre)?.cant || 0}">
-                                
-                                <button on:click={(event) => handleIncrementar(prod)} data-action="increment" class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
-                                    <span class="m-auto text-2xl font-thin">+</span>
-                                </button>
+                    {#if Number(prod.stock)>0}
+                        {#if $user?.rol!=='veterinario'}    
+                            <p>Cantidad pedida: </p>
+                            <div class="custom-number-input h-10 w-32">
+                                <div class="flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                                    {#if prodCarrito && prodCarrito.cant>0}
+                                    <button on:click={(event) => handleDecrementar(prodCarrito)} data-action="decrement" class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
+                                        <span class="m-auto text-2xl font-thin">−</span>
+                                    </button>
+                                    {/if}
+                                    
+                                    <input type="number" disabled class="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none" name="custom-input-number" value="{$productosCarrito.find( p => p.nombre === prod.nombre)?.cant || 0}">
+                                    {#if !prodCarrito || (prodCarrito && prodCarrito.cant<prod.stock)}
+                                    <button on:click={(event) => handleIncrementar(prod)} data-action="increment" class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
+                                        <span class="m-auto text-2xl font-thin">+</span>
+                                    </button>
+                                    {/if}
+                                    
+                                </div>
                             </div>
-                        </div>
-                    {/if}
+                            {/if}
+                        {:else}
+                            <p>No hay stock</p>
+                        {/if}
+
                 </footer>
             </div>
         {/each}
     </div>
     {#if $user?.rol!=='veterinario'}        
         <h1 class="h1 ml-15">Carrito de compras: </h1>
-        <Carrito></Carrito>
+        <Carrito on:reloadProducts={loadProductos}></Carrito>
     {/if}
 </div>
