@@ -209,3 +209,49 @@ export const notificacionDonacionController = async (req: Request, res: Response
             break
     }
 }
+
+
+export const notificacionCompraProductoController = async (req: Request, res: Response) => {
+    res.send();
+
+/*     console.log("QUERY de notificacion::")
+    console.log(req.query); */
+    const idCompra= req.query.idReserva as string;
+
+    //console.log("Configurando")
+    mercadopago.configure({
+        access_token: process.env.MP_ACCESS_TOKEN || "",
+    });
+    
+    //console.log("NOTIFICACION MP:::::::::::::::::::::");
+    const {body, query} = req;
+    //console.log({body,query});
+    const topic = query.topic || query.type;
+    //console.log("TOPIC:");
+    //console.log({topic});
+
+    switch (topic){
+        case "payment":
+            const paymentId = query.id || query['data.id'];
+            //console.log(topic,"obteniendo payment : ",paymentId);
+            const payment = await mercadopago.payment.findById(Number(paymentId));
+            const montoNetoDonado:number = Number(payment.body.transaction_details.net_received_amount);
+/*             console.log("PAYMENT-----------")
+            console.log("STATUS:::");
+            console.log(payment.body.status)
+            console.log("TRANSACTIONS DETAIL:::")
+            console.log(payment.body.transaction_details);
+            console.log(montoNetoDonado);
+            console.log("FIN PAYMENT-----------") */
+            
+            if (payment.body.status==="approved"){ 
+                //	- si se acreditó el pago, manda el comprobante al mail del comprador y se marca el pago como acreditado en la tabla de “pagosCompras”
+
+
+
+            }
+/*             console.log(topic,"obteniendo merchand order");
+            const merchantOrder = await mercadopago.merchant_orders.findById(payment.body.order.id); */
+            break
+    }
+}
