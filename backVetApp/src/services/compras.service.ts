@@ -2,6 +2,7 @@ import { QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 import { sumarCantidadCompradaProductosDB } from "./productos.service";
+import { DatosCompra } from "../interfaces/Compras.interface";
 
 
 export const insertCompraDB = async (productos:ItemCarrito[],email:string ) => {
@@ -14,7 +15,7 @@ export const insertCompraDB = async (productos:ItemCarrito[],email:string ) => {
     const values = [JSON.stringify(productos),email, new Date().toISOString()]
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
-        const resultId:number = await response.rows[0];
+        const resultId = await response.rows[0];
         return resultId;
     }
     catch (err) {
@@ -25,11 +26,11 @@ export const insertCompraDB = async (productos:ItemCarrito[],email:string ) => {
 }
 
 export const cancelarReservasExpiradasDB = async () => {
-    //selecciona las compras que no fueron canceladas ni se acreditaron y pasaron hace 30 segundos
+    //selecciona las compras que no fueron canceladas ni se acreditaron y pasaron hace 60 segundos
     const query = `
     SELECT id, productos, "seAcredito", cancelada, "fechaHoraReserva",EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) AS "secondsDifference"
 	FROM public.compras
-    WHERE cancelada = false and "seAcredito" = false and EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) > 30 
+    WHERE cancelada = false and "seAcredito" = false and EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) > 60 
     `;
     const values = [new Date().toISOString()];
     try {
@@ -77,3 +78,42 @@ const marcarCanceladoDB = async (id:number) => {
         return "error";
     }
 }
+
+export const marcarAcreditadoDB = async (id:number) => {
+    const query = `
+    UPDATE public.compras
+    SET "seAcredito" = true
+    WHERE id = $1
+    `
+    const values= [id];
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:marcarAcreditadoDB------");
+        console.log(err);
+        return "error";
+    }
+}
+
+export const getCompraBD = async (id: number) => {
+    const query = `
+    SELECT id, productos, email
+	FROM public.compras
+    WHERE id = $1
+    `
+    const values = [id]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: DatosCompra = await response.rows[0];
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getCompraBD------");
+        console.log(err);
+        return "error";
+    }
+}
+
+	

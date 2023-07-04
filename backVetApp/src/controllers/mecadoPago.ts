@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import * as mercadopago from "mercadopago";
 import { Campaign, Donacion, PaymentID } from "../interfaces/Donaciones.interface";
 import { sendMailWithAttachment } from "../utils/mailer.handle";
-import { generateComprobanteDonacion, generatePDF } from "../utils/pdf.handle";
+import { generateComprobanteDonacion, generateComprobantePagoCompra, generatePDF } from "../utils/pdf.handle";
 import { insertDonacion, sumarAMontoRecaudadoDeCampaign } from "../services/donaciones.service";
 import { getCliente, sumarAMontoAcumuladoDescuentoCliente } from "../services/clientes.service";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
-import { insertCompraDB } from "../services/compras.service";
+import { getCompraBD, insertCompraDB, marcarAcreditadoDB } from "../services/compras.service";
 import { getPrecioTotalCompraDB, restarCantidadCompradaProductosDB } from "../services/productos.service";
 
 const ngrokURL= 'https://7845-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
@@ -32,7 +32,7 @@ export const createPrefrerenceCompraProductosController = async (req: Request, r
     mercadopago.configure({
         access_token: process.env.MP_ACCESS_TOKEN || "",
     });
-    
+
     const idReserva = await insertCompraDB(productos,emailComprador);
     if (idReserva==='error'){
         res.status(500).send("error bd en reserva de compra");
@@ -46,7 +46,8 @@ export const createPrefrerenceCompraProductosController = async (req: Request, r
     }
     //preparo la url de la notificacion junto con los datos que necesitaré para identificarla
     var donacionNotificationUrl = new URL(ngrokURL+"/notificacion_mp_compraProductos");
-    donacionNotificationUrl.searchParams.append("idReserva",idReserva.toString());
+    donacionNotificationUrl.searchParams.append("idReserva",idReserva.id);
+    donacionNotificationUrl.searchParams.append("source_news","ipn");
 
     let preference = {
         items: [
@@ -222,10 +223,9 @@ export const notificacionDonacionController = async (req: Request, res: Response
 
 export const notificacionCompraProductoController = async (req: Request, res: Response) => {
     res.send();
-
 /*     console.log("QUERY de notificacion::")
     console.log(req.query); */
-    const idCompra= req.query.idReserva as string;
+    const idCompra= req.query.idReserva;
 
     //console.log("Configurando")
     mercadopago.configure({
@@ -234,10 +234,10 @@ export const notificacionCompraProductoController = async (req: Request, res: Re
     
     //console.log("NOTIFICACION MP:::::::::::::::::::::");
     const {body, query} = req;
-    //console.log({body,query});
+//    console.log({body,query});
     const topic = query.topic || query.type;
-    //console.log("TOPIC:");
-    //console.log({topic});
+/*     console.log("TOPIC:---------------");
+    console.log({topic}); */
 
     switch (topic){
         case "payment":
@@ -250,14 +250,36 @@ export const notificacionCompraProductoController = async (req: Request, res: Re
             console.log(payment.body.status)
             console.log("TRANSACTIONS DETAIL:::")
             console.log(payment.body.transaction_details);
-            console.log(montoNetoDonado);
             console.log("FIN PAYMENT-----------") */
             
             if (payment.body.status==="approved"){ 
                 //	- si se acreditó el pago, manda el comprobante al mail del comprador y se marca el pago como acreditado en la tabla de “pagosCompras”
+                console.log('REGISTRANDO EL PAGOOOOOOOOOOOOOOOOOOOOOOOO')
+                const seMarcoAcreditado = await marcarAcreditadoDB(Number(idCompra));
+                if (seMarcoAcreditado==='error'){
+                    console.log("Falla en marcado como acreditado de pago id:",idCompra);
+                }
+                const datosCompra = await getCompraBD(Number(idCompra));
+                if (datosCompra==="error"){
+                    console.log("Falla en getCompraBD al registrar pago");
+                    return
+                }
 
+                //envio email con pdf
+                let pdf = await generateComprobantePagoCompra(JSON.parse(datosCompra.productos),datosCompra.email)
+                try {
+                    await sendMailWithAttachment(datosCompra.email,
+                        `Comprobante de pago de compra de productos`,
+                        `Su comprobante del pago de sus productos se encuentra en el pdf adjunto.`,
+                        pdf,
+                        `comprobanteCompra${idCompra}.pdf`
+                    );
+                } catch (error) {
+                    console.log("Falla de envio de mail en notificacionCompraProductoController")
+                    console.log(error);
+                }
 
-
+                console.log("COMPRA REGISTRADA");
             }
 /*             console.log(topic,"obteniendo merchand order");
             const merchantOrder = await mercadopago.merchant_orders.findById(payment.body.order.id); */
