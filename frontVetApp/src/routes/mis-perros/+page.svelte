@@ -225,9 +225,9 @@
                             {/if}
                         </p>
                     </div>
-                    <footer class="flex">
+                    <footer class="flex flex-wrap">
                         <a
-                            class="btn variant-ghost-surface mr-2"
+                            class="btn variant-ghost-surface mr-2 mb-2"
                             rel="noreferrer"
                             href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
                             >Editar</a
@@ -249,13 +249,21 @@
                                         perro.paraCruza
                                     );
                                 }}
-                                class="btn variant-ghost-surface mr-2"
+                                class="btn variant-ghost-surface mr-2 mb-2"
                                 >{#if perro.paraCruza}
                                     Eliminar registro para cruza
                                 {:else}
                                     Registrar para cruza
                                 {/if}</button
                             >
+                            {#if perro.paraCruza}
+                                <a
+                                    class="btn variant-ghost-surface mr-2"
+                                    rel="noreferrer"
+                                    href="/mis-perros/perros-para-cruza?nombre={perro.nombre}&owner={perro.owner}&raza={perro.raza}"
+                                    >Ver perros para cruza</a
+                                >
+                            {/if}
                         {/if}
                     </footer>
                 </div>
