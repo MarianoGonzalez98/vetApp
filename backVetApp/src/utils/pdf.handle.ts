@@ -2,6 +2,7 @@
 import PDFDocument from "pdfkit";
 import getStream from 'get-stream';
 import { Donacion, PaymentID } from "../interfaces/Donaciones.interface";
+import { ItemCarrito } from "../interfaces/Carrito.interface";
 
 export const generatePDF = async (content:string) => {
     const doc = new PDFDocument()
@@ -25,6 +26,30 @@ export const generateComprobanteDonacion = async (donacion:(Donacion&PaymentID))
 
     Numero identificador de pago: ${donacion.paymentId}
 `
+    let pdf = await generatePDF(contenidoPDF);
+    return pdf;
+}
+
+
+export const generateComprobantePagoCompra = async (productos:ItemCarrito[],email:string) => {
+
+    let stringProductos="";
+    productos.forEach( prod => {
+        stringProductos+=`
+        Nombre del producto: ${prod.nombre}
+        Cantidad comprada: ${prod.cant}
+        `
+    });
+
+    let contenidoPDF= `
+        COMPROBANTE DE COMPRA
+
+        Email del comprador: ${email}
+        Fecha y hora: ${new Date().toLocaleDateString("es-AR")} ${new Date().toLocaleTimeString("es-AR",{timeStyle: 'short'})} 
+
+        Productos comprados:
+        ${stringProductos}
+    `
     let pdf = await generatePDF(contenidoPDF);
     return pdf;
 }
