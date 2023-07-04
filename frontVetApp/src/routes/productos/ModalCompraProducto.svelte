@@ -36,6 +36,8 @@
 			dispatchEvent();
 			$productosCarrito = [];
 			if (json.status==='out_of_stock'){
+				modalStore.clear();
+				modalStore.trigger(fallaStock);
 				console.log("NO HAY STOCK")
 				return -1;
 			}
@@ -71,7 +73,12 @@
 		}
     }
 
-
+    const fallaStock: ModalSettings = {
+        type: "alert",
+        title: "Sin stock",
+        body: "No hay stock suficiente para uno de sus productos elegidos. Por favor, vuelva a seleccionar los productos que desee comprar",
+        buttonTextCancel: "Ok",
+    };
 
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 	const cHeader = 'text-2xl font-bold';

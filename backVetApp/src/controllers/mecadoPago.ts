@@ -9,15 +9,12 @@ import { ItemCarrito } from "../interfaces/Carrito.interface";
 import { insertCompraDB } from "../services/compras.service";
 import { getPrecioTotalCompraDB, restarCantidadCompradaProductosDB } from "../services/productos.service";
 
-const ngrokURL= 'https://c48a-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://7845-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 
 export const createPrefrerenceCompraProductosController = async (req: Request, res: Response) => {
-    console.log("Configurando MercadoPagoCompraProductos")
-    mercadopago.configure({
-        access_token: process.env.MP_ACCESS_TOKEN || "",
-    });
+
     const productos:ItemCarrito[] = req.body.productosAComprar;
     const emailComprador:string = req.body.emailComprador;
 
@@ -30,6 +27,12 @@ export const createPrefrerenceCompraProductosController = async (req: Request, r
         res.status(200).send({status:'out_of_stock'})
         return;
     }
+
+    console.log("Configurando MercadoPagoCompraProductos")
+    mercadopago.configure({
+        access_token: process.env.MP_ACCESS_TOKEN || "",
+    });
+    
     const idReserva = await insertCompraDB(productos,emailComprador);
     if (idReserva==='error'){
         res.status(500).send("error bd en reserva de compra");
