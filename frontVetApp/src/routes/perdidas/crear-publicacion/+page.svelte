@@ -37,6 +37,7 @@
         inputPerro.fechaNacimiento = selectedPerro.fechaNacimiento.slice(0,10);
         inputPerro.descripcion = selectedPerro.observaciones;
         inputPerro.foto = selectedPerro.foto;
+        foto = selectedPerro.foto;
     }
 
     let popupSettings: PopupSettings = {
@@ -77,6 +78,61 @@
     function onPopupDemoSelect(event: any): void {
         zona = event.detail.label;
     }
+
+    let foto: any;
+    let fileErrorMsj = "";
+    let FotoFile: any; //por ahora no tiene utilidad
+
+    const modalConfirmarEliminarFoto: ModalSettings = {
+        type: "confirm",
+        title: "Confirme su acción",
+        body: "¿Está seguro de eliminar la foto?",
+        buttonTextConfirm: "Si",
+        buttonTextCancel: "No",
+        response: (confirma: boolean) => {
+            if (confirma) {
+                foto = "";
+                inputPerro.foto = "";
+                FotoFile = "";
+            }
+        },
+    };
+
+    const eliminarFoto = () => {
+        modalStore.clear();
+        modalStore.trigger(modalConfirmarEliminarFoto);
+    };
+
+
+    const onChangeFile = async (event: Event) => {
+        let target = event.target as HTMLInputElement;
+        if (!target.files) {
+            return;
+        }
+        let image = target.files[0];
+        if (image.size > 5242880) {
+            // 5 mb en bytes
+            fileErrorMsj = "La imagen debe pesar menos de 5 MB";
+            target.value = "";
+            return;
+        }
+        if (image.type !== "image/jpeg" && image.type !== "image/png") {
+            fileErrorMsj = "El archivo debe ser una imagen jpg, jpeg o png";
+            target.value = "";
+            return;
+        }
+        FotoFile = target.value;
+        fileErrorMsj = "";
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = (e) => {
+            if (!e.target) {
+                return;
+            }
+            foto = e.target.result;
+            //console.log(foto);
+        };
+    };
 
     onMount(async () => {
         //si soy cliente obtengo los datos de mis perros
@@ -157,7 +213,7 @@
                 nombrePerro:inputPerro.nombre,
                 razaPerro:inputPerro.raza,
                 sexoPerro:inputPerro.sexo,
-                foto:inputPerro.foto,
+                foto:foto,
                 fechaNacPerro:inputPerro.fechaNacimiento,
                 descripcionPerro:inputPerro.descripcion,
 
@@ -266,7 +322,35 @@
             </div>
         </div>
 
+        <p>Foto del perro:</p>
+            <div>
+                {#if foto}
+                    <img
+                        class="object-contain h-32 w-32"
+                        src={foto}
+                        alt="foto de perfil"
+                    />
+                {:else}
+                    <img
+                        class="object-contain h-32 w-32"
+                        src="/no_foto_perro.png"
+                        alt=""
+                    />
+                {/if}
+                <button
+                    on:click={eliminarFoto}
+                    class="btn rounded btn-sm variant-filled-warning"
+                    type="button">Eliminar foto</button
+                >
+            </div>
+            <p class="text-red-500">{fileErrorMsj}</p>
 
+            <input
+                bind:files={FotoFile}
+                type="file"
+                accept="image/png, image/jpeg"
+                on:change={onChangeFile}
+            >
 
     <!-- si es veterinario -->
 
