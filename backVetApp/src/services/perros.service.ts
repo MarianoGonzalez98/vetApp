@@ -238,3 +238,23 @@ export const toggleParaCruza = async (perro: Perro) => {
         return "error";
     }
 }
+
+export const getPerrosParaCruza = async (owner: string) => {
+    const query = `
+    SELECT *
+    FROM public.perros p
+    WHERE (p.owner = $1) AND (p.fallecido = false)
+    `
+
+    const values = [owner]
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        const result: Perro[] = await response.rows
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getPerros------");
+        console.log(err);
+        return "error";
+    }
+}

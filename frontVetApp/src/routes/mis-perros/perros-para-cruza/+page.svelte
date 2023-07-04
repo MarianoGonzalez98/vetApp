@@ -11,6 +11,7 @@
     import { goto, preloadCode } from "$app/navigation";
     import ModalExampleForm from "./ModalExampleForm.svelte";
     import { backendURL } from "$lib/utils/constantFactory";
+    import type { Perro } from "$lib/interfaces/Perro.interface";
 
     const owner: string =
         new URLSearchParams(window.location.search).get("owner") ??
@@ -23,7 +24,7 @@
     const raza: string =
         new URLSearchParams(window.location.search).get("raza") ?? "";
 
-    let paseadorescuidadores: PaseadorCuidador[] = [];
+    let perros: Perro[] = [];
 
     const fallaServidor: ModalSettings = {
         type: "alert",
@@ -57,56 +58,15 @@
             .then((res) => res.json())
             .then((apiResponse) => (perros = apiResponse.data));
         mostrar = perros;
-        console.log(typeof perros[0].vacunas);
     });
-
-    const cambiarDisponibilidad = async (
-        email: string,
-        disponible: boolean
-    ) => {
-        let error: boolean = false;
-
-        await fetch(`${backendURL}/cambiar-disponible`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                email: email,
-                disponible: disponible,
-            }),
-        })
-            .then((res) => {
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    goto("/auth/login");
-                    return;
-                }
-                if (res.status === 500) {
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
-            })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log(
-                    "Error desconocido en carga del paseador/cuidador : ",
-                    error
-                );
-            });
-    };
 
     let inputZona: string;
     let inputHorario: string;
     let inputNombre: string;
     let emailSeleccionado: string;
 
-    $: mostrar = paseadorescuidadores.filter((pc) => {
-        const zonaMatch = inputZona
+    $: mostrar = perros.filter((pc) => {
+/*         const zonaMatch = inputZona
             ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
             : true;
         const horarioMatch = inputHorario
@@ -121,11 +81,11 @@
                   .match(`.*${inputNombre.toLowerCase()}.*`)
             : true;
         return zonaMatch && horarioMatch && nombreMatch;
-    });
+ */    });
 
-    const handleContactar = (pc: PaseadorCuidador) => {
+    const handleContactar = (pc: Perro) => {
         console.log(pc);
-        emailSeleccionado = pc.email;
+        emailSeleccionado = pc.owner;
         let modalComponent = {
             // Pass a reference to your custom component
             ref: ModalExampleForm,
@@ -154,19 +114,9 @@
 
 <Modal />
 
-<h1 class="h1 m-4 font-medium">Paseadores y Cuidadores</h1>
-{#if paseadorescuidadores.length > 0}
+<h1 class="h1 m-4 font-medium">Perros para cruzar con {nombre}</h1>
+{#if perros.length > 0}
     <div class="flex">
-        {#if $user?.rol === "veterinario"}
-            <div class="mt-6">
-                <a
-                    class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
-                    rel="noreferrer"
-                    href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
-                    >Cargar paseador/cuidador</a
-                >
-            </div>
-        {/if}
         <div class="ml-2">
             <label for="filtroRaza" class="text-left whitespace-nowrap"
                 >Filtrar por zona:
@@ -205,8 +155,7 @@
         </div>
     </div>
     <div class="ml-2 flex flex-wrap">
-        {#each mostrar as pc}
-            {#if $user?.rol === "veterinario" || pc.disponible}
+        {#each mostrar as perro}
                 <div
                     class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
                 >
@@ -214,77 +163,26 @@
                         <h5
                             class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                         >
-                            {pc.nombre}
-                            {pc.apellido}
+                            {perro.nombre}
+                            {perro.owner}
                         </h5>
                         <div
                             class="text-base text-neutral-600 dark:text-neutral-200"
                         >
                             <p>
                                 <span class="font-medium">Zona: </span>
-                                {pc.zona}
-                            </p>
-                            <p>
-                                <span class="font-medium">Oficio: </span>
-                                {pc.oficio}
-                            </p>
-                            <p>
-                                <span class="font-medium">Email: </span>
-                                {pc.email}
-                            </p>
-                            {#if pc.cantPuntuaciones > 0}
-                                <p>
-                                    <span class="font-medium"
-                                        >Puntuación:
-                                    </span>
-                                    {(
-                                        pc.totalEstrellas / pc.cantPuntuaciones
-                                    ).toFixed(2)}/5
-                                </p>
-                            {:else}
-                                <p class="font-medium">
-                                    Todavía no tiene puntuaciones.
-                                </p>
-                            {/if}
-                            <p>
-                                <span class="font-medium">Teléfono: </span>
-                                {pc.telefono}
-                            </p>
-                            <p>
-                                <span class="font-medium">Horarios: </span>
-                                {pc.horarios}
+                                {perro.observaciones}
                             </p>
                         </div>
-                        {#if $user?.rol === "veterinario"}
                             <footer class="flex mt-4">
                                 <button
-                                    on:click={() => {
-                                        pc.disponible = !pc.disponible;
-                                        cambiarDisponibilidad(
-                                            pc.email,
-                                            pc.disponible
-                                        );
-                                    }}
-                                    class="btn btn-sm variant-ghost-surface mr-2"
-                                    >Marcar como {#if pc.disponible}
-                                        "No disponible"
-                                    {:else}
-                                        "Disponible"
-                                    {/if}
-                                </button>
-                            </footer>
-                        {:else}
-                            <footer class="flex mt-4">
-                                <button
-                                    on:click={(event) => handleContactar(pc)}
+                                    on:click={(event) => handleContactar(perro)}
                                     class="btn btn-sm variant-ghost-surface mr-2"
                                     >Contactar
                                 </button>
                             </footer>
-                        {/if}
                     </div>
                 </div>
-            {/if}
         {/each}
     </div>
 {:else}

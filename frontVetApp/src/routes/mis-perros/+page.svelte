@@ -240,6 +240,7 @@
                                 >Ocultar perro</button
                             >
                         {:else}
+                            {#if !perro.castrado}
                             <button
                                 on:click={(event) => {
                                     perro.paraCruza = !perro.paraCruza;
@@ -256,6 +257,7 @@
                                     Registrar para cruza
                                 {/if}</button
                             >
+                            {/if}
                             {#if perro.paraCruza}
                                 <a
                                     class="btn variant-ghost-surface mr-2"
