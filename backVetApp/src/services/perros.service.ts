@@ -219,3 +219,22 @@ export const getPerroJuli = async (id:number) => {
         return "error";
     }
 }
+
+export const toggleParaCruza = async (perro: Perro) => {
+    const query = `
+    UPDATE public.perros
+    SET "paraCruza" = $3
+    WHERE (owner = $1) AND (nombre = $2);
+    `
+    const values = [perro.owner, perro.nombre, perro.paraCruza]
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:toggleParaCruza------");
+        console.log(err);
+        return "error";
+    }
+}

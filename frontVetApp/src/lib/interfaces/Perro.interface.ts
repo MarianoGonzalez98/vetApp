@@ -25,6 +25,7 @@ export interface Perro {
     owner: string;
     fallecido: boolean,
     castrado: boolean,
+    paraCruza: boolean,
 }
 
 export interface Id {

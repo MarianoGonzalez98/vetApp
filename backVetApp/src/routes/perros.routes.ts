@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { actualizarPerroController, cargarPerroController, getPerroController, getPerroJuliController, listarPerrosController, marcarComoFallecidoController } from "../controllers/perros"
+import { actualizarPerroController, cambiarDisponibleParaCruzaController, cargarPerroController, getPerroController, getPerroJuliController, listarPerrosController, marcarComoFallecidoController } from "../controllers/perros"
 import { checkJWT } from "../middleware/session"
 import { checkRolCliente, checkRol } from "../middleware/checkRol"
 
@@ -11,3 +11,4 @@ PerrosRouter.put("/marcar-como-fallecido", checkJWT, checkRol, marcarComoFalleci
 PerrosRouter.get("/get-perro", checkJWT, getPerroController)
 PerrosRouter.put("/actualizar-perro", checkJWT, actualizarPerroController)
 PerrosRouter.get("/get-perroJuli", checkJWT, checkRol, getPerroJuliController)
+PerrosRouter.put("/cambiar-disponible-para-cruza", checkJWT, checkRolCliente, cambiarDisponibleParaCruzaController)

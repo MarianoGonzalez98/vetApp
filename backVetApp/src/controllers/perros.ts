@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { actualizarPerro, getPerro, getPerroJuli, getPerros, insertPerro, marcarComoFallecido } from "../services/perros.service"
+import { actualizarPerro, getPerro, getPerroJuli, getPerros, insertPerro, marcarComoFallecido, toggleParaCruza } from "../services/perros.service"
 import { Perro } from "../interfaces/Perro.interface"
 import { cancelarTurno, getTurnosPerro } from "../services/turno.service";
 import { sendMailController } from "./test";
@@ -143,4 +143,18 @@ export const getPerroJuliController = async (req: Request, res: Response) => {
         return
     }
     res.status(200).send({ data: result, statusCode: 200 })
+}
+
+export const cambiarDisponibleParaCruzaController = async (req: Request, res: Response) => {
+    const perro: Perro = req.body;
+
+    const dbResult = await toggleParaCruza(perro);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se actualizó correctamente la disponibilidad del paseador/cuidador');
 }
