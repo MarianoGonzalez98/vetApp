@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { PaseadorCuidador } from "../interfaces/PaseadoresYCuidadores.interface";
-import { getPaseadorCuidador, getPaseadoresCuidadores, insertPaseadorCuidador, toggleDisponible } from "../services/paseadorescuidadores.service";
+import { getPaseadorCuidador, getPaseadoresCuidadores, insertPaseadorCuidador, puntuarPC, toggleDisponible } from "../services/paseadorescuidadores.service";
 import { sendMailTest } from "../utils/mailer.handle";
 
 export const cargarPaseadorCuidadorController = async (req: Request, res: Response) => {
@@ -97,4 +97,28 @@ export const enviarMailController = async (req: Request, res: Response) => {
     }
 
     res.status(201).send('Se envió correctamente el mail al paseador/cuidador y a la veterinaria');
+}
+
+export const puntuarPCController = async (req: Request, res: Response) => {
+    const puntuacion = req.body;
+
+    const paseadorcuidador = await getPaseadorCuidador(puntuacion.email);
+    if (paseadorcuidador === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    paseadorcuidador.totalEstrellas += puntuacion.estrellas;
+    paseadorcuidador.cantPuntuaciones ++;
+
+    const dbResult = await puntuarPC(paseadorcuidador);
+
+    if (dbResult === 'error') {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+
+    res.status(201).send('Se puntuó correctamente al paseador/cuidador');
 }

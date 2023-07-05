@@ -68,6 +68,61 @@
         modalStore.trigger(modalConfirm);
     };
     const espacio = " ";
+
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del perro",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
+    const fallaDesconocida: ModalSettings = {
+        type: "alert",
+        title: "Fallo de la carga del perro",
+        body: "No se pudo cargar el nuevo perro",
+        buttonTextCancel: "Ok",
+    };
+
+    const cambiarDisponibilidadParaCruza = async (
+        owner: string,
+        nombre: string,
+        paraCruza: boolean
+    ) => {
+        let error: boolean = false;
+        await fetch(`${backendURL}/cambiar-disponible-para-cruza`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                owner: owner,
+                nombre: nombre,
+                paraCruza: paraCruza,
+            }),
+        })
+            .then((res) => {
+                if (res.status === 400) {
+                    //error por modificacion del token jwt.
+                    $user = null;
+                    goto("/auth/login");
+                    return;
+                }
+                if (res.status === 500) {
+                    modalStore.clear();
+                    modalStore.trigger(fallaServidor);
+                    return res;
+                }
+            })
+            .catch((error) => {
+                modalStore.clear();
+                modalStore.trigger(fallaDesconocida);
+                console.log(
+                    "Error desconocido cambio de disponibilidad de perro para cruza.",
+                    error
+                );
+            });
+    };
 </script>
 
 <Modal />
@@ -130,7 +185,8 @@
                             >
                         </p>
                         <p>
-                            <span class="font-medium">Vacunas aplicadas: </span> <br>
+                            <span class="font-medium">Vacunas aplicadas: </span>
+                            <br />
                             {#if perro.vacunas !== "[]"}
                                 {#each JSON.parse(perro.vacunas) as vacuna}
                                     {espacio}{vacuna.nombre}.
@@ -142,13 +198,16 @@
                         <p>
                             <span class="font-medium"
                                 >Antiparasitarios aplicados:
-                            </span> <br>
+                            </span> <br />
                             {#if perro.antiparasitarios !== "[]"}
                                 {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                     -{espacio}{antiparasitario.nombre}, aplicado el {new Date(
-                                        antiparasitario.fechaDeAplicacion).toLocaleDateString("es-AR")}, 
-                                        cantidad aplicada: {antiparasitario.cantidadAplicada} mg/kg.
-                                      <br>   
+                                    -{espacio}{antiparasitario.nombre}, aplicado
+                                    el {new Date(
+                                        antiparasitario.fechaDeAplicacion
+                                    ).toLocaleDateString("es-AR")}, cantidad
+                                    aplicada: {antiparasitario.cantidadAplicada}
+                                    mg/kg.
+                                    <br />
                                 {/each}
                             {:else}
                                 No se le aplicaron antiparasitarios.
@@ -166,13 +225,13 @@
                             {/if}
                         </p>
                     </div>
-                    <footer class="flex">
+                    <footer class="flex flex-wrap">
                         <a
-                            class="btn variant-ghost-surface mr-2"
+                            class="btn variant-ghost-surface mr-2 mb-2"
                             rel="noreferrer"
                             href="/mis-perros/editar-perro?nombre={perro.nombre}&owner={perro.owner}"
                             >Editar</a
-                            >
+                        >
                         {#if $user?.rol === "veterinario"}
                             <button
                                 on:click={(event) =>
@@ -180,6 +239,33 @@
                                 class="btn btn-sm bg-red-500"
                                 >Ocultar perro</button
                             >
+                        {:else}
+                            {#if !perro.castrado}
+                            <button
+                                on:click={(event) => {
+                                    perro.paraCruza = !perro.paraCruza;
+                                    cambiarDisponibilidadParaCruza(
+                                        perro.owner,
+                                        perro.nombre,
+                                        perro.paraCruza
+                                    );
+                                }}
+                                class="btn variant-ghost-surface mr-2 mb-2"
+                                >{#if perro.paraCruza}
+                                    Eliminar registro para cruza
+                                {:else}
+                                    Registrar para cruza
+                                {/if}</button
+                            >
+                            {/if}
+                            {#if perro.paraCruza}
+                                <a
+                                    class="btn variant-ghost-surface mr-2"
+                                    rel="noreferrer"
+                                    href="/mis-perros/perros-para-cruza?nombre={perro.nombre}&owner={perro.owner}&raza={perro.raza}"
+                                    >Ver perros para cruza</a
+                                >
+                            {/if}
                         {/if}
                     </footer>
                 </div>

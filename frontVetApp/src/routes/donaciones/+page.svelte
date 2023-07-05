@@ -139,7 +139,7 @@
     {/if}
 </div>
 <h1 class="h1 font-medium ml-3 mb-3">Campañas de donación</h1>
-{#if ((campaigns.length > 0) && ($user?.rol === "veterinario")) || (campaigns.filter(campaign => !campaign.finalizada).length > 0)}
+{#if (campaigns.length > 0 && $user?.rol === "veterinario") || campaigns.filter((campaign) => !campaign.finalizada).length > 0}
     <div class="ml-2 flex">
         {#if $user?.rol === "veterinario"}
             <div class="mt-6">
@@ -180,77 +180,90 @@
             />
         </div>
     </div>
-    <div class="ml-2 flex flex-wrap">
-        {#each mostrar as campaign}
-            {#if $user?.rol === "veterinario" || !campaign.finalizada}
-                <div
-                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
-                >
-                    <div class="flex flex-col justify-start p-6">
-                        <h5
-                            class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                        >
-                            {campaign.nombre}
-                        </h5>
-                        <div
-                            class="text-base text-neutral-600 dark:text-neutral-200"
-                        >
-                            {#if campaign.montoARecaudar}
+    {#if mostrar.length > 0}
+        <div class="ml-2 flex flex-wrap">
+            {#each mostrar as campaign}
+                {#if $user?.rol === "veterinario" || !campaign.finalizada}
+                    <div
+                        class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
+                    >
+                        <div class="flex flex-col justify-start p-6">
+                            <h5
+                                class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
+                            >
+                                {campaign.nombre}
+                            </h5>
+                            <div
+                                class="text-base text-neutral-600 dark:text-neutral-200"
+                            >
+                                {#if campaign.montoARecaudar}
+                                    <p>
+                                        <span class="font-medium"
+                                            >Monto a recaudar:
+                                        </span>
+                                        ${campaign.montoARecaudar}
+                                    </p>
+                                {/if}
                                 <p>
                                     <span class="font-medium"
-                                        >Monto a recaudar:
+                                        >Monto recaudado:
                                     </span>
-                                    ${campaign.montoARecaudar}
+                                    ${campaign.montoRecaudado}
                                 </p>
-                            {/if}
-                            <p>
-                                <span class="font-medium"
-                                    >Monto recaudado:
-                                </span>
-                                ${campaign.montoRecaudado}
-                            </p>
-                            <p>
-                                <span class="font-medium">Fecha límite: </span>
-                                {new Date(
-                                    campaign.fechaLimite
-                                ).toLocaleDateString("es-AR")}
-                            </p>
-                            <p>
-                                <span class="font-medium">Descripción: </span>
-                                {campaign.descripcion}
-                            </p>
-                        </div>
-                        <footer class="flex mt-4">
-                            {#if !campaign.finalizada}
-                                <button
-                                    on:click={(event) => handleDonar(campaign)}
-                                    class="btn btn-sm variant-ghost-surface mr-2"
-                                    >Donar
-                                </button>
-                                {#if $user?.rol === "veterinario"}
+                                <p>
+                                    <span class="font-medium"
+                                        >Fecha límite:
+                                    </span>
+                                    {new Date(
+                                        campaign.fechaLimite
+                                    ).toLocaleDateString("es-AR")}
+                                </p>
+                                <p>
+                                    <span class="font-medium"
+                                        >Descripción:
+                                    </span>
+                                    {campaign.descripcion}
+                                </p>
+                            </div>
+                            <footer class="flex mt-4">
+                                {#if !campaign.finalizada}
                                     <button
-                                        on:click={() => {
-                                            finalizarCampaign(campaign);
-                                        }}
+                                        on:click={(event) =>
+                                            handleDonar(campaign)}
                                         class="btn btn-sm variant-ghost-surface mr-2"
-                                        >Finalizar campaña
+                                        >Donar
                                     </button>
+                                    {#if $user?.rol === "veterinario"}
+                                        <button
+                                            on:click={() => {
+                                                finalizarCampaign(campaign);
+                                            }}
+                                            class="btn btn-sm variant-ghost-surface mr-2"
+                                            >Finalizar campaña
+                                        </button>
+                                    {/if}
                                 {/if}
-                            {/if}
-                            {#if $user?.rol === "veterinario"}
-                                <a
-                                    rel="noreferrer"
-                                    href="/donaciones/donaciones-a-campaign?campaign={campaign.nombre}"
-                                    class="btn btn-sm variant-ghost-surface mr-2"
-                                    >Ver donaciones
-                                </a>
-                            {/if}
-                        </footer>
+                                {#if $user?.rol === "veterinario"}
+                                    <a
+                                        rel="noreferrer"
+                                        href="/donaciones/donaciones-a-campaign?campaign={campaign.nombre}"
+                                        class="btn btn-sm variant-ghost-surface mr-2"
+                                        >Ver donaciones
+                                    </a>
+                                {/if}
+                            </footer>
+                        </div>
                     </div>
-                </div>
-            {/if}
-        {/each}
+                {/if}
+            {/each}
+        </div>
+    {:else}
+    <div class="flex justify-center items-center h-full">
+        <h1 class="text-4xl font-bold">
+            No hay resultados que coincidan con los filtros aplicados.
+        </h1>
     </div>
+    {/if}
 {:else}
     <div class="flex justify-center items-center h-full">
         {#if $user?.rol === "veterinario"}
