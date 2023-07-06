@@ -39,13 +39,16 @@ export const getProductoPorIdController = async (req:Request,res:Response) => {
 }
 
 export const getProductosController = async (req:Request, res:Response) => {
-    const productos = await getProductosDB();
-    
-    if (productos==='error'){
+    const productosDB = await getProductosDB();
+    if (productosDB==='error'){
         //HTTP 500 Internal server error
         res.status(500).send("posible error en base de datos:getProductos")
         return
     }
+    let productos = productosDB.map( p => ({
+        ...p,
+        foto: decodeToHTML_JPEG(p.foto),
+    }))
     return res.status(200).send({productos:productos});
 }
 

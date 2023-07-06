@@ -107,6 +107,13 @@
                     {:else}
                         <p>No hay stock</p>
                     {/if}
+                    <div>
+                        {#if prod.foto}
+                            <img class="object-contain h-32 w-32" src="{prod.foto}" alt="foto de perfil" />
+                        {:else}
+                            <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt="" />  <!-- guardar en static!! -->
+                        {/if}
+                    </div>
                     {#if ($user?.rol ==='veterinario')}
                     <a href= "/productos/editar-producto?idProducto={prod.id}">
                         <button class="btn btn-sm variant-ghost-surface mr-2">Editar producto</button>
