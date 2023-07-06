@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
-import { getProductoPorNombreMarcaDB, getProductosDB, insertProductoDB } from "../services/productos.service";
+import { getProductoPorIdDB, getProductoPorNombreMarcaDB, getProductosDB, insertProductoDB, updateProductoPorIdDB } from "../services/productos.service";
 import { Producto } from "../interfaces/Producto.interface";
+import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
 
 export const insertProductoController = async (req:Request, res:Response) => {
     const productoInput:Producto = req.body.producto;
@@ -23,6 +24,20 @@ export const insertProductoController = async (req:Request, res:Response) => {
     res.status(201).send('Producto cargado correctamente');
 }
 
+export const getProductoPorIdController = async (req:Request,res:Response) => {
+    const idProducto = Number(req.params.id);
+    const producto = await getProductoPorIdDB(idProducto);
+    
+    if (producto==='error'){
+        res.status(500).send("posible error en base de datos:getProductoPorIdDB")
+        return
+    }
+    if (producto){
+        producto.foto = decodeToHTML_JPEG(producto.foto);
+    }
+    return res.status(200).send({producto:producto});
+}
+
 export const getProductosController = async (req:Request, res:Response) => {
     const productos = await getProductosDB();
     
@@ -32,4 +47,18 @@ export const getProductosController = async (req:Request, res:Response) => {
         return
     }
     return res.status(200).send({productos:productos});
+}
+
+export const updateProductoPorIdController =  async (req:Request, res:Response) => {
+    const productoActualizado:Producto = req.body.producto;
+    try {
+        if (productoActualizado.foto){
+            productoActualizado.foto= await encodeRezizeImgToJPEG(productoActualizado.foto) || "";
+        }
+        await updateProductoPorIdDB(productoActualizado);
+        return res.status(200).send('Se actualizó el producto correctamente.');
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error al actualizar el producto")
+    }
 }

@@ -8,8 +8,8 @@ export const checkJWT = async (req:Request, res:Response, next: NextFunction) =>
         res.locals.jwtData=verificado; //si llega a esta linea, es que el jwt no fue modificado y lo guardo en user local
         next();
     } catch (error) {
-        console.log(error);
+        console.log("Falla de jwt. valor del token: "+req.cookies.jwt);
         res.status(400);
-        res.send('SESION_NO_VALIDA.No me cambies el jwt pillo.');
+        res.send('SESION_NO_VALIDA. FALLA EN EL JWT.');
     }
 }
