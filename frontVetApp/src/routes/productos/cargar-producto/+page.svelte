@@ -7,7 +7,7 @@
     import { fallaDesconocida, fallaServidor, productoCargado } from "./modals";
 
 
-    
+    let FotoFile: any;
     let producto = {
         nombre: '',
         precio:'',
@@ -17,7 +17,7 @@
         foto:'',
     }
     let errorMsj:string='';
-
+    let fileErrorMsj = "";
     
     const handleCarga = async () => {
         errorMsj='';
@@ -61,6 +61,40 @@
             });
     }
 
+    const eliminarFoto = () => {
+        producto.foto = "";
+        FotoFile = "";
+    };
+
+    const onChangeFile = async (event: Event) => {
+        let target = event.target as HTMLInputElement;
+        if (!target.files) {
+            return;
+        }
+        let image = target.files[0];
+        if (image.size > 5242880) {
+            // 5 mb en bytes
+            fileErrorMsj = "La imagen debe pesar menos de 5 MB";
+            target.value = "";
+            return;
+        }
+        if (image.type !== "image/jpeg" && image.type !== "image/png") {
+            fileErrorMsj = "El archivo debe ser una imagen jpg, jpeg o png";
+            target.value = "";
+            return;
+        }
+        FotoFile = target.value;
+        fileErrorMsj = "";
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = (e) => {
+            if (!e.target) {
+                return;
+            }
+            producto.foto = e.target.result as string;
+            //console.log(foto);
+        };
+    };
 </script>
 
 <Modal></Modal>
@@ -83,6 +117,20 @@
 
             <label class="label" for="descripcion">Descripcion:</label>
             <input bind:value={producto.descripcion} class="input focus:invalid:border-red-500"type="text" placeholder="Descripcion del producto" name="descripcion"/>
+
+            <p>Imagen del producto:</p>
+            <div>
+                {#if producto.foto}
+                    <img class="object-contain h-32 w-32" src={producto.foto} alt="foto del producto"/>
+                {:else}
+                    <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt=""/>
+                {/if}
+                <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
+            </div>
+            <p class="text-red-500">{fileErrorMsj}</p>
+
+            <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
+
 
             <hr class="!border-t-2" />
             <div></div> <!-- para mas espacio con el último elemento(horrible, ya se) -->

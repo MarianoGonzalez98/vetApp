@@ -15,6 +15,9 @@ export const insertProductoController = async (req:Request, res:Response) => {
         res.status(409).send('Error: ya existe el producto');
         return;
     }
+    if (productoInput.foto){
+        productoInput.foto= await encodeRezizeImgToJPEG(productoInput.foto) || "";
+    }
     const dbResult = await insertProductoDB(productoInput);
     if (dbResult==='error'){
         //HTTP 500 Internal server error

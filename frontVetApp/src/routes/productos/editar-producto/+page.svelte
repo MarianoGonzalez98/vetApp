@@ -11,7 +11,7 @@
     let producto:Producto;
 
 
-    let FotoFile: any; //por ahora ni tiene utilidad
+    let FotoFile: any; 
     let submittedClass = "";
 
 
@@ -183,7 +183,7 @@
                 <label class="label" for="descripcion">Descripcion:</label>
                 <input bind:value={producto.descripcion} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese descripción del producto" name="descripcion"/>
 
-                <p>Foto de perfil:</p>
+                <p>Imagen del producto:</p>
                 <div>
                     {#if producto.foto}
                         <img class="object-contain h-32 w-32" src={producto.foto} alt="foto del producto"/>
