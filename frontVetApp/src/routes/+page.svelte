@@ -46,6 +46,11 @@
 				href="/perdidas">Pérdidas</a
 			>
 			<a
+				class="btn variant-ghost-surface mr-1"
+				rel="noreferrer"
+				href="/busquedas">Búsquedas</a
+			>
+			<a
 			class="btn variant-ghost-surface"
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
