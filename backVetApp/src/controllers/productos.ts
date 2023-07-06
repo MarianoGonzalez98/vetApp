@@ -41,7 +41,6 @@ export const getProductoPorIdController = async (req:Request,res:Response) => {
 export const getProductosController = async (req:Request, res:Response) => {
     const productosDB = await getProductosDB();
     if (productosDB==='error'){
-        //HTTP 500 Internal server error
         res.status(500).send("posible error en base de datos:getProductos")
         return
     }
@@ -53,12 +52,12 @@ export const getProductosController = async (req:Request, res:Response) => {
 }
 
 export const updateProductoPorIdController =  async (req:Request, res:Response) => {
-    const productoActualizado:Producto = req.body.producto;
+    const prod:Producto = req.body.producto;
     try {
-        if (productoActualizado.foto){
-            productoActualizado.foto= await encodeRezizeImgToJPEG(productoActualizado.foto) || "";
+        if (prod.foto){
+            prod.foto= await encodeRezizeImgToJPEG(prod.foto) || "";
         }
-        await updateProductoPorIdDB(productoActualizado);
+        await updateProductoPorIdDB(prod);
         return res.status(200).send('Se actualizó el producto correctamente.');
     } catch (error) {
         console.log(error);
