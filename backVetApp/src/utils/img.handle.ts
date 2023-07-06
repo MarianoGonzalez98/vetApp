@@ -13,6 +13,7 @@ import sharp from "sharp";
         return result;
     } catch (error) {
         console.log(error)
+        throw error;
     }
     
 }

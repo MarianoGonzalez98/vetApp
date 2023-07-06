@@ -1,5 +1,5 @@
 export interface ItemCarrito {
-    idProducto:string,
+    idProducto:number,
     cant:number,
     nombre:string,
     marca:string,

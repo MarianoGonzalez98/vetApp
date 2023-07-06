@@ -1,3 +1,4 @@
+import { goto } from "$app/navigation";
 import type { ModalSettings } from "@skeletonlabs/skeleton";
 
 export const productoCargado: ModalSettings = {
@@ -5,7 +6,8 @@ export const productoCargado: ModalSettings = {
     title: "Producto cargado",
     body: "Producto cargado correctamente",
     buttonTextCancel: "Ok",
-    response: (r: boolean) => location.reload(),
+    response: (r: boolean) => goto("/productos"),
+    //response: (r: boolean) => location.reload(),
 };
 
 export const fallaDesconocida: ModalSettings = {

@@ -1,11 +1,43 @@
-import { QueryResult } from "pg";
+import { DatabaseError, QueryResult } from "pg";
 import { pool } from "../utils/db.handle";
 import { Producto } from "../interfaces/Producto.interface";
 import { Id } from "../interfaces/Id.interface";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 
 
+export const deleteProductoPorIdDB = async (id:number) => {
+    const query = `
+    DELETE FROM public.productos
+	WHERE id = $1;
+    `;
+    const value = [id];
+    try {
+        await pool.query(query,value);
+    } catch (error) {
+        console.error("----Error en delete en BD:deleteProductoPorIdDB------");
+        throw error;
+    }
+}
 
+export const updateProductoPorIdDB = async (producto:Producto) => {
+    const query = `
+    UPDATE public.productos
+	SET stock=$1, precio=$2, descripcion=$3,foto=$4
+	WHERE id = $5;
+    `
+    const values = [producto.stock,producto.precio,producto.descripcion,producto.foto,producto.id];
+    try{
+        const result = await pool.query(query, values);
+        if (result.rowCount<1){
+            throw new Error("product_not_exists");
+        }
+
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:updateProductoPorIdDB------");
+        throw err
+    }
+}
 
 export const getProductosPorCarritoDB = async (carrito:ItemCarrito[]) => {
     const query = `
@@ -158,5 +190,4 @@ export const getPrecioTotalCompraDB = async (productos:ItemCarrito[]) => {
         suma += (producto.precio * item.cant);
     }
     return suma;
-
 }

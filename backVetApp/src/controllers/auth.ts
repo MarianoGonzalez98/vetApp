@@ -84,9 +84,12 @@ export const updateMiPerfilController = async (req: Request, res: Response) => {
         res.status(409).send("Ya se encuentra un usuario registrado con ese dni")
         return
     }
-
-    if (datosNuevos.foto){
-        datosNuevos.foto= await encodeRezizeImgToJPEG(datosNuevos.foto) || "";
+    try {
+        if (datosNuevos.foto){
+            datosNuevos.foto= await encodeRezizeImgToJPEG(datosNuevos.foto);
+        }
+    } catch (error) {
+        datosNuevos.foto="";
     }
     const result = await updatePerfilUsuario(datosNuevos,emailJWT)
     if (result === 'error'){
