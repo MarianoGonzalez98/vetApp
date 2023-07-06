@@ -2,6 +2,8 @@
 import PDFDocument from "pdfkit";
 import getStream from 'get-stream';
 import { Donacion, PaymentID } from "../interfaces/Donaciones.interface";
+import { ItemCarrito } from "../interfaces/Carrito.interface";
+import { getProductosPorCarritoDB } from "../services/productos.service";
 
 export const generatePDF = async (content:string) => {
     const doc = new PDFDocument()
@@ -25,6 +27,42 @@ export const generateComprobanteDonacion = async (donacion:(Donacion&PaymentID))
 
     Numero identificador de pago: ${donacion.paymentId}
 `
+    let pdf = await generatePDF(contenidoPDF);
+    return pdf;
+}
+
+
+export const generateComprobantePagoCompra = async (carrito:ItemCarrito[],email:string) => {
+
+    const productos = await getProductosPorCarritoDB(carrito);
+    if (productos==='error'){
+        console.log("Carrito que fallo: ");
+        console.log(carrito);
+        return await generatePDF('Falla al generar pdf del carrito');
+    }
+
+    const detalles = carrito.map( item => ({
+        cant:item.cant,
+        ...productos.find( prod => prod.id=item.idProducto)
+    }) )
+    let stringProductos="";
+    detalles.forEach( detalle => {
+        stringProductos+=`
+        Nombre del producto: ${detalle.nombre}
+        Marca del produtco: ${detalle.marca}
+        Cantidad comprada: ${detalle.cant}
+        `
+    });
+
+    let contenidoPDF= `
+        COMPROBANTE DE COMPRA
+
+        Email del comprador: ${email}
+        Fecha y hora: ${new Date().toLocaleDateString("es-AR")} ${new Date().toLocaleTimeString("es-AR",{timeStyle: 'short'})} 
+
+        Productos comprados:
+        ${stringProductos}
+    `
     let pdf = await generatePDF(contenidoPDF);
     return pdf;
 }

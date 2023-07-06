@@ -14,11 +14,6 @@
 				<a class="btn variant-filled" rel="noreferrer" href="/clientes"
 					>Ver clientes</a
 				>
-				<a
-					class="btn variant-filled"
-					rel="noreferrer"
-					href="/donaciones/crear-campaign">Crear campaña</a
-				>
 			{:else}
 				<a
 					class="btn variant-filled"
@@ -46,9 +41,19 @@
 				href="/adopciones">Adopciones</a
 			>
 			<a
+				class="btn variant-ghost-surface mr-1"
+				rel="noreferrer"
+				href="/perdidas">Pérdidas</a
+			>
+			<a
 			class="btn variant-ghost-surface"
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
+			>
+			<a
+			class="btn variant-ghost-surface"
+			rel="noreferrer"
+			href="/productos">Productos en venta</a
 			>
 		</div>
 	</div>

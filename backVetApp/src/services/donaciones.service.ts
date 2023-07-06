@@ -23,7 +23,7 @@ export const getDonacion = async (paymentId: string) => {
 }
 
 export const insertDonacion = async (donacion:(Donacion&PaymentID)) => {
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2000)); //NO ME ACUERDO PORQUE PUSE ESTO, CREO QUE LO PUEDO SACAR
     const query = `
     INSERT INTO public.donaciones( "fechaHora", monto, "emailDonante", "nombreCampaign", "paymentId")
         VALUES ($1, $2, $3, $4, $5)

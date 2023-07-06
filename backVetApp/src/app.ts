@@ -24,7 +24,8 @@ types.setTypeParser(1700, function(val:any) {
 });
 
 cron.schedule('* * * * *', async () => {
-  finalizarCampaignsPasadas();
+  await cancelarReservasExpiradasDB()
+  await finalizarCampaignsPasadas();
   const result = await getTurnosPendientesPasados();
 
   if (result === "error") {
@@ -78,7 +79,11 @@ import { sendMailTest } from "./utils/mailer.handle";
 import { DonacionesRouter } from "./routes/donaciones.routes";
 import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 import { finalizarCampaignsPasadas } from "./controllers/donaciones";
+import { PerdidasRouter } from "./routes/perdidas.routes";
+import { ProductosRouter } from "./routes/productos.routes";
+import { cancelarReservasExpiradasDB } from "./services/compras.service";
 
+app.use(PerdidasRouter)
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
 app.use(AuthRouter);
@@ -89,6 +94,7 @@ app.use(PaseadoresCuidadoresRouter);
 app.use(MailerRouter)
 app.use(DonacionesRouter)
 app.use(MercadoPagoRouter)
+app.use(ProductosRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

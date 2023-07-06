@@ -77,3 +77,22 @@ export const toggleDisponible = async (paseadorcuidador: PaseadorCuidador) => {
         return "error";
     }
 }
+
+export const puntuarPC = async (paseadorcuidador: PaseadorCuidador) => {
+    const query = `
+    UPDATE public.paseadoresycuidadores
+    SET "totalEstrellas" = $2, "cantPuntuaciones" = $3
+    WHERE email = $1;
+    `
+    const values = [paseadorcuidador.email, paseadorcuidador.totalEstrellas, paseadorcuidador.cantPuntuaciones];
+
+    try {
+        const response: QueryResult = await pool.query(query, values)
+        return 'ok';
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:puntuarPC------");
+        console.log(err);
+        return "error";
+    }
+}
