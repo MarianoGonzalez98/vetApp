@@ -30,9 +30,15 @@
         if ((!prod) || (prod.stock==0)){
             return;
         }
-        let productoDelCarrito = $productosCarrito.find( p => p.nombre===prod.nombre);
+        let productoDelCarrito = $productosCarrito.find( p => p.idProducto===prod.id);
         if (!productoDelCarrito){ //si no se encuentra ya cargado
-            let prodAgregado:ItemCarrito = {nombre:prod.nombre,cant:1};
+            let prodAgregado:ItemCarrito = {
+                idProducto:prod.id,
+                cant:1,
+                nombre:prod.nombre,
+                marca:prod.marca,
+                precioUnitario:prod.precio,
+            };
             console.log('entra');
             $productosCarrito.push(prodAgregado);
         }
@@ -47,7 +53,7 @@
             return;
         }
         if (prod.cant===1){
-            $productosCarrito = $productosCarrito.filter(p => p.nombre !== prod.nombre);
+            $productosCarrito = $productosCarrito.filter(p => p.idProducto !== prod.idProducto);
         }else{
             prod.cant--;
             $productosCarrito = $productosCarrito;
@@ -67,7 +73,7 @@
         {#each productos.filter( (prod) => {
             return (prod)
         }) as prod}
-            {@const prodCarrito = $productosCarrito.find( p => p.nombre === prod.nombre)}
+            {@const prodCarrito = $productosCarrito.find( p => p.idProducto === prod.id)}
             <div class="card  variant-ghost-secondary p-1 max-w-xs m-2 ">
                 <header class="card-header">Nombre: {prod.nombre}</header>
                 <section class="p-2">
@@ -88,7 +94,7 @@
                                     </button>
                                     {/if}
                                     
-                                    <input type="number" disabled class="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none" name="custom-input-number" value="{$productosCarrito.find( p => p.nombre === prod.nombre)?.cant || 0}">
+                                    <input type="number" disabled class="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none" name="custom-input-number" value="{$productosCarrito.find( p => p.idProducto === prod.id)?.cant || 0}">
                                     {#if !prodCarrito || (prodCarrito && prodCarrito.cant<prod.stock)}
                                     <button on:click={(event) => handleIncrementar(prod)} data-action="increment" class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
                                         <span class="m-auto text-2xl font-thin">+</span>

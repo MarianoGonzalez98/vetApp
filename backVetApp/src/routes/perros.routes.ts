@@ -12,4 +12,4 @@ PerrosRouter.get("/get-perro", checkJWT, getPerroController)
 PerrosRouter.put("/actualizar-perro", checkJWT, actualizarPerroController)
 PerrosRouter.get("/get-perroJuli", checkJWT, checkRol, getPerroJuliController)
 PerrosRouter.put("/cambiar-disponible-para-cruza", checkJWT, checkRolCliente, cambiarDisponibleParaCruzaController)
-PerrosRouter.get("/listar-perros-para-cruza", checkJWT, checkRolCliente, listarPerrosParaCruzaController);
+//PerrosRouter.get("/listar-perros-para-cruza", checkJWT, checkRolCliente, listarPerrosParaCruzaController);

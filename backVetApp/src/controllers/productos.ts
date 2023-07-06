@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
-import { getProductoPorNombreDB, getProductosDB, insertProductoDB } from "../services/productos.service";
+import { getProductoPorNombreMarcaDB, getProductosDB, insertProductoDB } from "../services/productos.service";
 import { Producto } from "../interfaces/Producto.interface";
 
 export const insertProductoController = async (req:Request, res:Response) => {
     const productoInput:Producto = req.body.producto;
-    const existeProducto = await getProductoPorNombreDB(productoInput.nombre);
+    const existeProducto = await getProductoPorNombreMarcaDB(productoInput.nombre,productoInput.marca);
     if (existeProducto==='error'){
         //HTTP 500 Internal server error
         res.status(500).send({ data: "posible error en base de datos:getProductoPorNombreDB", statusCode: 500 })

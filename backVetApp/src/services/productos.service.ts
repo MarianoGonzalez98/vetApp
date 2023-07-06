@@ -4,6 +4,28 @@ import { Producto } from "../interfaces/Producto.interface";
 import { Id } from "../interfaces/Id.interface";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 
+
+
+
+export const getProductosPorCarritoDB = async (carrito:ItemCarrito[]) => {
+    const query = `
+    SELECT id,nombre, stock, precio, descripcion, marca, foto
+	FROM public.productos
+    WHERE id = ANY ($1)
+    `
+    const values= [carrito.map( item => item.idProducto)];
+    try {
+        const response: QueryResult = await pool.query(query,values)
+        const result: (Producto)[] = await response.rows;
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getProductosDB------");
+        console.log(err);
+        return "error";
+    }
+}
+
     //si hay suficiente stock, le resta la cantidad comprada al stock de cada producto y genera el botón de compra
 
 export const restarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) => { //no estoy controlando que stock sea mayor que la cant comprada de cada producto
@@ -13,9 +35,9 @@ export const restarCantidadCompradaProductosDB = async (productos:ItemCarrito[])
         const query = `
         UPDATE public.productos
         SET stock = stock - $1
-        WHERE nombre = $2
+        WHERE id = $2
         `
-        const values= [prod.cant, prod.nombre];
+        const values= [prod.cant, prod.idProducto];
         try {
             const response: QueryResult = await pool.query(query, values)
         }
@@ -35,9 +57,9 @@ export const sumarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) 
         const query = `
         UPDATE public.productos
         SET stock = stock + $1
-        WHERE nombre = $2
+        WHERE id = $2
         `
-        const values= [prod.cant, prod.nombre];
+        const values= [prod.cant, prod.idProducto];
         try {
             await pool.query(query, values)
         }
@@ -70,7 +92,7 @@ export const insertProductoDB = async (producto:Producto ) => {
 
 export const getProductosDB = async () => {
     const query = `
-    SELECT nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto
 	FROM public.productos;
     `
     try {
@@ -85,30 +107,48 @@ export const getProductosDB = async () => {
     }
 }
 
-export const getProductoPorNombreDB = async (nombre:string) => {
+export const getProductoPorIdDB = async (id:number) => {
     const query = `
-    SELECT nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto
 	FROM public.productos
-    WHERE nombre=$1
+    WHERE id=$1
     `
-    const values = [nombre];
+    const values = [id];
     try {
         const response: QueryResult = await pool.query(query,values)
         const result:Producto = await response.rows[0];
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getProductoPorNombreDB------");
+        console.error("----Error en acceso a BD:getProductoPorIdDB------");
         console.log(err);
         return "error";
     }
 }
 
+export const getProductoPorNombreMarcaDB = async (nombre:string,marca:string) => {
+    const query = `
+    SELECT id,nombre, stock, precio, descripcion, marca, foto
+	FROM public.productos
+    WHERE nombre=$1 AND marca=$2
+    `
+    const values = [nombre,marca];
+    try {
+        const response: QueryResult = await pool.query(query,values)
+        const result:Producto = await response.rows[0];
+        return result
+    }
+    catch (err) {
+        console.error("----Error en acceso a BD:getProductoPorNombreMarcaDB------");
+        console.log(err);
+        return "error";
+    }
+}
 export const getPrecioTotalCompraDB = async (productos:ItemCarrito[]) => {
     let suma = 0;
     for (let i = 0; i < productos.length; i++) {
         const item = productos[i];
-        const producto = await getProductoPorNombreDB(item.nombre);
+        const producto = await getProductoPorIdDB(item.idProducto);
         if (producto==='error'){
             return 'error';
         }
