@@ -6,6 +6,8 @@
     import Carrito from "./carrito.svelte";
     import { productosCarrito } from "$lib/stores/carrito";
     import type { ItemCarrito } from "$lib/interfaces/Carrito.interface";
+    import ModalConfirmarEliminarProducto from "./ModalConfirmarEliminarProducto.svelte";
+    import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
 
     let productos:Producto[] = [];
 
@@ -59,8 +61,32 @@
             $productosCarrito = $productosCarrito;
         }
     }
+
+    const handleEliminar = (prod:Producto) => {
+        let modalComponent = {
+            ref: ModalConfirmarEliminarProducto,
+            props: {
+                prod: prod,
+            },
+        };
+
+        let modalConfirm: ModalSettings = {
+            //esto sí lo uso
+            type: "component",
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+                if (confirmo) {
+                    
+                }
+            },
+        };
+        modalStore.clear();
+        modalStore.trigger(modalConfirm);
+    }
 </script>
 
+<Modal/>
 <div class="w-full ">
     <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/">Atras</a>
     {#if ($user?.rol === 'veterinario')}
@@ -115,9 +141,12 @@
                         {/if}
                     </div>
                     {#if ($user?.rol ==='veterinario')}
-                    <a href= "/productos/editar-producto?idProducto={prod.id}">
-                        <button class="btn btn-sm variant-ghost-surface mr-2">Editar producto</button>
-                    </a>
+                        <div>
+                            <a href= "/productos/editar-producto?idProducto={prod.id}">
+                                <button class="btn btn-sm variant-ghost-surface mr-2">Editar producto</button>
+                            </a>
+                            <button on:click={(event) => handleEliminar(prod)} class="btn btn-sm variant-filled-warning mr-2">Eliminar producto</button>
+                        </div>
                     {/if}
                 </footer>
             </div>

@@ -5,6 +5,20 @@ import { Id } from "../interfaces/Id.interface";
 import { ItemCarrito } from "../interfaces/Carrito.interface";
 
 
+export const deleteProductoPorIdDB = async (id:number) => {
+    const query = `
+    DELETE FROM public.productos
+	WHERE id = $1;
+    `;
+    const value = [id];
+    try {
+        await pool.query(query,value);
+    } catch (error) {
+        console.error("----Error en delete en BD:deleteProductoPorIdDB------");
+        throw error;
+    }
+}
+
 export const updateProductoPorIdDB = async (producto:Producto) => {
     const query = `
     UPDATE public.productos

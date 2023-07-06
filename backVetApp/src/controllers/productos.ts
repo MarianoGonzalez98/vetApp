@@ -1,7 +1,17 @@
 import { Request, Response } from "express"
-import { getProductoPorIdDB, getProductoPorNombreMarcaDB, getProductosDB, insertProductoDB, updateProductoPorIdDB } from "../services/productos.service";
+import { deleteProductoPorIdDB, getProductoPorIdDB, getProductoPorNombreMarcaDB, getProductosDB, insertProductoDB, updateProductoPorIdDB } from "../services/productos.service";
 import { Producto } from "../interfaces/Producto.interface";
 import { decodeToHTML_JPEG, encodeRezizeImgToJPEG } from "../utils/img.handle";
+
+export const deteleProductoController = async (req:Request, res:Response) => {
+    const idProducto = Number(req.params.id);
+    try {
+        await deleteProductoPorIdDB(idProducto);
+        res.status(200).send("Producto eliminado");
+    } catch (error) {
+        res.status(500).send("posible error en base de datos al eliminar producto")
+    }
+}
 
 export const insertProductoController = async (req:Request, res:Response) => {
     const productoInput:Producto = req.body.producto;
