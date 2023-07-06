@@ -103,11 +103,15 @@
                                     
                                 </div>
                             </div>
-                            {/if}
-                        {:else}
-                            <p>No hay stock</p>
                         {/if}
-
+                    {:else}
+                        <p>No hay stock</p>
+                    {/if}
+                    {#if ($user?.rol ==='veterinario')}
+                    <a href= "/productos/editar-producto?idProducto={prod.id}">
+                        <button class="btn btn-sm variant-ghost-surface mr-2">Editar producto</button>
+                    </a>
+                    {/if}
                 </footer>
             </div>
         {/each}
