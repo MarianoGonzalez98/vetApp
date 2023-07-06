@@ -1,4 +1,4 @@
 export interface ItemCarrito {
-    nombre:string,
+    idProducto:number,
     cant:number,
 }

@@ -1,4 +1,5 @@
 export interface Producto{
+    id:string,
     nombre:string,
     stock:number,
     precio:number,

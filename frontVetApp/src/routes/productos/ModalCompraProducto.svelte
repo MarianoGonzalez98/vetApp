@@ -26,7 +26,10 @@
 				"Content-Type": "application/json",
 			},
 			body:JSON.stringify({
-				productosAComprar:itemsCarrito,
+				productosAComprar:itemsCarrito.map( item => ({
+					idProducto:item.idProducto,
+					cant:item.cant,
+				})),
 				emailComprador:emailComprador,
 			})
 		});
