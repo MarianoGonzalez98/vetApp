@@ -22,8 +22,8 @@
     let publicacionSeleccionada: Perdida;
     $: publicaciones = publicaciones.sort((a, b) => {
         //ordeno publicacion primero por los no adoptados, en caso de empate, por los de fecha superior
-        if (!a.encontrado && b.encontrado) return -1;
-        if (a.encontrado && !b.encontrado) return 1;
+        if (!a.duenoEncontrado && b.duenoEncontrado) return -1;
+        if (a.duenoEncontrado && !b.duenoEncontrado) return 1;
         if (a.fechaPublicacion > b.fechaPublicacion) return -1;
         if (a.fechaPublicacion <= b.fechaPublicacion) return 1;
         return 1;
@@ -94,7 +94,7 @@
             component: modalComponent,
             response: (confirmo: any) => {
                 if (confirmo) {
-                    publicacion.encontrado = true; //marco como encontrado a la publicacion en el front tmb
+                    publicacion.duenoEncontrado = true; //marco como encontrado a la publicacion en el front tmb
                     publicacionesVisibles = publicacionesVisibles; //esta asignación es por la reactividad
                 }
             },
@@ -158,7 +158,7 @@
     <h1 class="h1 ml-15">Perros encontrados</h1>
     <div class="flex flex-wrap">
         {#each publicacionesVisibles.filter((pub) => {
-            return !pub.encontrado;
+            return !pub.duenoEncontrado;
         }) as publicacion}
             <div class="card variant-ghost-secondary p-1 max-w-xs m-2">
                 <section class="p-4">
@@ -209,7 +209,7 @@
                 </section>
                 <footer class="card-footer">
                     <div>
-                        {#if !publicacion.encontrado}
+                        {#if !publicacion.duenoEncontrado}
                             <!-- si no fue encontrado muestro los botones -->
                             {#if publicacion.emailContacto !== $user?.email}
                                 <button
@@ -244,7 +244,7 @@
 
     <div class="flex flex-wrap">
         {#each publicaciones.filter((pub) => {
-            return pub.encontrado;
+            return pub.duenoEncontrado;
         }) as publicacion}
             <div class="card variant-ghost-secondary p-1 max-w-xs m-2">
                 <section class="p-4">

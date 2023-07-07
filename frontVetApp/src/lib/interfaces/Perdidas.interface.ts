@@ -17,6 +17,7 @@ export interface Perdida{ // y Búsqueda
     descripcionPerro: string;
 
     encontrado:boolean, // en búsqueda dueño encontrado
+    duenoEncontrado:boolean,
     fechaPerdido: string;
     plazaPerdido: string;
 }

@@ -6,8 +6,10 @@
     import { goto } from "$app/navigation";
     import { popup, Autocomplete, Modal, modalStore } from "@skeletonlabs/skeleton";
     import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
+    import type { Perdida } from "$lib/interfaces/Perdidas.interface";
 
     let perrosCliente:(Perro)[] = [];
+    let publicaciones: Perdida[] = []; 
 
     let fechaMax: string = new Date().toJSON().slice(0, 10);
 
@@ -171,6 +173,17 @@
                 console.log("ERROR:");
                 console.log(e);
             })
+
+             //fetch de lista de perros perdidos publicados
+        await fetch(`${backendURL}/perdidas/get-lista-perdidos`, { 
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+            .then((res) => res.json())
+            .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
     });
 
     const publicacionPerdidaCargada: ModalSettings = {
@@ -194,60 +207,72 @@
         body: "Falla del servidor",
         buttonTextCancel: "Ok",
     };
+    
+    const fallaPublicacionRepetida: ModalSettings = {
+        type: "alert",
+        title: "Error en la creación de la publicación",
+        body: "La publicación ya se encuentra creada",
+        buttonTextCancel: "Ok",
+    };
 
     const handleCarga = () => {
-        console.log (inputPerro)
-        console.log($user?.email)
-        fetch(`${backendURL}/perdidas/crear-publicacion`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                nombreContacto,
-                apellidoContacto,
-                telefonoContacto,
-                emailContacto,
+       if((publicaciones.filter(a => ((a.nombrePerro === inputPerro.nombre)&&(a.razaPerro === inputPerro.raza)&&(a.emailContacto === emailContacto)&&(a.encontrado===false)))).length > 0) {
+            modalStore.clear();
+            modalStore.trigger(fallaPublicacionRepetida);
+            
+            }
+            else {
+                fetch(`${backendURL}/perdidas/crear-publicacion`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    nombreContacto,
+                    apellidoContacto,
+                    telefonoContacto,
+                    emailContacto,
 
-                nombrePerro:inputPerro.nombre,
-                razaPerro:inputPerro.raza,
-                sexoPerro:inputPerro.sexo,
-                foto:foto,
-                fechaNacPerro:inputPerro.fechaNacimiento,
-                descripcionPerro:inputPerro.descripcion,
+                    nombrePerro:inputPerro.nombre,
+                    razaPerro:inputPerro.raza,
+                    sexoPerro:inputPerro.sexo,
+                    foto:foto,
+                    fechaNacPerro:inputPerro.fechaNacimiento,
+                    descripcionPerro:inputPerro.descripcion,
 
-                fechaPerdido : inputPerro.fechaPerdido,
-                plazaPerdido: zona,
-            }),
-        })
-            .then((res) => {
-                if (res.status < 299) {
-                    modalStore.clear();
-                    modalStore.trigger(publicacionPerdidaCargada);
-                    return res;
-                }
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    goto('/auth/login');
-                    return;
-                }
-                if (res.status === 404) {
-                    console.log("El usuario no existe...");
-                    return res;
-                }
-                if (res.status === 500) {
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
+                    fechaPerdido : inputPerro.fechaPerdido,
+                    plazaPerdido: zona,
+                }),
             })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log("Error desconocido: ", error);
-            });
+                .then((res) => {
+                    if (res.status < 299) {
+                        modalStore.clear();
+                        modalStore.trigger(publicacionPerdidaCargada);
+                        return res;
+                    }
+                    if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        goto('/auth/login');
+                        return;
+                    }
+                    if (res.status === 404) {
+                        console.log("El usuario no existe...");
+                        return res;
+                    }
+                    if (res.status === 500) {
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                    }
+                })
+                .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log("Error desconocido: ", error);
+                });
+            }
     }
 
     const numbersPattern: string = "^[0-9]*$";
