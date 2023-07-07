@@ -5,7 +5,7 @@ import { Perdida } from "../interfaces/Perdidas.interface";
 export const insertBusquedaInDB = async (busqueda:Perdida) => {
     const query = `
         INSERT INTO public.busquedas(
-        "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro", "fechaPublicacion","sexoPerro","descripcionPerro",foto,"fechaEncontrado", "plazaEncontrado")
+        "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro", "fechaPublicacion","sexoPerro","descripcionPerro",foto,"fechaPerdido", "plazaPerdido")
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
         `
         const values = [busqueda.emailContacto,busqueda.nombreContacto,busqueda.apellidoContacto,
@@ -27,7 +27,7 @@ export const insertBusquedaInDB = async (busqueda:Perdida) => {
 
 export const getBusquedasDB = async () => {
     const query = `
-        SELECT id, "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro","fechaPublicacion","sexoPerro","descripcionPerro",foto,"fechaEncontrado", "plazaEncontrado","duenoEncontrado"
+        SELECT id, "emailContacto", "nombreContacto", "apellidoContacto", "telefonoContacto", "autorEmail", "nombrePerro", "razaPerro","fechaPublicacion","sexoPerro","descripcionPerro",foto,"fechaPerdido", "plazaPerdido","duenoEncontrado"
         FROM public.busquedas;
     `;
     try {
@@ -46,7 +46,7 @@ export const getBusquedasDB = async () => {
 export const marcarDuenoEncontradoInDB = async (id:number) => {
     const query = `
         UPDATE public.busquedas
-        SET duenoEncontrado=true
+        SET "duenoEncontrado"=true
         WHERE id=$1;
     `
         const value = [id];
