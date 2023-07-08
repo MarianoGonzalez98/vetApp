@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { actualizarPerroController, cambiarDisponibleParaCruzaController, cargarPerroController, getPerroController, getPerroJuliController, listarPerrosController, marcarComoFallecidoController } from "../controllers/perros"
+import { actualizarPerroController, cambiarDisponibleParaCruzaController, cargarPerroController, getPerroController, getPerroJuliController, listarPerrosController, listarPerrosParaCruzaController, marcarComoFallecidoController } from "../controllers/perros"
 import { checkJWT } from "../middleware/session"
 import { checkRolCliente, checkRol } from "../middleware/checkRol"
 

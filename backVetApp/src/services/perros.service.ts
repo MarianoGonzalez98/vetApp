@@ -239,21 +239,21 @@ export const toggleParaCruza = async (perro: Perro) => {
     }
 }
 
-export const getPerrosParaCruza = async (owner: string) => {
+export const getPerrosParaCruza = async (owner: string, sexo: string) => {
     const query = `
     SELECT *
-    FROM public.perros p
-    WHERE (p.owner = $1) AND (p.fallecido = false)
+    FROM public.perros
+    WHERE (owner <> $1) AND (fallecido = false) AND "paraCruza" AND (castrado = false) AND (sexo <> $2)
     `
 
-    const values = [owner]
+    const values = [owner, sexo]
     try {
         const response: QueryResult = await pool.query(query, values)
         const result: Perro[] = await response.rows
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getPerros------");
+        console.error("----Error en acceso a BD:getPerrosParaCruza------");
         console.log(err);
         return "error";
     }

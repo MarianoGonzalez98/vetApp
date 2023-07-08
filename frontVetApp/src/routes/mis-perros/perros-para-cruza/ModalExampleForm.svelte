@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Perro } from "$lib/interfaces/Perro.interface";
     import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
 
     // Props
@@ -9,6 +10,10 @@
     export let miEmail: string;
     export let miTelefono: string;
     export let emailDestinatario: string;
+    export let misPerros: Perro[];
+    export let perroOriginal: Perro;
+    export let nombrePerroOriginal: string;
+    export let sexoPerroOriginal: string;
 
     // Stores
     import {
@@ -24,6 +29,7 @@
     let apellido = miApellido;
     let telefono = miTelefono;
     let emailRemitente = miEmail;
+    let perro: Perro;
     let mensaje = "";
 
     const perroCargado: ModalSettings = {
@@ -138,6 +144,19 @@
                     required
                 />
             </label>
+            <label class="label" for="perro">Perro:</label>
+            <select
+                bind:value={perro}
+                class="input"
+                placeholder="Perro"
+                name="perro"
+                required
+            >
+                <option value="" selected>{nombrePerroOriginal}</option>
+                {#each misPerros.filter(p => ((p.sexo === sexoPerroOriginal) && p.paraCruza)).map(p => p.nombre) as value}
+                    <option {value}>{value}</option>
+                {/each}
+            </select>
 
             <label class="label">
                 <span>Mensaje:</span>

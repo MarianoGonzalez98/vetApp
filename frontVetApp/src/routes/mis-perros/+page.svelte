@@ -43,7 +43,6 @@
             .then((res) => res.json())
             .then((apiResponse) => (perros = apiResponse.data));
         mostrar = perros;
-        console.log(typeof perros[0].vacunas);
     });
 
     const handleMarcarFallecido = async (perro: Perro) => {
@@ -262,7 +261,7 @@
                                 <a
                                     class="btn variant-ghost-surface mr-2"
                                     rel="noreferrer"
-                                    href="/mis-perros/perros-para-cruza?nombre={perro.nombre}&owner={perro.owner}&raza={perro.raza}"
+                                    href="/mis-perros/perros-para-cruza?nombre={perro.nombre}&owner={perro.owner}&raza={perro.raza}&sexo={perro.sexo}"
                                     >Ver perros para cruza</a
                                 >
                             {/if}
