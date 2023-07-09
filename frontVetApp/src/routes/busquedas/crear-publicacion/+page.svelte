@@ -8,14 +8,11 @@
     import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
     import type { Perdida } from "$lib/interfaces/Perdidas.interface";
 
-    let perrosCliente:(Perro)[] = [];
-    let publicaciones: Perdida[] = []; 
 
     let fechaMax: string = new Date().toJSON().slice(0, 10);
 
-    let emailCliente=$user?.email
+    let publicaciones: Perdida[] = []; 
 
-    let selectedPerro:Perro;
     let inputPerro:InfoPerroPerdido={
         nombre:"",
         raza:"",
@@ -32,15 +29,6 @@
     let telefonoContacto=""
     let emailContacto=$user?.email
 
-    const actualizarForm = () => {
-        inputPerro.nombre=selectedPerro.nombre;
-        inputPerro.raza = selectedPerro.raza;
-        inputPerro.sexo = selectedPerro.sexo;
-        inputPerro.fechaNacimiento = selectedPerro.fechaNacimiento.slice(0,10);
-        inputPerro.descripcion = selectedPerro.observaciones;
-        inputPerro.foto = selectedPerro.foto;
-        foto = selectedPerro.foto;
-    }
 
     let popupSettings: PopupSettings = {
         event: "focus-click",
@@ -136,23 +124,7 @@
         };
     };
 
-    onMount(async () => {
-        //si soy cliente obtengo los datos de mis perros
-        if ($user?.rol==='cliente'){
-            await fetch(
-            `${backendURL}/listar-perros?cliente=${emailCliente}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
-            .then((res) => res.json())
-            .then((apiResponse) => {
-                perrosCliente = apiResponse.data
-            });
-        }
+    onMount(async () => {     
         //obtengo mis datos
         fetch(`${backendURL}/getPerfil`,{
         method:'GET',
@@ -174,8 +146,8 @@
                 console.log(e);
             })
 
-             //fetch de lista de perros perdidos publicados
-        await fetch(`${backendURL}/perdidas/get-lista-perdidos`, { 
+          //fetch de lista de perros perdidos publicados
+        await fetch(`${backendURL}/busquedas/get-lista-encontrados`, { 
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -186,12 +158,12 @@
             .then((apiResponse) => (publicaciones = apiResponse.publicaciones));
     });
 
-    const publicacionPerdidaCargada: ModalSettings = {
+    const publicacionBusquedaCargada: ModalSettings = {
         type: "alert",
         title: "Publicación cargada",
-        body: "Publicacion de perro perdido cargada correctamente",
+        body: "Publicacion de perro encontrado cargada correctamente",
         buttonTextCancel: "Ok",
-        response: (r: boolean) => goto("/perdidas"),
+        response: (r: boolean) => goto("/busquedas"),
     };
 
     const fallaDesconocida: ModalSettings = {
@@ -201,13 +173,6 @@
         buttonTextCancel: "Ok",
     };
 
-    const fallaServidor: ModalSettings = {
-        type: "alert",
-        title: "Fallo en la publicación",
-        body: "Falla del servidor",
-        buttonTextCancel: "Ok",
-    };
-    
     const fallaPublicacionRepetida: ModalSettings = {
         type: "alert",
         title: "Error en la creación de la publicación",
@@ -215,14 +180,16 @@
         buttonTextCancel: "Ok",
     };
 
+    const fallaServidor: ModalSettings = {
+        type: "alert",
+        title: "Fallo en la publicación",
+        body: "Falla del servidor",
+        buttonTextCancel: "Ok",
+    };
+
     const handleCarga = () => {
-       if((publicaciones.filter(a => ((a.nombrePerro === inputPerro.nombre)&&(a.razaPerro === inputPerro.raza)&&(a.emailContacto === emailContacto)&&(a.encontrado===false)))).length > 0) {
-            modalStore.clear();
-            modalStore.trigger(fallaPublicacionRepetida);
-            
-            }
-            else {
-                fetch(`${backendURL}/perdidas/crear-publicacion`, {
+        if((!(publicaciones.filter(a => ((a.nombrePerro === inputPerro.nombre)&&(a.razaPerro === inputPerro.raza)&&(a.emailContacto === emailContacto)&&(!a.duenoEncontrado))).length>0))) {
+            fetch(`${backendURL}/busquedas/crear-publicacion`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -238,7 +205,6 @@
                     razaPerro:inputPerro.raza,
                     sexoPerro:inputPerro.sexo,
                     foto:foto,
-                    fechaNacPerro:inputPerro.fechaNacimiento,
                     descripcionPerro:inputPerro.descripcion,
 
                     fechaPerdido : inputPerro.fechaPerdido,
@@ -248,7 +214,7 @@
                 .then((res) => {
                     if (res.status < 299) {
                         modalStore.clear();
-                        modalStore.trigger(publicacionPerdidaCargada);
+                        modalStore.trigger(publicacionBusquedaCargada);
                         return res;
                     }
                     if (res.status === 400) {
@@ -272,7 +238,11 @@
                     modalStore.trigger(fallaDesconocida);
                     console.log("Error desconocido: ", error);
                 });
-            }
+        }
+        else {
+            modalStore.clear();
+            modalStore.trigger(fallaPublicacionRepetida);
+        }
     }
 
     const numbersPattern: string = "^[0-9]*$";
@@ -282,26 +252,11 @@
 
 <div class="container mt-2 mb-10 h-full mx-auto flex justify-center items-center">
     <div class="w-6/12">
-        {#if $user?.rol==='cliente'}
-            <!-- si es cliente -->
-                    <!--  seleccionar de: -->
-            <div>
-                <label for="seleccionPerro">Si desea publicar un perro suyo, seleccionelo:</label>
-                <select id="seleccionPerro" style="color: black;" bind:value={selectedPerro} on:change={actualizarForm}>
-                    {#each perrosCliente as perro}
-                        <option value={perro}>
-                            <span>{perro.nombre} (raza: {perro.raza})</span>
-                        </option>
-                    {/each}
-                </select>
-            </div>
-        <!-- fin si es cliente -->
-        {/if}
         <!-- formulario: datos del perro (FALTA FOTO)-->
         <h3 class="h3 mt-3">Datos del perro:</h3>
         <form class="space-y-2 mt-5 mb-5 max-w-md" on:submit|preventDefault={handleCarga} action="">
-            <label class="label" for="nombre">Nombre del perro:</label>
-            <input bind:value={inputPerro.nombre} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre del perro" pattern={letrasEspaciosPatternFactory} name="nombre" required/>
+            <label class="label" for="nombre">Nombre del perro que indique el collar o desconocido:</label>
+            <input bind:value={inputPerro.nombre} class="input focus:invalid:border-red-500"type="text" placeholder="Nombre o ´Desconocido´" pattern={letrasEspaciosPatternFactory} name="nombre" required/>
 
             <label class="label" for="raza">Raza:</label>
             <input bind:value={inputPerro.raza} class="input focus:invalid:border-red-500" type="text" placeholder="Raza del perro" pattern={letrasEspaciosPatternFactory} name="raza" required />
@@ -314,15 +269,12 @@
                 {/each}
             </select>
 
-            <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
-            <input bind:value={inputPerro.fechaNacimiento} class="input" type="date" placeholder="Ingrese fecha de nacimiento del cliente" name="fechaNacimiento" max={fechaMax} required/>
-
             <label class="label" for="descripcion">Descripción:</label>
             <input bind:value={inputPerro.descripcion} class="input" type="text" placeholder="descripción del perro" name="descripcion" required />
 
         <!--formulario:datos de la pérdida del perro  -->
-            <h3 class="h3 mt-3">Datos de la pérdida del perro:</h3>
-            <label class="label" for="fechaPerdido">Fecha cuando se perdió:</label>
+            <h3 class="h3 mt-3">Datos del encuentro del perro:</h3>
+            <label class="label" for="fechaPerdido">Fecha cuando se encontró:</label>
             <input bind:value={inputPerro.fechaPerdido} class="input" type="date"  name="fechaPerdido" max={fechaMax} required/>
             <label class="label" for="zona">Zona:</label>
 
@@ -399,7 +351,7 @@
             {/if}
             <hr class="!border-t-2" />
             <div></div> <!-- para mas espacio con el último elemento(horrible, ya se) -->
-            <button class="btn rounded-lg variant-filled-primary mt-5" type="submit">Crear publicación de pérdida</button>
+            <button class="btn rounded-lg variant-filled-primary mt-5" type="submit">Crear publicación de búsqueda de dueño</button>
         </form>
 
     </div>
