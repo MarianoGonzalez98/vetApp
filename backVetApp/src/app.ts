@@ -80,10 +80,12 @@ import { DonacionesRouter } from "./routes/donaciones.routes";
 import { MercadoPagoRouter } from "./routes/mercadoPago.routes";
 import { finalizarCampaignsPasadas } from "./controllers/donaciones";
 import { PerdidasRouter } from "./routes/perdidas.routes";
+import { BusquedasRouter } from "./routes/busquedas.routes";
 import { ProductosRouter } from "./routes/productos.routes";
 import { cancelarReservasExpiradasDB } from "./services/compras.service";
 
-app.use(PerdidasRouter)
+app.use(BusquedasRouter);
+app.use(PerdidasRouter);
 app.use(AdopcionesRouter);
 app.use(TurnosRouter);
 app.use(AuthRouter);

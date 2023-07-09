@@ -1,4 +1,4 @@
-export interface Perdida{
+export interface Perdida{ // y Búsqueda
     id:number,
 
     emailContacto:string,
@@ -11,12 +11,13 @@ export interface Perdida{
 
     nombrePerro:string,
     razaPerro:string,
-    fechaNacPerro:string,
+    fechaNacPerro:string, // en búsqueda no se usa
     sexoPerro:string,
     foto:string | null,
     descripcionPerro: string;
 
-    encontrado:boolean,
+    encontrado:boolean, // en búsqueda dueño encontrado
+    duenoEncontrado:boolean,
     fechaPerdido: string;
     plazaPerdido: string;
 }
