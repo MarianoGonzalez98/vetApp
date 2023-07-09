@@ -26,6 +26,7 @@ export interface Perro {
     fallecido: boolean,
     castrado: boolean,
     paraCruza: boolean,
+    fechaDeCelo: string,
 }
 
 export interface Id {

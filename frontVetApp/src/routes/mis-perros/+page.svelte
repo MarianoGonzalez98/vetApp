@@ -11,6 +11,7 @@
     import type { AfterNavigate } from "@sveltejs/kit";
     import ModalConfirmarMarcarFallecido from "./ModalConfirmarMarcarFallecido.svelte";
     import { backendURL } from "$lib/utils/constantFactory";
+    import FechaDeCelo from "./FechaDeCelo.svelte";
 
     let cliente: string =
         new URLSearchParams(window.location.search).get("cliente") ??
@@ -66,6 +67,29 @@
         modalStore.clear();
         modalStore.trigger(modalConfirm);
     };
+
+    const handleFechaDeCelo = async (perro: Perro) => {
+        let modalComponent = {
+            ref: FechaDeCelo,
+            props: { perro: perro },
+        };
+
+        let modalConfirm: ModalSettings = {
+            //esto sí lo uso
+            type: "component",
+            // Pass the component directly:
+            component: modalComponent,
+            response: (confirmo: any) => {
+                if (confirmo.success) {
+                    perro.paraCruza = !perro.paraCruza; //marco como disponible para cruza en el front tmb
+                    perro.fechaDeCelo = confirmo.fechaDeCelo //cambio la info también en el front
+                    mostrar = mostrar
+                }
+            },
+        };
+        modalStore.clear();
+        modalStore.trigger(modalConfirm);
+    };
     const espacio = " ";
 
     const fallaServidor: ModalSettings = {
@@ -82,45 +106,48 @@
         buttonTextCancel: "Ok",
     };
 
-    const cambiarDisponibilidadParaCruza = async (
-        owner: string,
-        nombre: string,
-        paraCruza: boolean
-    ) => {
-        let error: boolean = false;
-        await fetch(`${backendURL}/cambiar-disponible-para-cruza`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                owner: owner,
-                nombre: nombre,
-                paraCruza: paraCruza,
-            }),
-        })
-            .then((res) => {
-                if (res.status === 400) {
-                    //error por modificacion del token jwt.
-                    $user = null;
-                    goto("/auth/login");
-                    return;
-                }
-                if (res.status === 500) {
-                    modalStore.clear();
-                    modalStore.trigger(fallaServidor);
-                    return res;
-                }
+    const cambiarDisponibilidadParaCruza = async (perro: Perro) => {
+        console.log(perro.fechaDeCelo);
+        if (perro.sexo === "Hembra" && !perro.paraCruza) handleFechaDeCelo(perro);
+        else {
+            let error: boolean = false;
+            await fetch(`${backendURL}/cambiar-disponible-para-cruza`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    owner: perro.owner,
+                    nombre: perro.nombre,
+                    paraCruza: !perro.paraCruza,
+                    sexo: perro.sexo,
+                }),
             })
-            .catch((error) => {
-                modalStore.clear();
-                modalStore.trigger(fallaDesconocida);
-                console.log(
-                    "Error desconocido cambio de disponibilidad de perro para cruza.",
-                    error
-                );
-            });
+                .then((res) => {
+                    if (res.status === 400) {
+                        //error por modificacion del token jwt.
+                        $user = null;
+                        goto("/auth/login");
+                        return;
+                    }
+                    if (res.status === 500) {
+                        modalStore.clear();
+                        modalStore.trigger(fallaServidor);
+                        return res;
+                    }
+                    perro.paraCruza = !perro.paraCruza;
+                    mostrar = mostrar;
+                })
+                .catch((error) => {
+                    modalStore.clear();
+                    modalStore.trigger(fallaDesconocida);
+                    console.log(
+                        "Error desconocido cambio de disponibilidad de perro para cruza.",
+                        error
+                    );
+                });
+        }
     };
 </script>
 
@@ -240,22 +267,17 @@
                             >
                         {:else}
                             {#if !perro.castrado}
-                            <button
-                                on:click={(event) => {
-                                    perro.paraCruza = !perro.paraCruza;
-                                    cambiarDisponibilidadParaCruza(
-                                        perro.owner,
-                                        perro.nombre,
-                                        perro.paraCruza
-                                    );
-                                }}
-                                class="btn variant-ghost-surface mr-2 mb-2"
-                                >{#if perro.paraCruza}
-                                    Eliminar registro para cruza
-                                {:else}
-                                    Registrar para cruza
-                                {/if}</button
-                            >
+                                <button
+                                    on:click={(event) => {
+                                        cambiarDisponibilidadParaCruza(perro);
+                                    }}
+                                    class="btn variant-ghost-surface mr-2 mb-2"
+                                    >{#if perro.paraCruza}
+                                        Eliminar registro para cruza
+                                    {:else}
+                                        Registrar para cruza
+                                    {/if}</button
+                                >
                             {/if}
                             {#if perro.paraCruza}
                                 <a

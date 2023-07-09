@@ -1,19 +1,17 @@
 <script lang="ts">
-    import type { Perro } from "$lib/interfaces/Perro.interface";
+    import type { Cliente, ExtrasCliente } from "$lib/interfaces/Cliente.interface";
+    import type { Perro, Sexo } from "$lib/interfaces/Perro.interface";
     import { backendURL, emailPatternFactory, letrasEspaciosPatternFactory } from "$lib/utils/constantFactory";
 
     // Props
-    /** Exposes parent props to this component. */
-    export let parent: any;
-    export let miNombre: string;
-    export let miApellido: string;
-    export let miEmail: string;
-    export let miTelefono: string;
-    export let emailDestinatario: string;
-    export let misPerros: Perro[];
-    export let perroOriginal: Perro;
+    /** Exposes parent props to this component. */ 
+    export let parent: any;   
+    export let cliente: Cliente&ExtrasCliente;
+    export let emailCliente: string;
     export let nombrePerroOriginal: string;
-    export let sexoPerroOriginal: string;
+    export let sexoPerroOriginal: Sexo;
+    export let perrosCliente: Perro[];
+    export let perroSeleccionado: Perro;
 
     // Stores
     import {
@@ -25,24 +23,25 @@
 
     const numbersPattern: string = "^[0-9]*$";
 
-    let nombre = miNombre;
-    let apellido = miApellido;
-    let telefono = miTelefono;
-    let emailRemitente = miEmail;
+    let nombre = cliente.nombre;
+    let apellido = cliente.apellido;
+    let telefono = cliente.telefono;
+    let emailRemitente = emailCliente;
     let perro: Perro;
     let mensaje = "";
+    let emailDestinatario = perroSeleccionado.owner;
 
-    const perroCargado: ModalSettings = {
+    const mailEnviado: ModalSettings = {
         type: "alert",
-        title: "Paseador/cuidador contactado",
-        body: "Se envió un mail al paseador/cuidador con sus datos.",
+        title: "Dueño contactado",
+        body: "Se envió un mail al dueño del perro con sus datos.",
         buttonTextCancel: "Ok",
     };
 
     const fallaDesconocida: ModalSettings = {
         type: "alert",
         title: "Fallo en el contacto",
-        body: "No se pudo enviar un mail al paseador/cuidador.",
+        body: "No se pudo enviar un mail al dueño del perro.",
         buttonTextCancel: "Ok",
     };
 
@@ -54,7 +53,7 @@
 
     // We've created a custom submit function to pass the response and close the modal.
     async function onFormSubmit() {
-        await fetch(`${backendURL}/enviar-mail-pc`, {
+        await fetch(`${backendURL}/enviar-mail-perro-cruza`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -65,21 +64,22 @@
                 apellido,
                 telefono,
                 emailRemitente,
-                mensaje,
                 emailDestinatario,
+                perroSeleccionado,
+                mensaje,
             }),
         })
             .then((res) => {
                 if (res.status < 299) {
                     modalStore.clear();
-                    modalStore.trigger(perroCargado);
+                    modalStore.trigger(mailEnviado);
                     return res;
                 }
             })
             .catch((error) => {
                 modalStore.clear();
                 modalStore.trigger(fallaDesconocida);
-                console.log("Error desconocido en carga del perro", error);
+                console.log("Error desconocido en contacto con el dueño", error);
             });
     }
 
@@ -150,10 +150,11 @@
                 class="input"
                 placeholder="Perro"
                 name="perro"
-                required
             >
-                <option value="" selected>{nombrePerroOriginal}</option>
-                {#each misPerros.filter(p => ((p.sexo === sexoPerroOriginal) && p.paraCruza)).map(p => p.nombre) as value}
+                <option value="" hidden>{nombrePerroOriginal}</option>
+                {#each perrosCliente
+                    .filter((p) => p.sexo === sexoPerroOriginal && p.paraCruza && !p.castrado)
+                    .map((p) => p.nombre) as value}
                     <option {value}>{value}</option>
                 {/each}
             </select>
@@ -163,7 +164,7 @@
                 <textarea
                     class="input rounded-3xl"
                     bind:value={mensaje}
-                    placeholder="Ej: Me gustaría contratar sus servicios para los días... en los horarios..."
+                    placeholder="Si lo desea, puede escribir un mensaje para que le llegue al dueño del perro."
                 />
             </label>
             <footer class="modal-footer {parent.regionFooter}">

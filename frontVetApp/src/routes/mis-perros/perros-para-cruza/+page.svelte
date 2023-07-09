@@ -122,14 +122,12 @@
             ref: ModalExampleForm,
             // Add the component properties as key/value pairs
             props: {
-                miNombre: cliente.nombre,
-                miApellido: cliente.apellido,
-                miTelefono: cliente.telefono,
-                miEmail: owner,
-                misPerros: perrosCliente,
+                cliente: cliente,
+                emailCliente: owner,
                 nombrePerroOriginal: nombre,
                 sexoPerroOriginal: sexo,
-                emailDestinatario: perro.owner,
+                perrosCliente: perrosCliente,
+                perroSeleccionado: perro,
             },
             // Provide a template literal for the default component slot
             slot: "<p>Skeleton</p>",
@@ -170,23 +168,8 @@
         <div class="ml-2 flex flex-wrap">
             {#each mostrar as perro}
                 <div
-                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary max-w-sm md:flex-row min-h-0 h-auto"
+                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
                 >
-                    <header>
-                        {#if perro.foto}
-                            <img
-                                class="object-cover h-full w-full rounded-t-lg"
-                                src={perro.foto}
-                                alt="foto de perfil"
-                            />
-                        {:else}
-                            <img
-                                class="object-cover h-full w-full rounded-t-lg p-5"
-                                src="/no_foto_perro.png"
-                                alt=""
-                            />
-                        {/if}
-                    </header>
                     <div class="flex flex-col justify-start p-6">
                         <h5
                             class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
@@ -194,76 +177,29 @@
                             {perro.nombre}
                         </h5>
                         <div
-                            class="mb-4 text-base text-neutral-600 dark:text-neutral-200"
+                            class="text-base text-neutral-600 dark:text-neutral-200"
                         >
                             <p>
                                 <span class="font-medium">Raza: </span>
                                 {perro.raza}
                             </p>
                             <p>
-                                <span class="font-medium"
-                                    >Fecha de nacimiento:
-                                </span>
-                                {new Date(
-                                    perro.fechaNacimiento
-                                ).toLocaleDateString("es-AR")}
+                                <span class="font-medium">Edad: </span>
+                                {new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear()}
                             </p>
-                            <p>
-                                <span class="font-medium">Observaciones: </span>
-                                {perro.observaciones}
-                            </p>
-                            <p>
-                                <span class="font-medium"
-                                    >Peso: {perro.peso} Kg</span
-                                >
-                            </p>
-                            <p>
-                                <span class="font-medium"
-                                    >Vacunas aplicadas:
-                                </span>
-                                <br />
-                                {#if perro.vacunas !== "[]"}
-                                    {#each JSON.parse(perro.vacunas) as vacuna}
-                                        {espacio}{vacuna.nombre}.
-                                    {/each}
-                                {:else}
-                                    No se le aplicaron vacunas.
-                                {/if}
-                            </p>
-                            <p>
-                                <span class="font-medium"
-                                    >Antiparasitarios aplicados:
-                                </span> <br />
-                                {#if perro.antiparasitarios !== "[]"}
-                                    {#each JSON.parse(perro.antiparasitarios) as antiparasitario}
-                                        -{espacio}{antiparasitario.nombre},
-                                        aplicado el {new Date(
-                                            antiparasitario.fechaDeAplicacion
-                                        ).toLocaleDateString("es-AR")}, cantidad
-                                        aplicada: {antiparasitario.cantidadAplicada}
-                                        mg/kg.
-                                        <br />
-                                    {/each}
-                                {:else}
-                                    No se le aplicaron antiparasitarios.
-                                {/if}
-                            </p>
-                            <p class="font-medium">
-                                {#if !perro.castrado}
-                                    No está
-                                {:else}
-                                    Está
-                                {/if}castrad{#if perro.sexo === "Macho"}
-                                    o.
-                                {:else}
-                                    a.
-                                {/if}
-                            </p>
+                            {#if perro.sexo === "Hembra" }
+                                <p>
+                                    <span class="font-medium"
+                                        >Fecha de celo:
+                                    </span>
+                                    {perro.fechaDeCelo}
+                                </p>
+                            {/if}
                         </div>
                         <footer class="flex flex-wrap">
                             <button
                                 on:click={(event) => handleContactar(perro)}
-                                class="btn btn-sm variant-ghost-surface mr-2"
+                                class="btn btn-sm variant-ghost-surface mr-2 mt-2"
                                 >Contactar
                             </button>
                         </footer>
@@ -281,7 +217,7 @@
 {:else}
     <div class="flex justify-center items-center h-screen">
         <h1 class="text-4xl font-bold">
-            Ups! Parece que no hay perros disponibles para cruza.
+            No hay perros disponibles para cruzar con {nombre}.
         </h1>
     </div>
 {/if}

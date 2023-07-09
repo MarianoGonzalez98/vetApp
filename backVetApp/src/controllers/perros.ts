@@ -172,3 +172,32 @@ export const listarPerrosParaCruzaController = async (req: Request, res: Respons
     }
     res.status(200).send({ data: result, statusCode: 200 })
 }
+
+export const enviarMailCruzaController = async (req: Request, res: Response) => {
+    const emailInfo = req.body;
+
+    let email = emailInfo.emailDestinatario;
+    let asunto = `¡Recibiste una solicitud de cruza para ${emailInfo.perroSeleccionado.nombre} en Oh my dog!`
+    let texto = `¡Un cliente de ¡Oh my dog! está interesado cruzar su perro con el tuyo!<br>
+    <br>
+    A continuación te dejamos los datos del cliente para que puedas comunicarte directamente con él.<br>
+    <br>
+    Nombre: ${emailInfo.nombre}<br>
+    Apellido: ${emailInfo.apellido}<br>
+    Teléfono: ${emailInfo.telefono}<br>
+    Email: ${emailInfo.emailRemitente}`;
+
+    if (emailInfo.mensaje != "") {
+        texto += `<br>
+        <br>
+        Mensaje del cliente: ${emailInfo.mensaje}`;
+    }
+
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
+    res.status(201).send('Se envió correctamente el mail al dueño del perro para cruza.');
+}
