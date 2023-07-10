@@ -185,7 +185,7 @@
                             </p>
                             <p>
                                 <span class="font-medium">Edad: </span>
-                                {new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear()}
+                                {new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear()} año{new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear() > 1 ? "s" : ""}
                             </p>
                             {#if perro.sexo === "Hembra" }
                                 <p>
