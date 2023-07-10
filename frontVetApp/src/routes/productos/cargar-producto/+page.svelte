@@ -14,6 +14,7 @@
         stock:'',
         descripcion:'',
         marca:'',
+        categoria:'',
         foto:'',
     }
     let errorMsj:string='';
@@ -108,6 +109,8 @@
             <p class="text-red-500">{errorMsj}</p>
             <label class="label" for="marca">Marca:</label>
             <input bind:value={producto.marca} class="input focus:invalid:border-red-500"type="text" placeholder="Marca del producto" name="marca" required/>
+            <label class="label" for="categoria">Categoría:</label>
+            <input bind:value={producto.categoria} class="input focus:invalid:border-red-500"type="text" placeholder="Categoría del producto" name="marca" required/>
             <label class="label" for="stock">Stock:</label>
             <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Stock del producto" name="stock" required />
 

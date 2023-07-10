@@ -9,7 +9,14 @@
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
 
     let productos:Producto[] = [];
-
+    let inputCategoria:string ='';
+    $: publicacionesVisibles = inputCategoria
+        ? productos.filter((pub) => {
+              return pub.categoria
+                  .toLowerCase()
+                  .match(`${inputCategoria.toLowerCase()}.*`);
+          })
+        : productos;
     onMount( async ()  => {
         await loadProductos();
     });
@@ -91,11 +98,25 @@
     {#if ($user?.rol === 'veterinario')}
     <a href="/productos/cargar-producto"><button class="btn rounded-lg variant-filled-secondary mt-5">Cargar nuevo producto</button></a>
     {/if}
+    <div class="float-right mr-5 mt-5">
+        <div class="flex items-center">
+            <label for="filtroRaza" class="text-left whitespace-nowrap"
+                >Filtrar por categoría:</label
+            >
+            <input
+                type="text"
+                bind:value={inputCategoria}
+                class="input"
+                name="filtroRaza"
+                id=""
+            />
+        </div>
+    </div>
 </div>
 <div class="container my-8 mx-auto ">
     <h1 class="h1 ml-15 mt-10">Productos: </h1>
     <div class="flex flex-wrap  ">
-        {#each productos.filter( (prod) => {
+        {#each publicacionesVisibles.filter( (prod) => {
             return (prod)
         }) as prod}
             {@const prodCarrito = $productosCarrito.find( p => p.idProducto === prod.id)}
