@@ -46,8 +46,8 @@
             </header>
             <section class="p-2">
                 <p>Cantidad: {prod.cant}</p>
-                <p>Precio unitario: {prod.precioUnitario}</p>
-                <p>Precio total: {prod.precioUnitario * prod.cant}</p>
+                <p>Precio unitario: ${prod.precioUnitario}</p>
+                <p>Precio total: ${prod.precioUnitario * prod.cant}</p>
             </section>
             <footer class="card-footer">
                 <button on:click={(event) => handleEliminarDelCarrito(prod)} class="btn rounded-sm variant-filled-secondary block mt-2" >Eliminar</button>
@@ -57,7 +57,7 @@
 </div>
 {#if $productosCarrito.length>0}
     <h3 class="h3 mb-5">
-        Monto total: {$productosCarrito
+        Monto total: ${$productosCarrito
                         .reduce((partialSum, a) => partialSum + (a.precioUnitario * a.cant), 0)}
     </h3>
     <button on:click={(event) => handleGenerarCompra()} class="btn btn-sm variant-ghost-surface mr-2">Pagar compra</button>

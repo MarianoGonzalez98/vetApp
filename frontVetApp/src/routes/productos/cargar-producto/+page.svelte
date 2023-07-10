@@ -62,11 +62,6 @@
             });
     }
 
-    const eliminarFoto = () => {
-        producto.foto = "";
-        FotoFile = "";
-    };
-
     const onChangeFile = async (event: Event) => {
         let target = event.target as HTMLInputElement;
         if (!target.files) {
@@ -125,14 +120,11 @@
             <div>
                 {#if producto.foto}
                     <img class="object-contain h-32 w-32" src={producto.foto} alt="foto del producto"/>
-                {:else}
-                    <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt=""/>
                 {/if}
-                <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
             </div>
             <p class="text-red-500">{fileErrorMsj}</p>
 
-            <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
+            <input required bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
 
 
             <hr class="!border-t-2" />

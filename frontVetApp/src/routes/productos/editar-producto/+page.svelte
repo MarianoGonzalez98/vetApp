@@ -190,14 +190,15 @@
                 <div>
                     {#if producto.foto}
                         <img class="object-contain h-32 w-32" src={producto.foto} alt="foto del producto"/>
+                        <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
                     {:else}
                         <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt=""/>
+                        <input required bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
                     {/if}
-                    <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
                 </div>
                 <p class="text-red-500">{fileErrorMsj}</p>
 
-                <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
+
             </div>
 
             <a href="/productos"><button type="button" class="btn rounded-lg variant-filled-secondary">Cancelar edición</button></a>

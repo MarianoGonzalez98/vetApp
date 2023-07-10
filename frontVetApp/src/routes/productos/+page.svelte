@@ -124,7 +124,7 @@
                 <header class="card-header">Nombre: {prod.nombre}</header>
                 <section class="p-2">
                     <p>Stock: {prod.stock}</p>
-                    <p>Precio:{prod.precio}</p>
+                    <p>Precio: ${prod.precio}</p>
                     <p>Marca: {prod.marca}</p>
                     {#if (prod.descripcion)}
                         <p>Descripción: {prod.descripcion}</p>
