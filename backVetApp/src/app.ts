@@ -82,6 +82,7 @@ import { finalizarCampaignsPasadas } from "./controllers/donaciones";
 import { PerdidasRouter } from "./routes/perdidas.routes";
 import { ProductosRouter } from "./routes/productos.routes";
 import { cancelarReservasExpiradasDB } from "./services/compras.service";
+import { VeterinariasRouter } from "./routes/veterinarias.routes";
 
 app.use(PerdidasRouter)
 app.use(AdopcionesRouter);
@@ -95,6 +96,7 @@ app.use(MailerRouter)
 app.use(DonacionesRouter)
 app.use(MercadoPagoRouter)
 app.use(ProductosRouter)
+app.use(VeterinariasRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

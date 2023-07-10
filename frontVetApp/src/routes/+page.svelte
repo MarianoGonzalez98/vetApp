@@ -46,14 +46,19 @@
 				href="/perdidas">Pérdidas</a
 			>
 			<a
-			class="btn variant-ghost-surface"
+			class="btn variant-ghost-surface mr-1"
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
 			>
 			<a
-			class="btn variant-ghost-surface"
+			class="btn variant-ghost-surface mr-1"
 			rel="noreferrer"
 			href="/productos">Productos en venta</a
+			>
+			<a
+			class="btn variant-ghost-surface mr-1"
+			rel="noreferrer"
+			href="/veterinarias">Veterinarias de turno</a
 			>
 		</div>
 	</div>
