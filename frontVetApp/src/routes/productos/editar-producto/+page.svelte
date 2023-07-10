@@ -177,11 +177,11 @@
                 <input bind:value={producto.categoria} class="input focus:invalid:border-red-500"type="text" placeholder="Categoría del producto" name="marca" required/>
                 
                 <label class="label" for="stock">Stock:</label>
-                <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Ingrese stock del producto." name="stock" required/>
+                <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" min="0" max="99999999999" placeholder="Ingrese stock del producto." name="stock" required/>
 
 
                 <label class="label" for="precio">Precio:</label>
-                <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" max="9999999999" placeholder="Ingrese precio del producto" name="precio" required/>
+                <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" step="0.01" min="0" max="99999999999" placeholder="Ingrese precio del producto" name="precio" required/>
 
                 <label class="label" for="descripcion">Descripcion:</label>
                 <input bind:value={producto.descripcion} class="input focus:invalid:border-red-500" type="text" placeholder="Ingrese descripción del producto" name="descripcion"/>
@@ -200,7 +200,7 @@
                 <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
             </div>
 
-            <a href="/productos"><button class="btn rounded-lg variant-filled-secondary">Cancelar edición</button></a>
+            <a href="/productos"><button type="button" class="btn rounded-lg variant-filled-secondary">Cancelar edición</button></a>
 
             <button class="btn rounded-lg variant-filled-primary" type="submit">Actualizar el producto<button>
         </form>

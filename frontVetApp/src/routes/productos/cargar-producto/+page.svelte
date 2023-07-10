@@ -112,10 +112,10 @@
             <label class="label" for="categoria">Categoría:</label>
             <input bind:value={producto.categoria} class="input focus:invalid:border-red-500"type="text" placeholder="Categoría del producto" name="marca" required/>
             <label class="label" for="stock">Stock:</label>
-            <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Stock del producto" name="stock" required />
+            <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Stock del producto" name="stock" min="0" max="99999999999" />
 
             <label class="label" for="precio">Precio:</label>
-            <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" placeholder="Precio del producto" name="precio" required />
+            <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" placeholder="Precio del producto" step="0.01" min="0" max="99999999999" name="precio" required />
 
 
             <label class="label" for="descripcion">Descripcion:</label>

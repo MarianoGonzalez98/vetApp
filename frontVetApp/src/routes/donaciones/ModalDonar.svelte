@@ -88,7 +88,7 @@
 			Tenga en cuenta que su monto neto donado será menor al cobrado, ya que Mercado Pago cobra una tasa de 6.40% + IVA.</article>
 			<form action="" on:submit|preventDefault={onConfirm}>
 				<label for="">Monto:</label>
-				<input class="input mb-2" bind:value={monto} disabled={montoInputDisabled} type="number" required>
+				<input class="input mb-2" bind:value={monto} disabled={montoInputDisabled} type="number" step="0.01" min="1" max="99999999999" required>
 				{#if (!$user)}
 					<label for="">Su email:</label>
 					<input class="input focus:invalid:border-red-500 mb-2" bind:value={emailDonante} disabled={montoInputDisabled} type="text" title="Ingrese un email válido" required pattern={emailPatternFactory} placeholder="Ingrese su email. Ej: miEmail@gmail.com">
