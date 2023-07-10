@@ -173,7 +173,7 @@
                     on:click={parent.onClose}>Cancelar</button
                 >
                 <button class="btn {parent.buttonPositive}" type="submit"
-                    >Contactar paseador/cuidador</button
+                    >Contactar dueño/a</button
                 >
             </footer>
         </form>
