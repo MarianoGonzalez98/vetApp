@@ -9,7 +9,7 @@ import { ItemCarrito } from "../interfaces/Carrito.interface";
 import { getCompraBD, insertCompraDB, marcarAcreditadoDB } from "../services/compras.service";
 import { getPrecioTotalCompraDB, restarCantidadCompradaProductosDB } from "../services/productos.service";
 
-const ngrokURL= 'https://f2bc-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
+const ngrokURL= 'https://0506-186-127-125-154.ngrok-free.app'; // acá hay que colocar la url que da ngrok en el momento.
 // comando: ngrok http 3000
 
 

@@ -3,7 +3,6 @@
     import { user } from "$lib/stores/user";
     import { backendURL } from "$lib/utils/constantFactory";
     import { onMount } from "svelte";
-    import Carrito from "./carrito.svelte";
     import { productosCarrito } from "$lib/stores/carrito";
     import type { ItemCarrito } from "$lib/interfaces/Carrito.interface";
     import ModalConfirmarEliminarProducto from "./ModalConfirmarEliminarProducto.svelte";
@@ -153,7 +152,6 @@
         {/each}
     </div>
     {#if $user?.rol!=='veterinario'}        
-        <h1 class="h1 ml-15">Carrito de compras: </h1>
-        <Carrito on:reloadProducts={loadProductos}></Carrito>
+        <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/productos/carrito-de-compras">Ver mi carrito de compras</a>
     {/if}
 </div>
