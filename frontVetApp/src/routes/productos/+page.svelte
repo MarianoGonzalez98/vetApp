@@ -126,7 +126,9 @@
                     <p>Stock: {prod.stock}</p>
                     <p>Precio:{prod.precio}</p>
                     <p>Marca: {prod.marca}</p>
-                    <p>Descripción: {prod.descripcion}</p>
+                    {#if (prod.descripcion)}
+                        <p>Descripción: {prod.descripcion}</p>
+                    {/if}
                 </section>
                 <footer class="card-footer">
                     {#if Number(prod.stock)>0}
