@@ -144,20 +144,6 @@
                     required
                 />
             </label>
-            <label class="label" for="perro">Perro:</label>
-            <select
-                bind:value={perro}
-                class="input"
-                placeholder="Perro"
-                name="perro"
-            >
-                <option value="" hidden>{nombrePerroOriginal}</option>
-                {#each perrosCliente
-                    .filter((p) => p.sexo === sexoPerroOriginal && p.paraCruza && !p.castrado)
-                    .map((p) => p.nombre) as value}
-                    <option {value}>{value}</option>
-                {/each}
-            </select>
 
             <label class="label">
                 <span>Mensaje:</span>
