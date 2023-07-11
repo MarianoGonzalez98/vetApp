@@ -66,7 +66,7 @@ export const createPrefrerenceCompraProductosController = async (req: Request, r
         //date_of_expiration: "2024-05-30T23:59:59.000-04:00"
         expires: true,
         expiration_date_from: new Date().toISOString().slice(0, -1)+"-00:00",
-        expiration_date_to: new Date(Date.now()+(1 * 60 * 1000)).toISOString().slice(0, -1)+"-00:00",
+        expiration_date_to: new Date(Date.now()+(5 * 60 * 1000)).toISOString().slice(0, -1)+"-00:00",
     };
 //new Date(Date.now()+(1 * 60 * 1000)).toISOString()
 

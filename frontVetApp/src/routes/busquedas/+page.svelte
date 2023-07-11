@@ -157,86 +157,92 @@
 <div class="container my-8 mx-auto">
     <h1 class="h1 ml-15">Perros encontrados</h1>
     <div class="flex flex-wrap">
-        {#each publicacionesVisibles.filter((pub) => {
-            return !pub.duenoEncontrado;
-        }) as publicacion}
-            <div class="card variant-ghost-secondary p-1 max-w-xs m-2">
-                <section class="p-4">
-                    <header>
-                        {#if publicacion.foto}
-                            <img
-                                class="object-cover h-full w-full rounded-t-lg"
-                                src={publicacion.foto}
-                                alt="foto de perfil"
-                            />
-                        {:else}
-                            <img
-                                class="object-cover h-full w-full rounded-t-lg p-5"
-                                src="/no_foto_perro.png"
-                                alt=""
-                            />
-                        {/if}
-                    </header>
-                    <p>
-                        <span class="font-medium"
-                            >Nombre:
-                        </span>{publicacion.nombrePerro}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Raza:
-                        </span>{publicacion.razaPerro}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Descripción:
-                        </span>{publicacion.descripcionPerro}
-                    </p>
-                    <br><br>
-        
-                    <p>
-                        <span class="font-medium"
-                            >Fecha cuando se encontró:
-                        </span>{new Date(
-                            publicacion.fechaPerdido
-                        ).toLocaleDateString("es-AR")}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Plaza por donde se encontró:
-                        </span>{publicacion.plazaPerdido}
-                    </p>
-                </section>
-                <footer class="card-footer">
-                    <div>
-                        {#if !publicacion.duenoEncontrado}
-                            <!-- si no fue encontrado muestro los botones -->
-                            {#if publicacion.emailContacto !== $user?.email}
-                                <button
-                                    on:click={(event) =>
-                                        handleContactar(publicacion)}
-                                    class="btn variant-filled-primary"
-                                    >Contactar</button
-                                >
+        {#if publicacionesVisibles.filter((pub) => {
+            return !pub.encontrado;
+        }).length > 0}
+            {#each publicacionesVisibles.filter((pub) => {
+                return !pub.duenoEncontrado;
+            }) as publicacion}
+                <div class="card variant-ghost-secondary p-1 max-w-xs m-2">
+                    <section class="p-4">
+                        <header>
+                            {#if publicacion.foto}
+                                <img
+                                    class="object-cover h-full w-full rounded-t-lg"
+                                    src={publicacion.foto}
+                                    alt="foto de perfil"
+                                />
+                            {:else}
+                                <img
+                                    class="object-cover h-full w-full rounded-t-lg p-5"
+                                    src="/no_foto_perro.png"
+                                    alt=""
+                                />
                             {/if}
-                            {#if publicacion.autorEmail === $user?.email}
-                                <button
-                                    on:click={(event) =>
-                                        handleMarcarEncontrado(publicacion)}
-                                    class="btn variant-filled-secondary mt-2"
-                                    >Marcar dueño encontrado</button
-                                >
+                        </header>
+                        <p>
+                            <span class="font-medium"
+                                >Nombre:
+                            </span>{publicacion.nombrePerro}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Raza:
+                            </span>{publicacion.razaPerro}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Descripción:
+                            </span>{publicacion.descripcionPerro}
+                        </p>
+                        <br><br>
+            
+                        <p>
+                            <span class="font-medium"
+                                >Fecha cuando se encontró:
+                            </span>{new Date(
+                                publicacion.fechaPerdido
+                            ).toLocaleDateString("es-AR")}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Plaza por donde se encontró:
+                            </span>{publicacion.plazaPerdido}
+                        </p>
+                    </section>
+                    <footer class="card-footer">
+                        <div>
+                            {#if !publicacion.duenoEncontrado}
+                                <!-- si no fue encontrado muestro los botones -->
+                                {#if publicacion.emailContacto !== $user?.email}
+                                    <button
+                                        on:click={(event) =>
+                                            handleContactar(publicacion)}
+                                        class="btn variant-filled-primary"
+                                        >Contactar</button
+                                    >
+                                {/if}
+                                {#if publicacion.autorEmail === $user?.email}
+                                    <button
+                                        on:click={(event) =>
+                                            handleMarcarEncontrado(publicacion)}
+                                        class="btn variant-filled-secondary mt-2"
+                                        >Marcar dueño encontrado</button
+                                    >
+                                {/if}
                             {/if}
-                        {/if}
-                    </div>
-                    <p class="mt-4 font-medium">
-                        Fecha de publicación: {new Date(
-                            publicacion.fechaPublicacion
-                        ).toLocaleDateString("es-AR")}
-                    </p>
-                </footer>
-            </div>
-        {/each}
+                        </div>
+                        <p class="mt-4 font-medium">
+                            Fecha de publicación: {new Date(
+                                publicacion.fechaPublicacion
+                            ).toLocaleDateString("es-AR")}
+                        </p>
+                    </footer>
+                </div>
+            {/each}
+        {:else if inputRaza}
+            <h1>No hay ningún resultado que coincida con el filtro aplicado.</h1>
+        {/if}
     </div>
 
     <hr class="h-px my-8 bg-gray-200 border-2 dark:bg-gray-700" />

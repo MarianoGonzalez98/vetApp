@@ -30,7 +30,7 @@ export const cancelarReservasExpiradasDB = async () => {
     const query = `
     SELECT id, productos, "seAcredito", cancelada, "fechaHoraReserva",EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) AS "secondsDifference"
 	FROM public.compras
-    WHERE cancelada = false and "seAcredito" = false and EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) > 60 
+    WHERE cancelada = false and "seAcredito" = false and EXTRACT(EPOCH FROM ($1 - "fechaHoraReserva")) > 300 
     `;
     const values = [new Date().toISOString()];
     try {

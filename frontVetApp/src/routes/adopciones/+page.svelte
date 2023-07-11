@@ -169,6 +169,9 @@
 <div class="container my-8 mx-auto">
     <h1 class="h1 ml-15">Perros para adoptar</h1>
     <div class="flex flex-wrap">
+                {#if publicacionesVisibles.filter((pub) => {
+            return !pub.adoptado;
+        }).length > 0}
         {#each publicacionesVisibles.filter((pub) => {
             return !pub.adoptado;
         }) as publicacion}
@@ -225,6 +228,9 @@
                 </footer>
             </div>
         {/each}
+        {:else if inputRaza}
+            <h1>No hay ningún resultado que coincida con el filtro aplicado.</h1>
+        {/if}
     </div>
 
     <hr class="h-px my-8 bg-gray-200 border-2 dark:bg-gray-700" />
