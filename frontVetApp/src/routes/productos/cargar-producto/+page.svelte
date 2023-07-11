@@ -14,6 +14,7 @@
         stock:'',
         descripcion:'',
         marca:'',
+        categoria:'',
         foto:'',
     }
     let errorMsj:string='';
@@ -61,11 +62,6 @@
             });
     }
 
-    const eliminarFoto = () => {
-        producto.foto = "";
-        FotoFile = "";
-    };
-
     const onChangeFile = async (event: Event) => {
         let target = event.target as HTMLInputElement;
         if (!target.files) {
@@ -108,11 +104,13 @@
             <p class="text-red-500">{errorMsj}</p>
             <label class="label" for="marca">Marca:</label>
             <input bind:value={producto.marca} class="input focus:invalid:border-red-500"type="text" placeholder="Marca del producto" name="marca" required/>
+            <label class="label" for="categoria">Categoría:</label>
+            <input bind:value={producto.categoria} class="input focus:invalid:border-red-500"type="text" placeholder="Categoría del producto" name="marca" required/>
             <label class="label" for="stock">Stock:</label>
-            <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Stock del producto" name="stock" required />
+            <input bind:value={producto.stock} class="input focus:invalid:border-red-500" type="number" placeholder="Stock del producto" name="stock" min="0" max="99999999999" />
 
             <label class="label" for="precio">Precio:</label>
-            <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" placeholder="Precio del producto" name="precio" required />
+            <input bind:value={producto.precio} class="input focus:invalid:border-red-500" type="number" placeholder="Precio del producto" step="0.01" min="0" max="99999999999" name="precio" required />
 
 
             <label class="label" for="descripcion">Descripcion:</label>
@@ -122,14 +120,11 @@
             <div>
                 {#if producto.foto}
                     <img class="object-contain h-32 w-32" src={producto.foto} alt="foto del producto"/>
-                {:else}
-                    <img class="object-contain h-32 w-32" src="/no_foto_perfil.png" alt=""/>
                 {/if}
-                <button on:click={eliminarFoto} class="btn rounded btn-sm variant-filled-warning" type="button">Eliminar foto</button>
             </div>
             <p class="text-red-500">{fileErrorMsj}</p>
 
-            <input bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
+            <input required bind:files={FotoFile} type="file" accept="image/png, image/jpeg" on:change={onChangeFile}/>
 
 
             <hr class="!border-t-2" />

@@ -130,14 +130,15 @@
 
 <Modal />
 
-{#if $user}
-    <div class="w-full">
+<div class="w-full">
+    {#if $user}
         <a href="/busquedas/crear-publicacion" 
-            ><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8"
-                >Publicar perro encontrado</button
-            ></a
-        >
-
+                ><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8"
+                    >Publicar perro encontrado</button
+                ></a
+                >
+                
+    {/if}
         <div class="float-right mr-5 mt-5">
             <div class="flex items-center">
                 <label for="filtroRaza" class="text-left whitespace-nowrap"
@@ -153,7 +154,6 @@
             </div>
         </div>
     </div>
-{/if}
 <div class="container my-8 mx-auto">
     <h1 class="h1 ml-15">Perros encontrados</h1>
     <div class="flex flex-wrap">

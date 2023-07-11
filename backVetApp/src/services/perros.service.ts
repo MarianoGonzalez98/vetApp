@@ -99,14 +99,14 @@ export const actualizarPerro = async (perro: Perro, nombreAnterior: string) => {
     }
 }
 
-export const actualizarLibreta = async (id:number, vacunas:string, antiparasitarios:string, castrado:boolean, peso:number) => {
+export const actualizarLibreta = async (id: number, vacunas: string, antiparasitarios: string, castrado: boolean, peso: number) => {
     const query = `
     UPDATE public.perros
     SET vacunas=$2, peso=$3, antiparasitarios=$4, castrado=$5
     WHERE (id = $1);
     `
 
-    const values = [id,vacunas,peso,antiparasitarios,castrado]
+    const values = [id, vacunas, peso, antiparasitarios, castrado]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -119,14 +119,14 @@ export const actualizarLibreta = async (id:number, vacunas:string, antiparasitar
     }
 }
 
-export const actualizarVacunacion = async (id:number, vacunas:string, peso:number) => {
+export const actualizarVacunacion = async (id: number, vacunas: string, peso: number) => {
     const query = `
     UPDATE public.perros
     SET vacunas=$2, peso=$3
     WHERE (id = $1);
     `
 
-    const values = [id,vacunas,peso]
+    const values = [id, vacunas, peso]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -139,14 +139,14 @@ export const actualizarVacunacion = async (id:number, vacunas:string, peso:numbe
     }
 }
 
-export const actualizarCastracion = async (id:number,castrado:boolean, peso:number) => {
+export const actualizarCastracion = async (id: number, castrado: boolean, peso: number) => {
     const query = `
     UPDATE public.perros
     SET castrado=$2, peso=$3
     WHERE (id = $1);
     `
 
-    const values = [id,castrado,peso]
+    const values = [id, castrado, peso]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -159,14 +159,14 @@ export const actualizarCastracion = async (id:number,castrado:boolean, peso:numb
     }
 }
 
-export const actualizarAntiparasitario = async (id:number, antiparasitarios:string, peso:number) => {
+export const actualizarAntiparasitario = async (id: number, antiparasitarios: string, peso: number) => {
     const query = `
     UPDATE public.perros
     SET antiparasitarios=$2, peso=$3
     WHERE (id = $1);
     `
 
-    const values = [id,antiparasitarios,peso]
+    const values = [id, antiparasitarios, peso]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -179,14 +179,14 @@ export const actualizarAntiparasitario = async (id:number, antiparasitarios:stri
     }
 }
 
-export const actualizarConsultaGeneral = async (id:number, peso:number) => {
+export const actualizarConsultaGeneral = async (id: number, peso: number) => {
     const query = `
     UPDATE public.perros
     SET peso=$2
     WHERE (id = $1);
     `
 
-    const values = [id,peso]
+    const values = [id, peso]
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -200,7 +200,7 @@ export const actualizarConsultaGeneral = async (id:number, peso:number) => {
 }
 
 
-export const getPerroJuli = async (id:number) => {
+export const getPerroJuli = async (id: number) => {
     const query = `
     SELECT *
     FROM public.perros
@@ -221,12 +221,26 @@ export const getPerroJuli = async (id:number) => {
 }
 
 export const toggleParaCruza = async (perro: Perro) => {
-    const query = `
-    UPDATE public.perros
-    SET "paraCruza" = $3
-    WHERE (owner = $1) AND (nombre = $2);
-    `
-    const values = [perro.owner, perro.nombre, perro.paraCruza]
+    let query, values;
+    console.log(perro.sexo);
+    console.log(perro.paraCruza);
+    console.log(perro.fechaDeCelo);
+    if (perro.sexo === "Hembra" && perro.paraCruza) {
+        query = `
+        UPDATE public.perros
+        SET "paraCruza" = $3, "fechaDeCelo" = $4
+        WHERE (owner = $1) AND (nombre = $2);
+        `
+        console.log("fecha de celo: " + perro.fechaDeCelo);
+        values = [perro.owner, perro.nombre, perro.paraCruza, perro.fechaDeCelo];
+    } else {
+        query = `
+        UPDATE public.perros
+        SET "paraCruza" = $3
+        WHERE (owner = $1) AND (nombre = $2);
+        `
+        values = [perro.owner, perro.nombre, perro.paraCruza];
+    }
 
     try {
         const response: QueryResult = await pool.query(query, values)
@@ -239,21 +253,21 @@ export const toggleParaCruza = async (perro: Perro) => {
     }
 }
 
-export const getPerrosParaCruza = async (owner: string) => {
+export const getPerrosParaCruza = async (owner: string, sexo: string) => {
     const query = `
     SELECT *
-    FROM public.perros p
-    WHERE (p.owner = $1) AND (p.fallecido = false)
+    FROM public.perros
+    WHERE (owner <> $1) AND (fallecido = false) AND "paraCruza" AND (castrado = false) AND (sexo <> $2  )
     `
 
-    const values = [owner]
+    const values = [owner, sexo]
     try {
         const response: QueryResult = await pool.query(query, values)
         const result: Perro[] = await response.rows
         return result
     }
     catch (err) {
-        console.error("----Error en acceso a BD:getPerros------");
+        console.error("----Error en acceso a BD:getPerrosParaCruza------");
         console.log(err);
         return "error";
     }

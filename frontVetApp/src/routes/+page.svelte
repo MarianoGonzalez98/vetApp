@@ -20,12 +20,12 @@
 					rel="noreferrer"
 					href="/mis-perros">Mis perros</a
 				>
-				<a
-					class="btn variant-filled"
-					rel="noreferrer"
-					href="/cargar-perro">Cargar nuevo perro</a
-				>
 			{/if}
+			<a
+				class="btn variant-filled"
+				rel="noreferrer"
+				href="/cargar-perro">Cargar nuevo perro</a
+			>
 			<a class="btn variant-filled" rel="noreferrer" href="/turnos"
 				>Ir a turnos</a
 			>
@@ -51,14 +51,19 @@
 				href="/busquedas">Búsquedas</a
 			>
 			<a
-			class="btn variant-ghost-surface"
+			class="btn variant-ghost-surface mr-1"
 			rel="noreferrer"
 			href="/donaciones">Donaciones</a
 			>
 			<a
-			class="btn variant-ghost-surface"
+			class="btn variant-ghost-surface mr-1"
 			rel="noreferrer"
 			href="/productos">Productos en venta</a
+			>
+			<a
+			class="btn variant-ghost-surface mr-1"
+			rel="noreferrer"
+			href="/veterinarias">Veterinarias de turno</a
 			>
 		</div>
 	</div>

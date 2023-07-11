@@ -83,6 +83,7 @@ import { PerdidasRouter } from "./routes/perdidas.routes";
 import { BusquedasRouter } from "./routes/busquedas.routes";
 import { ProductosRouter } from "./routes/productos.routes";
 import { cancelarReservasExpiradasDB } from "./services/compras.service";
+import { VeterinariasRouter } from "./routes/veterinarias.routes";
 
 app.use(BusquedasRouter);
 app.use(PerdidasRouter);
@@ -97,6 +98,7 @@ app.use(MailerRouter)
 app.use(DonacionesRouter)
 app.use(MercadoPagoRouter)
 app.use(ProductosRouter)
+app.use(VeterinariasRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Test backend')

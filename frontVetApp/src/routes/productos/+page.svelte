@@ -3,14 +3,20 @@
     import { user } from "$lib/stores/user";
     import { backendURL } from "$lib/utils/constantFactory";
     import { onMount } from "svelte";
-    import Carrito from "./carrito.svelte";
     import { productosCarrito } from "$lib/stores/carrito";
     import type { ItemCarrito } from "$lib/interfaces/Carrito.interface";
     import ModalConfirmarEliminarProducto from "./ModalConfirmarEliminarProducto.svelte";
     import { modalStore, type ModalSettings, Modal } from "@skeletonlabs/skeleton";
 
     let productos:Producto[] = [];
-
+    let inputCategoria:string ='';
+    $: publicacionesVisibles = inputCategoria
+        ? productos.filter((pub) => {
+              return pub.categoria
+                  .toLowerCase()
+                  .match(`${inputCategoria.toLowerCase()}.*`);
+          })
+        : productos;
     onMount( async ()  => {
         await loadProductos();
     });
@@ -92,11 +98,25 @@
     {#if ($user?.rol === 'veterinario')}
     <a href="/productos/cargar-producto"><button class="btn rounded-lg variant-filled-secondary mt-5">Cargar nuevo producto</button></a>
     {/if}
+    <div class="float-right mr-5 mt-5">
+        <div class="flex items-center">
+            <label for="filtroRaza" class="text-left whitespace-nowrap"
+                >Filtrar por categoría:</label
+            >
+            <input
+                type="text"
+                bind:value={inputCategoria}
+                class="input"
+                name="filtroRaza"
+                id=""
+            />
+        </div>
+    </div>
 </div>
 <div class="container my-8 mx-auto ">
     <h1 class="h1 ml-15 mt-10">Productos: </h1>
     <div class="flex flex-wrap  ">
-        {#each productos.filter( (prod) => {
+        {#each publicacionesVisibles.filter( (prod) => {
             return (prod)
         }) as prod}
             {@const prodCarrito = $productosCarrito.find( p => p.idProducto === prod.id)}
@@ -104,9 +124,11 @@
                 <header class="card-header">Nombre: {prod.nombre}</header>
                 <section class="p-2">
                     <p>Stock: {prod.stock}</p>
-                    <p>Precio:{prod.precio}</p>
+                    <p>Precio: ${prod.precio}</p>
                     <p>Marca: {prod.marca}</p>
-                    <p>Descripción: {prod.descripcion}</p>
+                    {#if (prod.descripcion)}
+                        <p>Descripción: {prod.descripcion}</p>
+                    {/if}
                 </section>
                 <footer class="card-footer">
                     {#if Number(prod.stock)>0}
@@ -153,7 +175,6 @@
         {/each}
     </div>
     {#if $user?.rol!=='veterinario'}        
-        <h1 class="h1 ml-15">Carrito de compras: </h1>
-        <Carrito on:reloadProducts={loadProductos}></Carrito>
+        <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/productos/carrito-de-compras">Ver mi carrito de compras</a>
     {/if}
 </div>
