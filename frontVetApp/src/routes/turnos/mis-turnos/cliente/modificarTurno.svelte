@@ -19,6 +19,8 @@
     export let turnoRango:string;
 
     
+    let fechaParaMostrar:Date =  new Date (turnoFecha);
+
     // Form Data
     let formData ={
         perros : perrosCliente,
@@ -126,7 +128,7 @@
 {#if $modalStore[0]}
     <div class="modal-example-form {cBase}">
         <header class={cHeader}>Modificar turno</header>
-        <header class={cHeader}>Fecha: {formData.fecha.toLocaleDateString()}</header>
+        <header class={cHeader}>Fecha: {fechaParaMostrar.toLocaleDateString()}</header>
 
         <form class="modal-form {cForm}">     
                 <label class="label">
