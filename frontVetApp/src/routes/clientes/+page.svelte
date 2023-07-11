@@ -91,58 +91,66 @@
             />
         </div>
     </div>
-    <div class="ml-2 flex flex-wrap">
-        {#each mostrar as cliente}
-            <div
-                class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
-            >
-                <div class="flex flex-col justify-start p-6">
-                    <h5
-                        class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
-                    >
-                        {cliente.nombre}
-                        {cliente.apellido}
-                    </h5>
-                    <div
-                        class="text-base text-neutral-600 dark:text-neutral-200"
-                    >
-                        <p>
-                            <span class="font-medium">Email: </span>
-                            {cliente.email}
-                        </p>
-                        <p>
-                            <span class="font-medium">DNI: </span>
-                            {cliente.dni}
-                        </p>
-                        <p>
-                            <span class="font-medium"
-                                >Fecha de nacimiento:
-                            </span>
-                            {new Date(cliente.fechaNacimiento)
-                                .toJSON()
-                                .slice(0, 10)}
-                        </p>
-                        <p>
-                            <span class="font-medium">Dirección: </span>
-                            {cliente.direccion}
-                        </p>
-                        <p>
-                            <span class="font-medium">Teléfono: </span>
-                            {cliente.telefono}
-                        </p>
-                    </div>
-                    <footer class="flex mt-4">
-                        <a
-                            class="btn variant-ghost-surface"
-                            rel="noreferrer"
-                            href="/mis-perros?cliente={cliente.email}"
-                            >Ver perros</a
+    {#if mostrar.length > 0}
+        <div class="ml-2 flex flex-wrap">
+            {#each mostrar as cliente}
+                <div
+                    class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
+                >
+                    <div class="flex flex-col justify-start p-6">
+                        <h5
+                            class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                         >
-                    </footer>
+                            {cliente.nombre}
+                            {cliente.apellido}
+                        </h5>
+                        <div
+                            class="text-base text-neutral-600 dark:text-neutral-200"
+                        >
+                            <p>
+                                <span class="font-medium">Email: </span>
+                                {cliente.email}
+                            </p>
+                            <p>
+                                <span class="font-medium">DNI: </span>
+                                {cliente.dni}
+                            </p>
+                            <p>
+                                <span class="font-medium"
+                                    >Fecha de nacimiento:
+                                </span>
+                                {new Date(cliente.fechaNacimiento)
+                                    .toJSON()
+                                    .slice(0, 10)}
+                            </p>
+                            <p>
+                                <span class="font-medium">Dirección: </span>
+                                {cliente.direccion}
+                            </p>
+                            <p>
+                                <span class="font-medium">Teléfono: </span>
+                                {cliente.telefono}
+                            </p>
+                        </div>
+                        <footer class="flex mt-4">
+                            <a
+                                class="btn variant-ghost-surface"
+                                rel="noreferrer"
+                                href="/mis-perros?cliente={cliente.email}"
+                                >Ver perros</a
+                            >
+                        </footer>
+                    </div>
                 </div>
-            </div>
-        {/each}
-    </div>
+            {/each}
+        </div>
+    {:else}
+        <div class="flex justify-center items-center h-full">
+            <h1 class="text-4xl font-bold">
+                No hay resultados que coincidan con los filtros aplicados.
+            </h1>
+        </div>
+    {/if}
 {:else}
     <div class="flex justify-center items-center h-screen">
         <div class="flex-none">
