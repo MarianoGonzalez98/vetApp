@@ -20,12 +20,12 @@
 					rel="noreferrer"
 					href="/mis-perros">Mis perros</a
 				>
-				<a
-					class="btn variant-filled"
-					rel="noreferrer"
-					href="/cargar-perro">Cargar nuevo perro</a
-				>
 			{/if}
+			<a
+				class="btn variant-filled"
+				rel="noreferrer"
+				href="/cargar-perro">Cargar nuevo perro</a
+			>
 			<a class="btn variant-filled" rel="noreferrer" href="/turnos"
 				>Ir a turnos</a
 			>

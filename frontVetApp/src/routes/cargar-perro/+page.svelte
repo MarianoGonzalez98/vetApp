@@ -3,7 +3,7 @@
     import type { Vacuna } from "$lib/interfaces/Perro.interface";
     import { dataRegistroCliente } from "$lib/stores/dataRegistroCliente";
     import { user } from "$lib/stores/user";
-    import { backendURL } from "$lib/utils/constantFactory";
+    import { backendURL, emailPatternFactory } from "$lib/utils/constantFactory";
     import {
         CodeBlock,
         ListBox,
@@ -69,6 +69,9 @@
     let owner = $user?.email;
     let castrado: string[] = [];
 
+    let esVeterinarioSinCargarCliente = false;
+    let errorNoExisteClienteMSG = '';
+
     const fechaHoy = new Date(Date.now());
     const fechaHoyString = `${fechaHoy.getFullYear()}-${(
         fechaHoy.getMonth() + 1
@@ -77,21 +80,28 @@
         .padStart(2, "0")}-${fechaHoy.getDate().toString().padStart(2, "0")}`;
 
     afterNavigate((nav: AfterNavigate) => {
+        console.log(nav.from?.route.id)
         if (
             $user?.rol === "veterinario" &&
-            nav.from?.route.id !== "/cargar-cliente"
+            nav.from?.route.id !== "/cargar-cliente" &&
+            nav.from?.route.id !== "/" &&
+            nav.from?.route.id
         ) {
             goto("/");
         }
+        if ($user?.rol === "veterinario" && (nav.from?.route.id==="/" || nav.from?.route.id==="/cargar-perro" || (!nav.from?.route.id)) || !$dataRegistroCliente?.email){
+            esVeterinarioSinCargarCliente = true;
+            owner='';
+        }
     });
     beforeNavigate((nav: BeforeNavigate) => {
-        if (nav?.to?.route.id !== "/cargar-cliente") {
+        if (nav?.to?.route.id !== "/cargar-cliente" ) {
             $dataRegistroCliente = null;
         }
     });
 
     const handleCarga = async () => {
-        if ($user?.rol === "veterinario") {
+        if ($user?.rol === "veterinario" && !esVeterinarioSinCargarCliente) {
             owner = $dataRegistroCliente?.email;
         }
         let error = false;
@@ -104,7 +114,7 @@
             vacunasAplicadas.push(vacunaAplicada);
         }
 
-        if ($user?.rol === "veterinario" && !error) {
+        if ($user?.rol === "veterinario" && !error && !esVeterinarioSinCargarCliente) {
             await fetch(`${backendURL}/registrar-cliente`, {
                 method: "POST",
                 headers: {
@@ -154,6 +164,34 @@
             modalStore.trigger(fallaDesconocidaCliente);
             return;
         }
+        if ($user?.rol === "veterinario" && esVeterinarioSinCargarCliente){
+            //valida que el cliente exista
+            await fetch(`http://localhost:3000/clienteJuli?email=${owner}`,  //Traerme al cliente para saber el descuento acumulado
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+            )
+                .then((res) => res.json())
+                .then((apiResponse) => {
+                    let cliente = apiResponse.data;
+                    if (!cliente){
+                        console.log("No existe el cliente");
+                        error=true;
+                        return;
+                    }
+                });
+    
+            if (error){
+                errorNoExisteClienteMSG = 'No existe un cliente con el email ingresado'
+                return;
+            }
+        }
+
+
         await fetch(`${backendURL}/cargar-perro`, {
             method: "POST",
             headers: {
@@ -175,7 +213,7 @@
         })
             .then((res) => {
                 if (res.status < 299) {
-                    if ($user?.rol === "veterinario"){
+                    if ($user?.rol === "veterinario" && !esVeterinarioSinCargarCliente){
                         modalStore.clear();
                         modalStore.trigger(perroClienteCargado);
                     }else{
@@ -253,6 +291,18 @@
             {/each}
         </select>
 
+        {#if esVeterinarioSinCargarCliente}
+        <label class="label" for="emailCliente">Email del cliente dueño:</label>
+        <input
+            bind:value={owner}
+            class="input"
+            type="text"
+            placeholder="Ej: email@gmail.com"
+            name="emailCliente"
+            pattern="{emailPatternFactory}"
+            required
+        />
+        {/if}
         <label class="label" for="fechaNacimiento">Fecha de nacimiento:</label>
         <input
             bind:value={fechaNacimiento}
@@ -317,7 +367,7 @@
                 </ListBoxItem>
             {/each}
         </ListBox>
-
+        <p class="text-red-500">{errorNoExisteClienteMSG}</p>
         <button class="btn rounded-lg variant-filled-primary" type="submit"
             >Cargar perro</button
         >
