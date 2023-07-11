@@ -115,12 +115,12 @@
 		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
 			<label class="label">
 				<span>Nombre</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre válido" bind:value={formData.nombre} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido y nombre" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre válido" bind:value={formData.nombre} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su nombre" />
 			</label>
 
 			<label class="label">
 				<span>Apellido</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un apellido válido" bind:value={formData.apellido} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido y nombre" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un apellido válido" bind:value={formData.apellido} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido" />
 			</label>
 
 			<label use:popup={popupFocusBlur}  class="label">

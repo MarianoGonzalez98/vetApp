@@ -50,6 +50,8 @@
 				rel="noreferrer"
 				href="/busquedas">Búsquedas</a
 			>
+		</div>
+		<div class="flex justify-center">
 			<a
 			class="btn variant-ghost-surface mr-1"
 			rel="noreferrer"
