@@ -116,9 +116,12 @@
 <div class="container my-8 mx-auto ">
     <h1 class="h1 ml-15 mt-10">Productos: </h1>
     <div class="flex flex-wrap  ">
-        {#each publicacionesVisibles.filter( (prod) => {
+        {#if publicacionesVisibles.filter( (prod) => {
             return (prod)
-        }) as prod}
+        }).length > 0}
+            {#each publicacionesVisibles.filter( (prod) => {
+                return (prod)
+            }) as prod}
             {@const prodCarrito = $productosCarrito.find( p => p.idProducto === prod.id)}
             <div class="card  variant-ghost-secondary p-1 max-w-xs m-2 ">
                 <header class="card-header">Nombre: {prod.nombre}</header>
@@ -173,6 +176,9 @@
                 </footer>
             </div>
         {/each}
+        {:else if inputCategoria}
+            <h1>No hay ningún resultado que coincida con el filtro aplicado.</h1>
+        {/if}
     </div>
     {#if $user?.rol!=='veterinario'}        
         <a class="btn variant-filled m-4 mb-0" rel="noreferrer" href="/productos/carrito-de-compras">Ver mi carrito de compras</a>
