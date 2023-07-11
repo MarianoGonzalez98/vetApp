@@ -12,6 +12,10 @@
     import ModalExampleForm from "./ModalExampleForm.svelte";
     import { backendURL } from "$lib/utils/constantFactory";
     import type { Perro } from "$lib/interfaces/Perro.interface";
+    import type {
+        Cliente,
+        ExtrasCliente,
+    } from "$lib/interfaces/Cliente.interface";
 
     const owner: string =
         new URLSearchParams(window.location.search).get("owner") ??
@@ -23,6 +27,9 @@
 
     const raza: string =
         new URLSearchParams(window.location.search).get("raza") ?? "";
+
+    const sexo: string =
+        new URLSearchParams(window.location.search).get("sexo") ?? "";
 
     let perros: Perro[] = [];
 
@@ -40,13 +47,9 @@
         buttonTextCancel: "Ok",
     };
 
-    let apellido = "";
-    let email = $user?.email;
-    let telefono = "";
-
     onMount(async () => {
         const res = await fetch(
-            `${backendURL}/listar-perros-para-cruza?owner=${owner}&nombre=${nombre}&raza=${raza}`,
+            `${backendURL}/listar-perros-para-cruza?owner=${owner}&sexo=${sexo}`,
             {
                 method: "GET",
                 headers: {
@@ -57,45 +60,74 @@
         )
             .then((res) => res.json())
             .then((apiResponse) => (perros = apiResponse.data));
+        perros = perros.sort((a, b) => {
+            if (a.raza === raza && b.raza !== raza) {
+                return -1; // a viene antes que b
+            } else if (a.raza !== raza && b.raza === raza) {
+                return 1; // b viene antes que a
+            } else {
+                return 0; // no se cambia el orden
+            }
+        });
         mostrar = perros;
     });
 
-    let inputZona: string;
-    let inputHorario: string;
-    let inputNombre: string;
-    let emailSeleccionado: string;
+    let inputRaza: string;
 
-    $: mostrar = perros.filter((pc) => {
-/*         const zonaMatch = inputZona
-            ? pc.zona.toLowerCase().match(`.*${inputZona.toLowerCase()}.*`)
+    $: mostrar = perros.filter((perro) => {
+        const razaMatch = inputRaza
+            ? perro.raza.toLowerCase().match(`.*${inputRaza.toLowerCase()}.*`)
             : true;
-        const horarioMatch = inputHorario
-            ? pc.horarios
-                  .toLowerCase()
-                  .match(`.*${inputHorario.toLowerCase()}.*`)
-            : true;
-        const nombreMatch = inputNombre
-            ? pc.nombre
-                  .toLowerCase()
-                  .concat(" " + pc.apellido.toLowerCase())
-                  .match(`.*${inputNombre.toLowerCase()}.*`)
-            : true;
-        return zonaMatch && horarioMatch && nombreMatch;
- */    });
+        return razaMatch;
+    });
 
-    const handleContactar = (pc: Perro) => {
-        console.log(pc);
-        emailSeleccionado = pc.owner;
+    let perrosCliente: Perro[] = [];
+    let cliente: Cliente & ExtrasCliente;
+
+    const handleContactar = async (perro: Perro) => {
+        const res = await fetch(
+            `${backendURL}/listar-perros?cliente=${owner}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            }
+        )
+            .then((res) => res.json())
+            .then((apiResponse) => (perrosCliente = apiResponse.data));
+        await fetch(`${backendURL}/getPerfil`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+            .then((res) => {
+                if (res.status < 299) {
+                    //si entra acá no hubo error
+                    return res.json();
+                }
+                return Promise.reject(res);
+            })
+            .then((res) => {
+                cliente = res;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
         let modalComponent = {
             // Pass a reference to your custom component
             ref: ModalExampleForm,
             // Add the component properties as key/value pairs
             props: {
-                miNombre: nombre,
-                miApellido: apellido,
-                miEmail: email,
-                miTelefono: telefono,
-                emailDestinatario: emailSeleccionado,
+                cliente: cliente,
+                emailCliente: owner,
+                nombrePerroOriginal: nombre,
+                sexoPerroOriginal: sexo,
+                perrosCliente: perrosCliente,
+                perroSeleccionado: perro,
             },
             // Provide a template literal for the default component slot
             slot: "<p>Skeleton</p>",
@@ -110,6 +142,8 @@
         modalStore.clear();
         modalStore.trigger(modalTest);
     };
+
+    const espacio = " ";
 </script>
 
 <Modal />
@@ -119,43 +153,20 @@
     <div class="flex">
         <div class="ml-2">
             <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por zona:
+                >Filtrar por raza:
             </label>
             <input
                 type="text"
-                bind:value={inputZona}
-                class="input"
-                name="filtroRaza"
-                id=""
-            />
-        </div>
-        <div class="ml-2">
-            <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por horarios:
-            </label>
-            <input
-                type="text"
-                bind:value={inputHorario}
-                class="input"
-                name="filtroRaza"
-                id=""
-            />
-        </div>
-        <div class="ml-2">
-            <label for="filtroRaza" class="text-left whitespace-nowrap"
-                >Filtrar por nombre:
-            </label>
-            <input
-                type="text"
-                bind:value={inputNombre}
+                bind:value={inputRaza}
                 class="input"
                 name="filtroRaza"
                 id=""
             />
         </div>
     </div>
-    <div class="ml-2 flex flex-wrap">
-        {#each mostrar as perro}
+    {#if mostrar.length > 0}
+        <div class="ml-2 flex flex-wrap">
+            {#each mostrar as perro}
                 <div
                     class="m-2 grayscale hover:grayscale-0 duration-300 rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] variant-ghost-secondary md:max-w-xl md:flex-row"
                 >
@@ -164,47 +175,49 @@
                             class="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50"
                         >
                             {perro.nombre}
-                            {perro.owner}
                         </h5>
                         <div
                             class="text-base text-neutral-600 dark:text-neutral-200"
                         >
                             <p>
-                                <span class="font-medium">Zona: </span>
-                                {perro.observaciones}
+                                <span class="font-medium">Raza: </span>
+                                {perro.raza}
                             </p>
+                            <p>
+                                <span class="font-medium">Edad: </span>
+                                {new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear()} año{new Date().getFullYear() - new Date(perro.fechaNacimiento).getFullYear() > 1 ? "s" : ""}
+                            </p>
+                            {#if perro.sexo === "Hembra" }
+                                <p>
+                                    <span class="font-medium"
+                                        >Fecha de celo:
+                                    </span>
+                                    {perro.fechaDeCelo}
+                                </p>
+                            {/if}
                         </div>
-                            <footer class="flex mt-4">
-                                <button
-                                    on:click={(event) => handleContactar(perro)}
-                                    class="btn btn-sm variant-ghost-surface mr-2"
-                                    >Contactar
-                                </button>
-                            </footer>
+                        <footer class="flex flex-wrap">
+                            <button
+                                on:click={(event) => handleContactar(perro)}
+                                class="btn btn-sm variant-ghost-surface mr-2 mt-2"
+                                >Contactar
+                            </button>
+                        </footer>
                     </div>
                 </div>
-        {/each}
-    </div>
+            {/each}
+        </div>
+    {:else}
+        <div class="flex justify-center items-center h-full">
+            <h1 class="text-4xl font-bold">
+                No hay resultados que coincidan con los filtros aplicados.
+            </h1>
+        </div>
+    {/if}
 {:else}
     <div class="flex justify-center items-center h-screen">
-        {#if $user?.rol === "veterinario"}
-            <div class="flex-none">
-                <h1 class="text-4xl font-bold mb-6">
-                    No hay paseadores cargados.
-                </h1>
-                <div class="flex justify-center">
-                    <a
-                        class="ml-4 btn variant-ghost-secondary hover:variant-filled-secondary"
-                        rel="noreferrer"
-                        href="/paseadores-y-cuidadores/cargar-paseadorcuidador"
-                        >Cargar paseador/cuidador</a
-                    >
-                </div>
-            </div>
-        {:else}
-            <h1 class="text-4xl font-bold">
-                Ups! Parece que no hay paseadores cargados.
-            </h1>
-        {/if}
+        <h1 class="text-4xl font-bold">
+            No hay perros disponibles para cruzar con {nombre}.
+        </h1>
     </div>
 {/if}

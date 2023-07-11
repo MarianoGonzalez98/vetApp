@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { actualizarPerro, getPerro, getPerroJuli, getPerros, insertPerro, marcarComoFallecido, toggleParaCruza } from "../services/perros.service"
+import { actualizarPerro, getPerro, getPerroJuli, getPerros, getPerrosParaCruza, insertPerro, marcarComoFallecido, toggleParaCruza } from "../services/perros.service"
 import { Perro } from "../interfaces/Perro.interface"
 import { cancelarTurno, getTurnosPerro } from "../services/turno.service";
 import { sendMailController } from "./test";
@@ -157,4 +157,47 @@ export const cambiarDisponibleParaCruzaController = async (req: Request, res: Re
     }
 
     res.status(201).send('Se actualizó correctamente la disponibilidad del paseador/cuidador');
+}
+
+export const listarPerrosParaCruzaController = async (req: Request, res: Response) => {
+    const owner: string = req.query.owner as string;
+    const sexo: string = req.query.sexo as string;
+    
+    const result = await getPerrosParaCruza(owner, sexo);
+
+    if (result === "error") {
+        //HTTP 500 Internal server error
+        res.status(500).send({ data: "posible error en base de datos", statusCode: 500 })
+        return
+    }
+    res.status(200).send({ data: result, statusCode: 200 })
+}
+
+export const enviarMailCruzaController = async (req: Request, res: Response) => {
+    const emailInfo = req.body;
+
+    let email = emailInfo.emailDestinatario;
+    let asunto = `¡Recibiste una solicitud de cruza para ${emailInfo.perroSeleccionado.nombre} en Oh my dog!`
+    let texto = `¡Un cliente de ¡Oh my dog! está interesado cruzar su perro con el tuyo!<br>
+    <br>
+    A continuación te dejamos los datos del cliente para que puedas comunicarte directamente con él.<br>
+    <br>
+    Nombre: ${emailInfo.nombre}<br>
+    Apellido: ${emailInfo.apellido}<br>
+    Teléfono: ${emailInfo.telefono}<br>
+    Email: ${emailInfo.emailRemitente}`;
+
+    if (emailInfo.mensaje != "") {
+        texto += `<br>
+        <br>
+        Mensaje del cliente: ${emailInfo.mensaje}`;
+    }
+
+    try {
+        await sendMailTest(email, asunto, texto);
+    } catch (error) {
+        console.log(error);
+    }
+
+    res.status(201).send('Se envió correctamente el mail al dueño del perro para cruza.');
 }
