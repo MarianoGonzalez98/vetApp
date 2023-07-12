@@ -143,14 +143,14 @@
 
 <Modal />
 
-{#if $user}
-    <div class="w-full">
-        <a href="/adopciones/crear-publicacion"
+<div class="w-full">
+    {#if $user}
+    <a href="/adopciones/crear-publicacion"
             ><button class="btn rounded-lg variant-filled-secondary mt-5 ml-8"
                 >Publicar perro</button
             ></a
         >
-
+    {/if}
         <div class="float-right mr-5 mt-5">
             <div class="flex items-center">
                 <label for="filtroRaza" class="text-left whitespace-nowrap"
@@ -166,10 +166,12 @@
             </div>
         </div>
     </div>
-{/if}
 <div class="container my-8 mx-auto">
     <h1 class="h1 ml-15">Perros para adoptar</h1>
     <div class="flex flex-wrap">
+                {#if publicacionesVisibles.filter((pub) => {
+            return !pub.adoptado;
+        }).length > 0}
         {#each publicacionesVisibles.filter((pub) => {
             return !pub.adoptado;
         }) as publicacion}
@@ -226,6 +228,9 @@
                 </footer>
             </div>
         {/each}
+        {:else if inputRaza}
+            <h1>No hay ningún resultado que coincida con el filtro aplicado.</h1>
+        {/if}
     </div>
 
     <hr class="h-px my-8 bg-gray-200 border-2 dark:bg-gray-700" />

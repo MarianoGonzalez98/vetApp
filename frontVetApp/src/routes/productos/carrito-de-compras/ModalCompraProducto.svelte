@@ -4,20 +4,20 @@
 </svelte:head>
 
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import type { ItemCarrito } from '$lib/interfaces/Carrito.interface';
     import { productosCarrito } from '$lib/stores/carrito';
     import { user } from '$lib/stores/user';
     import { backendURL, emailPatternFactory } from '$lib/utils/constantFactory';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-    import { createEventDispatcher } from 'svelte';
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: any;
 	export let itemsCarrito:ItemCarrito[];
-	export let dispatchEvent:any
+	//export let dispatchEvent:any
 
 	let emailComprador= $user?.email || "";
-    let emailDisabled = false;
+    let confirmoCompra = false;
 
 	async function getPreferenceId(){
 		const res = await fetch(`${backendURL}/create_prefrerence_compraProductos`, {
@@ -36,7 +36,7 @@
 		const json = await res.json();
 
 		if (res.ok){
-			dispatchEvent();
+			//dispatchEvent();
 			$productosCarrito = [];
 			if (json.status==='out_of_stock'){
 				modalStore.clear();
@@ -70,8 +70,8 @@
 	}
 
     const onConfirm = async () => {
-		if (!emailDisabled){
-			emailDisabled = true;
+		if (!confirmoCompra){
+			confirmoCompra = true;
 			await createMercadoPagoButton()
 		}
     }
@@ -81,6 +81,7 @@
         title: "Sin stock",
         body: "No hay stock suficiente para uno de sus productos elegidos. Por favor, vuelva a seleccionar los productos que desee comprar",
         buttonTextCancel: "Ok",
+		response: () => goto("/productos"),
     };
 
 	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
@@ -92,6 +93,9 @@
 	function onClose(): void {
 		if ($modalStore[0].response) $modalStore[0].response(false);
 		modalStore.close();
+		if (confirmoCompra){
+			goto('/productos');
+		}
 	}
 </script>
 
@@ -104,10 +108,12 @@
 			<form action="" on:submit|preventDefault={onConfirm}>
 				{#if (!$user)}
 					<label for="">Su email:</label>
-					<input class="input focus:invalid:border-red-500 mb-2" bind:value={emailComprador} disabled={emailDisabled} type="text" title="Ingrese un email válido" required pattern={emailPatternFactory} placeholder="Ingrese su email. Ej: miEmail@gmail.com">
+					<input class="input focus:invalid:border-red-500 mb-2" bind:value={emailComprador} disabled={confirmoCompra} type="text" title="Ingrese un email válido" required pattern={emailPatternFactory} placeholder="Ingrese su email. Ej: miEmail@gmail.com">
 				{/if}
 				<button type="button" class="btn {buttonNeutral}" on:click={onClose}>Cancelar</button>
-				<button type="submit" class="btn {buttonPositive}" >Confirmar compra</button>
+				{#if !confirmoCompra}
+					<button type="submit" class="btn {buttonPositive}" >Confirmar compra</button>
+				{/if}
 			</form>
 		<footer class="modal-footer {parent.regionFooter}">
 

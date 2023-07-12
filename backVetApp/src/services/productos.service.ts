@@ -22,10 +22,10 @@ export const deleteProductoPorIdDB = async (id:number) => {
 export const updateProductoPorIdDB = async (producto:Producto) => {
     const query = `
     UPDATE public.productos
-	SET stock=$1, precio=$2, descripcion=$3,foto=$4
+	SET stock=$1, precio=$2, descripcion=$3,foto=$4, categoria=$6
 	WHERE id = $5;
     `
-    const values = [producto.stock,producto.precio,producto.descripcion,producto.foto,producto.id];
+    const values = [producto.stock,producto.precio,producto.descripcion,producto.foto,producto.id,producto.categoria];
     try{
         const result = await pool.query(query, values);
         if (result.rowCount<1){
@@ -41,7 +41,7 @@ export const updateProductoPorIdDB = async (producto:Producto) => {
 
 export const getProductosPorCarritoDB = async (carrito:ItemCarrito[]) => {
     const query = `
-    SELECT id,nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto, categoria
 	FROM public.productos
     WHERE id = ANY ($1)
     `
@@ -107,10 +107,10 @@ export const sumarCantidadCompradaProductosDB = async (productos:ItemCarrito[]) 
 export const insertProductoDB = async (producto:Producto ) => {
     const query = `
     INSERT INTO public.productos(
-        nombre, stock, precio, descripcion, marca, foto)
-        VALUES ($1, $2, $3, $4, $5, $6);
+        nombre, stock, precio, descripcion, marca, foto, categoria)
+        VALUES ($1, $2, $3, $4, $5, $6, $7);
     `;
-    const values = [producto.nombre, producto.stock,producto.precio, producto.descripcion,producto.marca,producto.foto]
+    const values = [producto.nombre, producto.stock,producto.precio, producto.descripcion,producto.marca,producto.foto, producto.categoria]
     try {
         const response: QueryResult = await pool.query(query, values) //hace la query
         return 'ok';
@@ -124,7 +124,7 @@ export const insertProductoDB = async (producto:Producto ) => {
 
 export const getProductosDB = async () => {
     const query = `
-    SELECT id,nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto, categoria
 	FROM public.productos;
     `
     try {
@@ -141,7 +141,7 @@ export const getProductosDB = async () => {
 
 export const getProductoPorIdDB = async (id:number) => {
     const query = `
-    SELECT id,nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto, categoria
 	FROM public.productos
     WHERE id=$1
     `
@@ -160,7 +160,7 @@ export const getProductoPorIdDB = async (id:number) => {
 
 export const getProductoPorNombreMarcaDB = async (nombre:string,marca:string) => {
     const query = `
-    SELECT id,nombre, stock, precio, descripcion, marca, foto
+    SELECT id,nombre, stock, precio, descripcion, marca, foto, categoria
 	FROM public.productos
     WHERE nombre=$1 AND marca=$2
     `

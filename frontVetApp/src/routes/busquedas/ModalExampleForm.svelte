@@ -32,7 +32,7 @@
 				emailData: {
 					emailDestino:publicacion.emailContacto,
 					asunto:"Alguien quiere contactarse por su publicacion",
-					cuerpo:`Alguien se ha contacado con usted por su publicacion del perro ${publicacion.nombrePerro} perdido. <br>
+					cuerpo:`Alguien se ha contacado con usted por su publicacion del perro ${publicacion.nombrePerro} encontrado. <br>
 					Los datos de contacto del interesado son: <br>
 					<br>
 					Apellido y nombre: ${formData.nombre} ${formData.apellido}<br>
@@ -115,12 +115,12 @@
 		<form on:submit|preventDefault={onFormSubmit} class="modal-form {cForm}">
 			<label class="label">
 				<span>Nombre</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre válido" bind:value={formData.nombre} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su nombre" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un nombre válido" bind:value={formData.nombre} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido y nombre" />
 			</label>
 
 			<label class="label">
 				<span>Apellido</span>
-				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un apellido válido" bind:value={formData.apellido} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido" />
+				<input class="input focus:invalid:border-red-500" type="text" title="Ingrese un apellido válido" bind:value={formData.apellido} pattern={letrasEspaciosComaPatternFactory} required placeholder="Ingrese su apellido y nombre" />
 			</label>
 
 			<label use:popup={popupFocusBlur}  class="label">

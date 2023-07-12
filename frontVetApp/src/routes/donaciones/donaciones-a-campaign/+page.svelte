@@ -37,14 +37,16 @@
                   .match(`.*${inputEmail.toLowerCase()}.*`)
             : true;
         let fechaDonacionDesde = new Date(donacion.fechaHora);
-        fechaDonacionDesde.setHours(0,0,0,0);
+        fechaDonacionDesde.setHours(0, 0, 0, 0);
         const fechaDesdeMatch = inputFechaDesde
-            ? fechaDonacionDesde >= new Date(inputFechaDesde + "T00:00:00-03:00")
+            ? fechaDonacionDesde >=
+              new Date(inputFechaDesde + "T00:00:00-03:00")
             : true;
         let fechaDonacionHasta = new Date(donacion.fechaHora);
-        fechaDonacionHasta.setHours(0,0,0,0);
+        fechaDonacionHasta.setHours(0, 0, 0, 0);
         const fechaHastaMatch = inputFechaHasta
-            ? fechaDonacionHasta <= new Date(inputFechaHasta + "T00:00:00-03:00")
+            ? fechaDonacionHasta <=
+              new Date(inputFechaHasta + "T00:00:00-03:00")
             : true;
         return nombreMatch && fechaDesdeMatch && fechaHastaMatch;
     }) as Donacion[];
@@ -98,39 +100,47 @@
             />
         </div>
     </div>
-    <div class="ml-2 flex flex-wrap">
-        {#each mostrar as donacion}
-            <div
-                class="card grayscale hover:grayscale-0 duration-300 variant-ghost-secondary p-1 max-w-xs m-2"
-            >
-                <section class="p-4">
-                    <p>
-                        <span class="font-medium"
-                            >Email del donante:
-                        </span>{donacion.emailDonante}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Fecha y hora:
-                        </span>{new Date(donacion.fechaHora).toLocaleDateString(
-                            "es-AR"
-                        )}
-                        {new Date(donacion.fechaHora).toLocaleTimeString(
-                            "es-AR",
-                            {
-                                timeStyle: "short",
-                            }
-                        )}
-                    </p>
-                    <p>
-                        <span class="font-medium"
-                            >Monto neto donado:
-                        </span>${donacion.monto}
-                    </p>
-                </section>
-            </div>
-        {/each}
-    </div>
+    {#if mostrar.length > 0}
+        <div class="ml-2 flex flex-wrap">
+            {#each mostrar as donacion}
+                <div
+                    class="card grayscale hover:grayscale-0 duration-300 variant-ghost-secondary p-1 max-w-xs m-2"
+                >
+                    <section class="p-4">
+                        <p>
+                            <span class="font-medium"
+                                >Email del donante:
+                            </span>{donacion.emailDonante}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Fecha y hora:
+                            </span>{new Date(
+                                donacion.fechaHora
+                            ).toLocaleDateString("es-AR")}
+                            {new Date(donacion.fechaHora).toLocaleTimeString(
+                                "es-AR",
+                                {
+                                    timeStyle: "short",
+                                }
+                            )}
+                        </p>
+                        <p>
+                            <span class="font-medium"
+                                >Monto neto donado:
+                            </span>${donacion.monto}
+                        </p>
+                    </section>
+                </div>
+            {/each}
+        </div>
+    {:else}
+        <div class="flex justify-center items-center h-full">
+            <h1 class="text-4xl font-bold">
+                No hay resultados que coincidan con los filtros aplicados.
+            </h1>
+        </div>
+    {/if}
 {:else}
     <div class="flex justify-center items-center h-full">
         <h1 class="text-4xl font-bold">No hay donaciones registradas.</h1>
